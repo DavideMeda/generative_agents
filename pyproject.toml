@@ -19,6 +19,10 @@ dependencies = [
     "python-dotenv>=1.0",
     "httpx>=0.25",
     "structlog>=23.2",
+    # Server
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "websockets>=12",
 ]
 
 [project.optional-dependencies]
@@ -40,7 +44,7 @@ docs = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["gen_agent*", "server*", "config*"]
+include = ["gen_agent*", "server*", "config*", "scenarios*"]
 
 [tool.black]
 line-length = 99
