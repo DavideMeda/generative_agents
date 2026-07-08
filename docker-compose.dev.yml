@@ -1,0 +1,39 @@
+version: "3.9"
+
+# Development overrides — hot reload, debugger port, pgAdmin.
+# Usage: docker compose -f docker-compose.base.yml -f docker-compose.dev.yml up
+
+include:
+  - docker-compose.base.yml
+
+services:
+  app:
+    build:
+      target: runtime        # still use runtime stage, but with code mounted below
+    volumes:
+      - .:/app               # hot-reload: local changes reflected immediately
+      - /app/.venv           # keep venv from container, not local
+    environment:
+      LOG_LEVEL: DEBUG
+      DATABASE_URL: postgresql://gen_agent:devpassword@db:5432/gen_agent
+    ports:
+      - "8000:8000"
+      - "5678:5678"          # debugpy
+    command: ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678",
+              "-m", "server.main", "--reload"]
+
+  db:
+    environment:
+      POSTGRES_PASSWORD: devpassword
+    ports:
+      - "5432:5432"          # expose for local DB tools
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gen-agent.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
