@@ -1,0 +1,45 @@
+version: "3.9"
+
+# Production overrides — resource limits, structured logging, nginx.
+# Usage: docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
+
+include:
+  - docker-compose.base.yml
+
+services:
+  app:
+    image: ghcr.io/davidemeda/generative_agents:latest
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2g
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      LOG_LEVEL: WARNING
+
+  db:
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512m
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./config/certs:/etc/nginx/certs:ro
+    depends_on:
+      - app

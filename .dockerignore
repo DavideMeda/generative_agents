@@ -1,0 +1,49 @@
+# Version control
+.git/
+.gitignore
+.github/
+
+# Python artefacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Tests (not needed at runtime)
+tests/
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker build artefacts
+docker-compose*.yml
+
+# Node
+node_modules/
+web/node_modules/
+
+# Logs
+*.log
+logs/

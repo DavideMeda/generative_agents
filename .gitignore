@@ -1,102 +1,52 @@
-reverie/backend_server/utils.py
-frontend_server/settings/local.py
-storage/*
-static_dirs/*
-
-!storage/base_the_ville_isabella_maria_klaus/*
-!storage/base_the_ville_n25/*
-
-bin/
-include/
-pip-selfcheck.json
-.DS_Store
-
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
 *.egg-info/
-.installed.cfg
-*.egg
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*,cover
-.hypothesis/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# IPython Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# celery beat schedule file
-celerybeat-schedule
-
-# dotenv
-.env
-
-# virtualenv
+dist/
+build/
+.venv/
 venv/
-ENV/
+*.egg
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
 
-# Spyder project settings
-.spyderproject
+# Env
+.env
+.env.*
+!.env.example
 
-# Rope project settings
-.ropeproject
+# Database
+*.db
+*.sqlite3
+
+# Docker
+.docker-data/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs
+docs/_build/
+docs/api/_build/
+
+# Logs
+*.log
+logs/
+
+# Alembic
+# (versions committed, but not auto-generated temp)
+
+# Node (portfolio)
+node_modules/
+dist/
+.astro/
