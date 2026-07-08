@@ -36,7 +36,8 @@ class SQLiteMemoryBackend:
     """Thread-safe SQLite backend. One connection per thread via threading.local."""
 
     def __init__(self, db_path: str = "gen_agent.db") -> None:
-        self._db_path = str(Path(db_path).resolve())
+        # ponytail: :memory: must not be resolved to an absolute filesystem path
+        self._db_path = db_path if db_path == ":memory:" else str(Path(db_path).resolve())
         self._local = threading.local()
         self._init_schema()
 
