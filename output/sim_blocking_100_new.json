@@ -1,0 +1,162 @@
+{
+  "project": "Nuovo Gen_Agent (modular)",
+  "scenario": "blocking_100",
+  "llm": "ollama",
+  "ollama_model": "llama3.2:3b",
+  "ticks_requested": 100,
+  "final_tick": 100,
+  "agents": 5,
+  "agent_names": [
+    "Marco",
+    "Lucia",
+    "Giovanni",
+    "Anna",
+    "Elena"
+  ],
+  "block_on_dialogue": true,
+  "interaction_radius": 5.0,
+  "interaction_every_ticks": 10,
+  "min_gap_ticks": 32,
+  "world_pois": 8,
+  "missions_enabled": true,
+  "interactions": 13,
+  "dialogues": 13,
+  "dialogue_utterances": 52,
+  "missions_completed": 37,
+  "memories_total": 48,
+  "real_time_sec": 5926.45,
+  "avg_sec_per_tick": 59.265,
+  "dialogue_log": [
+    {
+      "tick": 10,
+      "agents": [
+        "Giovanni",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 343.706,
+      "preview": "Giovanni: Anna, I've been trying to remember how we ended up here at the market, but my mind is as dry as the olives on "
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Lucia",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 434.626,
+      "preview": "Lucia: \"Hello, I don't remember how I got here or who you are,\" I say, looking around the hospital room with a mix of co"
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Lucia",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 474.694,
+      "preview": "Lucia: \"Wait, what? An accident? What kind of accident?\" I ask, my voice shaking slightly as I try to piece together the"
+    },
+    {
+      "tick": 30,
+      "agents": [
+        "Marco",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 474.959,
+      "preview": "Marco: I'm afraid I don't have a previous statement to draw from, as my context is that we're just starting our conversa"
+    },
+    {
+      "tick": 50,
+      "agents": [
+        "Marco",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 441.924,
+      "preview": "Marco: Anna: Hi Giovanni! It's great to see you too. *glances at me* So, what's new with you? How was your day at the ma"
+    },
+    {
+      "tick": 50,
+      "agents": [
+        "Giovanni",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 427.715,
+      "preview": "Giovanni: \"Ah, Anna, it's good to see you too,\" I say with a gentle smile, glancing around the bustling market scene we'"
+    },
+    {
+      "tick": 70,
+      "agents": [
+        "Lucia",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 437.245,
+      "preview": "Lucia: \"I don't remember anything, Giovanni. It's like my memories just... stopped. Do you know what happened to me? Can"
+    },
+    {
+      "tick": 70,
+      "agents": [
+        "Anna",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 476.984,
+      "preview": "Anna: *I take a deep breath and try to process Lucia's words* I'm sorry, Lucia. I don't know what happened either. We we"
+    },
+    {
+      "tick": 80,
+      "agents": [
+        "Marco",
+        "Lucia"
+      ],
+      "turns": 4,
+      "elapsed_sec": 485.843,
+      "preview": "Marco: Lucia: *smiling warmly at Marco* I'm so glad we're having this conversation. It feels like it's been a while sinc"
+    },
+    {
+      "tick": 80,
+      "agents": [
+        "Marco",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 490.173,
+      "preview": "Marco: Giovanni: Ah, nice day, isn't it? *looks out the window* The sun is shining, and the city is bustling with life. "
+    },
+    {
+      "tick": 80,
+      "agents": [
+        "Lucia",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 457.033,
+      "preview": "Lucia: *looking at Giovanni with pleading eyes* \"What about us? What happened to us before that?\" I ask, my voice barely"
+    },
+    {
+      "tick": 80,
+      "agents": [
+        "Giovanni",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 495.899,
+      "preview": "Giovanni: Anna. It's good to see you too. *I look around the bustling market scene we're currently in, taking a moment t"
+    },
+    {
+      "tick": 90,
+      "agents": [
+        "Lucia",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 485.493,
+      "preview": "Lucia: I look up at Elena with a mix of emotions on my face. It's been a while since we last spoke, and I'm not sure whe"
+    }
+  ],
+  "errors": []
+}
