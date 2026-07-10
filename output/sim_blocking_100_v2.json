@@ -1,0 +1,222 @@
+{
+  "project": "Nuovo Gen_Agent (modular)",
+  "scenario": "blocking_100",
+  "llm": "ollama",
+  "ollama_model": "llama3.2:3b",
+  "ticks_requested": 100,
+  "final_tick": 100,
+  "agents": 5,
+  "agent_names": [
+    "Marco",
+    "Lucia",
+    "Giovanni",
+    "Anna",
+    "Elena"
+  ],
+  "block_on_dialogue": true,
+  "interaction_radius": 5.0,
+  "interaction_every_ticks": 10,
+  "min_gap_ticks": 32,
+  "world_pois": 8,
+  "missions_enabled": true,
+  "interactions": 18,
+  "dialogues": 18,
+  "dialogue_utterances": 54,
+  "missions_completed": 33,
+  "plan_goals_extracted": 48,
+  "plan_to_poi_matches": 24,
+  "plan_goals_matched_to_poi": 24,
+  "concrete_goals_used": 8,
+  "plan_to_poi_analysis": {
+    "extraction_rate": 12.0,
+    "matching_rate": 0.5,
+    "usage_rate": 0.333
+  },
+  "memories_total": 87,
+  "reflections_generated": 27,
+  "real_time_sec": 2937.31,
+  "avg_sec_per_tick": 29.373,
+  "dialogue_log": [
+    {
+      "tick": 10,
+      "agents": [
+        "Marco",
+        "Lucia"
+      ],
+      "turns": 3,
+      "elapsed_sec": 82.978,
+      "preview": "Marco: Hey Lucia, how's it going? I saw you around town yesterday and thought I'd stop by and say hi. What's new with yo"
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Marco",
+        "Anna"
+      ],
+      "turns": 3,
+      "elapsed_sec": 105.537,
+      "preview": "Marco: Hey Anna, how's it going? I'm good, thanks for asking. Just wanted to stop by and say hi. What's new with you? An"
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Marco",
+        "Elena"
+      ],
+      "turns": 3,
+      "elapsed_sec": 127.825,
+      "preview": "Marco: Hey Elena, how's it going? I'm good, thanks for asking. Just wanted to stop by and say hi. What's new with you? A"
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Lucia",
+        "Anna"
+      ],
+      "turns": 3,
+      "elapsed_sec": 117.754,
+      "preview": "Lucia: Hey Anna, how's it going? I saw you around town yesterday and thought I'd stop by and say hi. What's new with you"
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Lucia",
+        "Elena"
+      ],
+      "turns": 3,
+      "elapsed_sec": 123.528,
+      "preview": "Lucia: Hey Elena, how's it going? I saw you around town yesterday and thought I'd stop by and say hi. What's new with yo"
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Anna",
+        "Elena"
+      ],
+      "turns": 3,
+      "elapsed_sec": 146.239,
+      "preview": "Anna: Hey Elena, how's it going? I saw you around town yesterday and thought I'd stop by and say hi. What's new with you"
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Giovanni",
+        "Anna"
+      ],
+      "turns": 3,
+      "elapsed_sec": 119.016,
+      "preview": "Giovanni: Hi Anna, how's it going? Been busy lately, got a lot on my plate. Just trying to get some things done around t"
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Giovanni",
+        "Elena"
+      ],
+      "turns": 3,
+      "elapsed_sec": 144.428,
+      "preview": "Giovanni: Hey Elena, how's it going? Been busy lately, got a lot on my plate. Just trying to get some things done around"
+    },
+    {
+      "tick": 30,
+      "agents": [
+        "Lucia",
+        "Giovanni"
+      ],
+      "turns": 3,
+      "elapsed_sec": 212.055,
+      "preview": "Lucia: Hi Giovanni how's it going? I saw you around town yesterday and thought I'd stop by and say hi. What's new with y"
+    },
+    {
+      "tick": 50,
+      "agents": [
+        "Marco",
+        "Anna"
+      ],
+      "turns": 3,
+      "elapsed_sec": 166.028,
+      "preview": "Marco: Hey Anna, how's it going? I'm good, thanks for asking. Just wanted to stop by and say hi. What's new with you? An"
+    },
+    {
+      "tick": 50,
+      "agents": [
+        "Lucia",
+        "Elena"
+      ],
+      "turns": 3,
+      "elapsed_sec": 172.522,
+      "preview": "Lucia: Elena, I've been thinking about our interactions lately and I realized that despite having the same conversations"
+    },
+    {
+      "tick": 60,
+      "agents": [
+        "Lucia",
+        "Anna"
+      ],
+      "turns": 3,
+      "elapsed_sec": 184.141,
+      "preview": "Lucia: Anna, I've been thinking about our interactions lately and I realized that despite having the same conversations "
+    },
+    {
+      "tick": 60,
+      "agents": [
+        "Giovanni",
+        "Elena"
+      ],
+      "turns": 3,
+      "elapsed_sec": 201.659,
+      "preview": "Giovanni: Hey Elena, how's it going? I was thinking about visiting the Town Hall today to check on some things, and then"
+    },
+    {
+      "tick": 60,
+      "agents": [
+        "Anna",
+        "Elena"
+      ],
+      "turns": 3,
+      "elapsed_sec": 167.156,
+      "preview": "Anna: Hey Elena, how's it going? I'm good, thanks for asking. Just wanted to stop by and say hi. What's new with you? An"
+    },
+    {
+      "tick": 70,
+      "agents": [
+        "Marco",
+        "Giovanni"
+      ],
+      "turns": 3,
+      "elapsed_sec": 199.633,
+      "preview": "Marco: Hi Giovanni, how's it going? I'm good, thanks for asking. Just wanted to stop by and say hi. What's new with you?"
+    },
+    {
+      "tick": 70,
+      "agents": [
+        "Marco",
+        "Elena"
+      ],
+      "turns": 3,
+      "elapsed_sec": 186.062,
+      "preview": "Marco: Hi Elena, how's it going? I'm good, thanks for asking. Just wanted to stop by and say hi. What's new with you? An"
+    },
+    {
+      "tick": 80,
+      "agents": [
+        "Marco",
+        "Lucia"
+      ],
+      "turns": 3,
+      "elapsed_sec": 132.066,
+      "preview": "Marco: Hey Lucia how's it going? I'm good, thanks for asking. Just wanted to stop by and say hi. What's new with you? An"
+    },
+    {
+      "tick": 80,
+      "agents": [
+        "Lucia",
+        "Giovanni"
+      ],
+      "turns": 3,
+      "elapsed_sec": 191.727,
+      "preview": "Lucia: Hey Giovanni, how's it going? I'm good, thanks for asking. Just wanted to stop by and say hi. What's new with you"
+    }
+  ],
+  "errors": []
+}

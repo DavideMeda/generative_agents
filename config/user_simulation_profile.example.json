@@ -1,0 +1,20 @@
+{
+  "preset": "blocking_balanced",
+  "ticks": 100,
+  "agents": 5,
+  "agent_names": ["Marco", "Lucia", "Giovanni", "Anna", "Elena"],
+  "llm_provider": "ollama",
+  "llm_model": "llama3.2:3b",
+  "block_on_dialogue": true,
+  "dialogue_max_turns": 4,
+  "interaction_radius": 5.0,
+  "min_gap_ticks": 32,
+  "enable_stanford_worker": true,
+  "enable_neat": false,
+  "enable_hrm": false,
+  "enable_rlif": false,
+  "enable_game_theory": true,
+  "dialogue_min_words": 25,
+  "reflection_trigger": 5,
+  "ollama_timeout": 300
+}

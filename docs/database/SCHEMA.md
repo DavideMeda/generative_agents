@@ -1,59 +1,69 @@
-# Database Schema
+# Database Schema & Dual-Mode Strategy
 
-## Strategy
+## Dual-Mode Strategy
 
-Gen_Agent starts with **SQLite** for zero-config local development and switches to **PostgreSQL** for production via the `DATABASE_URL` environment variable.
+Gen_Agent uses a dual-mode database approach:
 
-The storage interface (`SQLiteMemoryBackend`) is decoupled from the manager — swapping backends requires only a constructor change, no business logic rewrite.
+| Environment | Backend | Config |
+|-------------|---------|--------|
+| Local development / sim scripts | SQLite per-agent | `data/agents/{id}/memory.db` |
+| Server / Docker / production | PostgreSQL | `DATABASE_URL=postgresql://...` |
 
-## Migration tool: Alembic
+### How It Works
 
-```bash
-# Apply all pending migrations
-./scripts/migrate.sh upgrade
+The `engine_factory.build_memory()` function inspects `DATABASE_URL`:
+- If it starts with `postgresql://` or `postgres://` → uses `PostgresMemoryBackend`
+- Otherwise → uses `SQLiteMemoryBackend` per-agent in `data/agents/{id}/memory.db`
 
-# Roll back one step
-./scripts/migrate.sh downgrade -1
-
-# Create a new migration after model changes
-./scripts/migrate.sh revision "describe your change"
-```
-
-Set `DATABASE_URL` before running:
+### Running Migrations
 
 ```bash
-# SQLite (default)
-export DATABASE_URL=sqlite:///./gen_agent.db
+# local dev (SQLite): no migration needed, schema auto-created on first run
 
-# PostgreSQL
-export DATABASE_URL=postgresql://user:password@localhost:5432/gen_agent
+# production (PostgreSQL):
+scripts/migrate.sh
+# or inside Docker entrypoint:
+alembic upgrade head
 ```
 
-## Tables
+## Schema
 
-### `memories`
+```sql
+CREATE TABLE memories (
+    memory_id     TEXT PRIMARY KEY,
+    agent_id      TEXT NOT NULL,
+    content       TEXT NOT NULL,
+    memory_type   TEXT NOT NULL,  -- observation | social | reflection | plan
+    importance    FLOAT NOT NULL,
+    created_at    FLOAT NOT NULL,
+    last_accessed FLOAT NOT NULL,
+    extra         JSONB NOT NULL DEFAULT '{}'
+);
+CREATE INDEX idx_memories_agent ON memories(agent_id);
+CREATE INDEX idx_memories_type  ON memories(agent_id, memory_type);
+```
 
-| Column         | Type    | Notes                              |
-|----------------|---------|------------------------------------|
-| `memory_id`    | TEXT PK | UUID v4                            |
-| `agent_id`     | TEXT    | Owner agent — indexed              |
-| `content`      | TEXT    | Raw memory text                    |
-| `memory_type`  | TEXT    | `observation` / `reflection` / `plan` |
-| `importance`   | REAL    | 0.0 – 10.0                        |
-| `created_at`   | REAL    | Unix timestamp                     |
-| `last_accessed`| REAL    | Unix timestamp — updated on touch  |
-| `extra`        | TEXT    | JSON blob for extension fields     |
+## Memory Types
 
-**Indexes:**
-- `idx_memories_agent` on `(agent_id)` — all queries filter by agent.
-- `idx_memories_type` on `(agent_id, memory_type)` — type-filtered retrieval.
+| Type | Description | Scope |
+|------|-------------|-------|
+| `observation` | Perceived events in the world | sim |
+| `social` | Dialogue/chat interactions | social |
+| `reflection` | Agent introspection (LLM-generated) | any |
+| `plan` | Stanford daily plan steps | sim |
 
-## Adding PostgreSQL in production
+## Reflection Triggers
 
-1. Provision a Postgres 16 instance.
-2. Set `DATABASE_URL=postgresql://user:pass@host:5432/gen_agent`.
-3. Run `./scripts/migrate.sh upgrade`.
-4. The `SQLiteMemoryBackend` will still work for local dev — no code changes needed.
+Reflections are triggered automatically in `MemoryManager`:
+1. **Modulo trigger**: every `REFLECTION_TRIGGER` (default: 5) new memories
+2. **Salience trigger**: when a high-importance memory (≥ 7.0) is stored and ≥ 3 memories since last reflection
 
-> For a full PostgreSQL backend, extend `SQLiteMemoryBackend` into a `PostgresMemoryBackend`
-> that shares the same `MemoryProtocol` interface.
+## Alembic Integration
+
+Migrations live in `migrations/`. The `alembic.ini` points to the `DATABASE_URL` env var.
+
+To add a new migration:
+```bash
+alembic revision --autogenerate -m "describe change"
+alembic upgrade head
+```

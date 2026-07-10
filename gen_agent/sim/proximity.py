@@ -23,6 +23,10 @@ class ProximityDetector:
         # Maps frozenset({id_a, id_b}) -> last interaction tick
         self._last_interaction: Dict[frozenset, int] = {}
 
+    @property
+    def config(self) -> ProximityConfig:
+        return self._cfg
+
     def within_radius(
         self, pos_a: Tuple[float, float], pos_b: Tuple[float, float]
     ) -> bool:
@@ -30,10 +34,13 @@ class ProximityDetector:
         dy = pos_a[1] - pos_b[1]
         return math.hypot(dx, dy) <= self._cfg.interaction_radius
 
-    def can_interact(self, id_a: str, id_b: str, current_tick: int) -> bool:
+    def can_interact(
+        self, id_a: str, id_b: str, current_tick: int, min_gap: int | None = None
+    ) -> bool:
+        gap = self._cfg.min_gap_ticks if min_gap is None else min_gap
         key: frozenset = frozenset({id_a, id_b})
-        last = self._last_interaction.get(key, -self._cfg.min_gap_ticks)
-        return (current_tick - last) >= self._cfg.min_gap_ticks
+        last = self._last_interaction.get(key, -gap)
+        return (current_tick - last) >= gap
 
     def record_interaction(self, id_a: str, id_b: str, tick: int) -> None:
         self._last_interaction[frozenset({id_a, id_b})] = tick

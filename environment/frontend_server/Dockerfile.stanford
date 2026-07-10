@@ -1,0 +1,22 @@
+# Dockerfile per il frontend Stanford (Django 2.2)
+# Python 3.11 — ultima versione compatibile con Django 2.2
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Dipendenze di sistema minime
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Crea directory necessarie al runtime
+RUN mkdir -p storage temp_storage compressed_storage
+
+EXPOSE 8080
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]

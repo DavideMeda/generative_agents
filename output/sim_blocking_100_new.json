@@ -2,7 +2,7 @@
   "project": "Nuovo Gen_Agent (modular)",
   "scenario": "blocking_100",
   "llm": "ollama",
-  "ollama_model": "llama3.2:3b",
+  "ollama_model": "gemma4:12b",
   "ticks_requested": 100,
   "final_tick": 100,
   "agents": 5,
@@ -19,83 +19,143 @@
   "min_gap_ticks": 32,
   "world_pois": 8,
   "missions_enabled": true,
-  "interactions": 13,
-  "dialogues": 13,
-  "dialogue_utterances": 52,
-  "missions_completed": 37,
-  "memories_total": 48,
-  "real_time_sec": 5926.45,
-  "avg_sec_per_tick": 59.265,
+  "interactions": 18,
+  "dialogues": 18,
+  "dialogue_utterances": 72,
+  "missions_completed": 35,
+  "memories_total": 64,
+  "real_time_sec": 12664.69,
+  "avg_sec_per_tick": 126.647,
   "dialogue_log": [
     {
       "tick": 10,
       "agents": [
-        "Giovanni",
-        "Anna"
-      ],
-      "turns": 4,
-      "elapsed_sec": 343.706,
-      "preview": "Giovanni: Anna, I've been trying to remember how we ended up here at the market, but my mind is as dry as the olives on "
-    },
-    {
-      "tick": 20,
-      "agents": [
-        "Lucia",
-        "Giovanni"
-      ],
-      "turns": 4,
-      "elapsed_sec": 434.626,
-      "preview": "Lucia: \"Hello, I don't remember how I got here or who you are,\" I say, looking around the hospital room with a mix of co"
-    },
-    {
-      "tick": 20,
-      "agents": [
-        "Lucia",
-        "Anna"
-      ],
-      "turns": 4,
-      "elapsed_sec": 474.694,
-      "preview": "Lucia: \"Wait, what? An accident? What kind of accident?\" I ask, my voice shaking slightly as I try to piece together the"
-    },
-    {
-      "tick": 30,
-      "agents": [
         "Marco",
-        "Giovanni"
+        "Lucia"
       ],
       "turns": 4,
-      "elapsed_sec": 474.959,
-      "preview": "Marco: I'm afraid I don't have a previous statement to draw from, as my context is that we're just starting our conversa"
+      "elapsed_sec": 335.297,
+      "preview": "Marco: It's getting quite crowded here today, isn't it? I can hardly hear myself think over all these vendors shouting o"
     },
     {
-      "tick": 50,
+      "tick": 10,
       "agents": [
         "Marco",
         "Anna"
       ],
       "turns": 4,
-      "elapsed_sec": 441.924,
-      "preview": "Marco: Anna: Hi Giovanni! It's great to see you too. *glances at me* So, what's new with you? How was your day at the ma"
+      "elapsed_sec": 352.406,
+      "preview": "Marco: It’s a bit of a maze today, isn't it? I feel like I could get lost just trying to find a single stall in all this"
     },
     {
-      "tick": 50,
+      "tick": 10,
+      "agents": [
+        "Marco",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 520.82,
+      "preview": "Marco: The sheer energy of this place is almost overwhelming today, wouldn't you say? It feels like quite a maze trying "
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Lucia",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 546.52,
+      "preview": "Lucia: Oh, hello Giovanni! You caught me right in the middle of this overwhelming scene. I was just trying to navigate m"
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Lucia",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 666.379,
+      "preview": "Lucia: Oh, hello there! Please forgive me if I seem a bit preoccupied—this market is proving to be quite the ordeal toda"
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Anna",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 708.408,
+      "preview": "Anna: [Ollama error]\nElena: Oh, my apologies—it’s so incredibly loud here today with everyone shouting their wares that "
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Lucia",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 556.728,
+      "preview": "Lucia: Oh, excuse me! I didn't mean to startle you. Hello, Anna. It is such a relief to be among these quiet shelves aft"
+    },
+    {
+      "tick": 20,
       "agents": [
         "Giovanni",
         "Elena"
       ],
       "turns": 4,
-      "elapsed_sec": 427.715,
-      "preview": "Giovanni: \"Ah, Anna, it's good to see you too,\" I say with a gentle smile, glancing around the bustling market scene we'"
+      "elapsed_sec": 413.55,
+      "preview": "Giovanni: Ah, Elena... the silence of our home is a balm to my senses after the cacophony I just endured at the market. "
+    },
+    {
+      "tick": 30,
+      "agents": [
+        "Giovanni",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 948.379,
+      "preview": "Giovanni: Ah, Anna. You find me here amidst the weight of stone and governance. There is a certain gravity to this hall,"
+    },
+    {
+      "tick": 50,
+      "agents": [
+        "Marco",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 952.301,
+      "preview": "Marco: [Ollama error]\nGiovanni: Ah, Marco. It is a relief to see a familiar face in such peaceful surroundings. You find"
+    },
+    {
+      "tick": 60,
+      "agents": [
+        "Marco",
+        "Lucia"
+      ],
+      "turns": 4,
+      "elapsed_sec": 1464.769,
+      "preview": "Marco: [Ollama error]\nLucia: [Ollama error]\nMarco: [Ollama error]\nLucia: [Ollama error]"
+    },
+    {
+      "tick": 60,
+      "agents": [
+        "Giovanni",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 387.046,
+      "preview": "Giovanni: Ah, Elena... This establishment offers a rather peculiar sort of sanctuary, does it not? It possesses a gentle"
     },
     {
       "tick": 70,
       "agents": [
         "Lucia",
-        "Anna"
+        "Giovanni"
       ],
       "turns": 4,
-      "elapsed_sec": 437.245,
-      "preview": "Lucia: \"I don't remember anything, Giovanni. It's like my memories just... stopped. Do you know what happened to me? Can"
+      "elapsed_sec": 535.856,
+      "preview": "Lucia: A \"symphony of noise\"—that is a rather poetic way to describe such a chaotic scene, Giovanni. You have a certain "
     },
     {
       "tick": 70,
@@ -104,38 +164,8 @@
         "Elena"
       ],
       "turns": 4,
-      "elapsed_sec": 476.984,
-      "preview": "Anna: *I take a deep breath and try to process Lucia's words* I'm sorry, Lucia. I don't know what happened either. We we"
-    },
-    {
-      "tick": 80,
-      "agents": [
-        "Marco",
-        "Lucia"
-      ],
-      "turns": 4,
-      "elapsed_sec": 485.843,
-      "preview": "Marco: Lucia: *smiling warmly at Marco* I'm so glad we're having this conversation. It feels like it's been a while sinc"
-    },
-    {
-      "tick": 80,
-      "agents": [
-        "Marco",
-        "Giovanni"
-      ],
-      "turns": 4,
-      "elapsed_sec": 490.173,
-      "preview": "Marco: Giovanni: Ah, nice day, isn't it? *looks out the window* The sun is shining, and the city is bustling with life. "
-    },
-    {
-      "tick": 80,
-      "agents": [
-        "Lucia",
-        "Giovanni"
-      ],
-      "turns": 4,
-      "elapsed_sec": 457.033,
-      "preview": "Lucia: *looking at Giovanni with pleading eyes* \"What about us? What happened to us before that?\" I ask, my voice barely"
+      "elapsed_sec": 1071.965,
+      "preview": "Anna: [Ollama error]\nElena: [Ollama error]\nAnna: The air here is so much lighter than it was at the market, isn't it? Af"
     },
     {
       "tick": 80,
@@ -144,18 +174,38 @@
         "Anna"
       ],
       "turns": 4,
-      "elapsed_sec": 495.899,
-      "preview": "Giovanni: Anna. It's good to see you too. *I look around the bustling market scene we're currently in, taking a moment t"
+      "elapsed_sec": 1336.151,
+      "preview": "Giovanni: [Ollama error]\nAnna: [Ollama error]\nGiovanni: Ah, Anna. There is something quite peculiar about the atmosphere"
     },
     {
-      "tick": 90,
+      "tick": 100,
       "agents": [
-        "Lucia",
+        "Marco",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 792.975,
+      "preview": "Marco: Indeed, Giovanni. There is something profound about how quickly the noise of the world fades when one steps into "
+    },
+    {
+      "tick": 100,
+      "agents": [
+        "Marco",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 657.804,
+      "preview": "Marco: It is a striking contrast to the bustle of the marketplace, wouldn't you agree? After enduring those crowded stal"
+    },
+    {
+      "tick": 100,
+      "agents": [
+        "Marco",
         "Elena"
       ],
       "turns": 4,
-      "elapsed_sec": 485.493,
-      "preview": "Lucia: I look up at Elena with a mix of emotions on my face. It's been a while since we last spoke, and I'm not sure whe"
+      "elapsed_sec": 417.135,
+      "preview": "Marco: It is quite a striking contrast, isn't it? After enduring that relentless clamor and the frantic energy of the ma"
     }
   ],
   "errors": []

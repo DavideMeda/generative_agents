@@ -1,0 +1,183 @@
+{
+  "project": "Nuovo Gen_Agent (modular)",
+  "scenario": "blocking_100",
+  "llm": "ollama",
+  "ollama_model": "llama3.2:3b",
+  "ticks_requested": 100,
+  "final_tick": 100,
+  "agents": 5,
+  "agent_names": [
+    "Marco",
+    "Lucia",
+    "Giovanni",
+    "Anna",
+    "Elena"
+  ],
+  "block_on_dialogue": true,
+  "interaction_radius": 5.0,
+  "interaction_every_ticks": 10,
+  "min_gap_ticks": 32,
+  "world_pois": 8,
+  "missions_enabled": true,
+  "interactions": 15,
+  "dialogues": 15,
+  "dialogue_utterances": 60,
+  "missions_completed": 16,
+  "memories_total": 91,
+  "reflections_generated": 32,
+  "real_time_sec": 4345.64,
+  "avg_sec_per_tick": 43.456,
+  "dialogue_log": [
+    {
+      "tick": 10,
+      "agents": [
+        "Marco",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 108.243,
+      "preview": "Marco: Hi Anna, how's it going? I've been meaning to ask you, have you tried that new coffee shop downtown? I've been he"
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Giovanni",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 125.414,
+      "preview": "Giovanni: Hi Elena, nice day today isn't it? I love walking through the park in the morning when everything feels so fre"
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Marco",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 184.037,
+      "preview": "Marco: Hi Elena, how's it going? I've been meaning to ask you, have you tried that new coffee shop downtown? I've been h"
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Lucia",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 210.185,
+      "preview": "Lucia: Anna, how's your day going so far? I've been meaning to ask you, have you tried that new café downtown yet? They "
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Giovanni",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 263.039,
+      "preview": "Giovanni: Hi Anna, nice day today isn't it? I love walking through the park in the morning when everything feels so fres"
+    },
+    {
+      "tick": 30,
+      "agents": [
+        "Lucia",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 269.439,
+      "preview": "Lucia: Elena, how's your day going so far? I've been meaning to ask you, have you tried that new café downtown yet? They"
+    },
+    {
+      "tick": 40,
+      "agents": [
+        "Marco",
+        "Lucia"
+      ],
+      "turns": 4,
+      "elapsed_sec": 305.67,
+      "preview": "Marco: Hi Lucia, how's it going? I've been meaning to ask you, have you tried that new coffee shop downtown? I've been h"
+    },
+    {
+      "tick": 40,
+      "agents": [
+        "Marco",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 325.43,
+      "preview": "Marco: Hi Giovanni, how's it going? I've been meaning to ask you, have you tried that new coffee shop downtown? I've bee"
+    },
+    {
+      "tick": 40,
+      "agents": [
+        "Lucia",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 360.363,
+      "preview": "Lucia: Giovanni, it's great to see you here in the park. I've been meaning to ask you, have you tried that new coffee sh"
+    },
+    {
+      "tick": 40,
+      "agents": [
+        "Anna",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 310.037,
+      "preview": "Anna: Elena, I've been thinking a lot about our conversations recently. It's like my priorities have shifted - a simple "
+    },
+    {
+      "tick": 70,
+      "agents": [
+        "Lucia",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 346.056,
+      "preview": "Lucia: Hi Anna, it's great to see you here in the park. I've been meaning to ask you, have you tried that new coffee sho"
+    },
+    {
+      "tick": 70,
+      "agents": [
+        "Giovanni",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 341.735,
+      "preview": "Giovanni: Anna, it's great to see you here in the park. I've been meaning to ask you, have you tried that new coffee sho"
+    },
+    {
+      "tick": 70,
+      "agents": [
+        "Giovanni",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 338.518,
+      "preview": "Giovanni: It's great to see you here in the cafe. I've been meaning to ask you, have you tried that new coffee shop down"
+    },
+    {
+      "tick": 80,
+      "agents": [
+        "Anna",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 307.507,
+      "preview": "Anna: Elena, it's great to see you here in the park. I've been thinking a lot about our conversations recently. It's lik"
+    },
+    {
+      "tick": 90,
+      "agents": [
+        "Lucia",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 265.631,
+      "preview": "Lucia: Giovanni, it's great to see you here in the cafe. I've been meaning to ask you, have you tried that new coffee sh"
+    }
+  ],
+  "errors": []
+}

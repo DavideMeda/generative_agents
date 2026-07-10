@@ -52,7 +52,22 @@ class GraphRAGRetriever:
         importance: float,
         **kwargs: Any,
     ) -> str:
-        mem_id = self._backend.store(agent_id, content, memory_type, importance, **kwargs)
+        import time
+        import uuid
+        from gen_agent.interfaces.memory_protocol import MemoryRecord
+
+        mem_id = str(kwargs.get("memory_id") or uuid.uuid4())
+        record = MemoryRecord(
+            memory_id=mem_id,
+            agent_id=agent_id,
+            content=content,
+            memory_type=memory_type,
+            importance=importance,
+            created_at=float(kwargs.get("created_at", time.time())),
+            last_accessed=float(kwargs.get("last_accessed", time.time())),
+            extra={k: v for k, v in kwargs.items() if k not in ("memory_id", "created_at", "last_accessed")},
+        )
+        self._backend.store(record)
         self._graph.add_memory(mem_id, content)
         return mem_id
 

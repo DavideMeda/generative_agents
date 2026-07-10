@@ -1,66 +1,103 @@
-# Gen_Agent
+# Nuovo Gen_Agent
 
-> Modular generative agent simulation — built on the [Stanford Generative Agents](https://github.com/joonspk-research/generative_agents) fork.
+Modular generative-agent simulation. Agents live in a small town, walk to POIs,
+have personality-driven conversations, form memories, reflect, and evolve via NEAT.
 
-[![CI](https://github.com/DavideMeda/generative_agents/actions/workflows/ci.yml/badge.svg)](https://github.com/DavideMeda/generative_agents/actions/workflows/ci.yml)
-[![Security](https://github.com/DavideMeda/generative_agents/actions/workflows/security.yml/badge.svg)](https://github.com/DavideMeda/generative_agents/actions/workflows/security.yml)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org)
+Built on top of [Stanford Generative Agents](https://github.com/joonspk-research/generative_agents):
+this repo is a **fork** of it (`upstream`), with the reference implementation vendored under `reverie/`.
 
-## Quick start (5 minutes)
+## Quick start
 
 ```bash
-git clone https://github.com/DavideMeda/generative_agents.git
-cd generative_agents
-
-cp .env.example .env          # fill in OPENAI_API_KEY
+# 1. Install (pyproject.toml is the single source of truth — do NOT use old Stanford deps)
 pip install -e ".[dev]"
-pytest                        # all tests green → you are ready
+
+# 2. Pull the Ollama model
+ollama pull llama3.2:3b
+
+# 3. Run a 30-tick simulation
+python scripts/run_sim_100_ticks_blocking.py --preset fast --ticks 30 --llm ollama
+
+# 4. Check quality vs legacy
+python scripts/compare_simulations.py --report output/sim_blocking_100_v2.json
 ```
 
-## Run with Docker
+## Reproducibility
+
+| Layer | Deterministic? | Notes |
+|-------|----------------|-------|
+| Agent movement, proximity, missions | **Yes** | `SimConfig.seed=42` fixes RNG |
+| Dialogue text, reflections, plans | **No** | LLM output (Ollama/OpenAI) is stochastic |
+| Parity metrics (`core_score`, Plan→POI) | **Indicative** | Re-run may differ; pin model + version |
+
+For comparable runs, record in your report: `OLLAMA_MODEL`, preset, tick count, and
+the git commit hash. See [docs/COMPARISON.md](docs/COMPARISON.md) for benchmark methodology.
+
+## Citation
+
+If you use this project academically, cite this repository and the original paper.
+See [CITATION.cff](CITATION.cff) (GitHub / Zenodo compatible).
+
+## Docker
 
 ```bash
-docker compose -f docker-compose.base.yml -f docker-compose.dev.yml up
+docker compose -f docker-compose.dev.yml up
+# server at http://localhost:8000
 ```
 
-App at `http://localhost:8000` — pgAdmin at `http://localhost:5050`.
+See [docs/guides/DOCKER.md](docs/guides/DOCKER.md) for production (PostgreSQL) setup.
 
-## Project layout
+## Architecture
 
 ```
-gen_agent/           ← Gen_Agent application code (our namespace)
-  interfaces/        ← Stable Protocols (MemoryProtocol, SimProtocol, …)
-  memory/            ← Memory models, decay engine, SQLite backend
-  sim/               ← SimEngine (tick loop + proximity detection)
-  dialogue/          ← DialogueEngine (LLM-driven conversations)
-  telemetry/         ← Metrics collection and JSON reports
-  integrations/
-    stanford/        ← ONLY place that imports from reverie/
-
-reverie/             ← Stanford upstream code (read-only reference)
-environment/         ← Stanford simulation environment
-tests/               ← Unit + integration tests (pytest)
-migrations/          ← Alembic database migrations
-docs/                ← Architecture, guides, DB schema
+launch_profile → engine_factory → SimEngine
+                                 ├── DialogueEngine (intent_pack + traits + emotions)
+                                 ├── MemoryManager  (SQLite / PostgreSQL dual-mode)
+                                 ├── StanfordWorker (async planning + reflection)
+                                 ├── MissionSystem
+                                 └── optional layers (HRM, RLIF, NEAT, GameTheory…)
 ```
+
+Full diagram: [docs/architecture/MODULARITY.md](docs/architecture/MODULARITY.md)
+
+## Presets
+
+| Preset | Ticks | Agents | Notes |
+|--------|-------|--------|-------|
+| `fast` | 20 | 3 | Offline smoke test |
+| `blocking_balanced` | 100 | 5 | Legacy parity target |
+| `complex` | 200 | 10 | All layers enabled |
+
+## Quality parity checks
+
+```bash
+python scripts/compare_simulations.py --skip-legacy
+# → output/parity_report.json
+```
+
+Thresholds: `core_score > 0.5`, zero meta/wrong-name/non-English turns,
+≥1 reflection/agent/100 ticks.
 
 ## Documentation
 
-| Doc | Link |
-|-----|------|
-| Architecture overview | [docs/architecture/OVERVIEW.md](docs/architecture/OVERVIEW.md) |
-| Developer onboarding | [docs/guides/DEVELOPER_ONBOARDING.md](docs/guides/DEVELOPER_ONBOARDING.md) |
-| Database schema | [docs/database/SCHEMA.md](docs/database/SCHEMA.md) |
-| Branch strategy | [.github/BRANCH_STRATEGY.md](.github/BRANCH_STRATEGY.md) |
-| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
+- [Architecture](docs/architecture/MODULARITY.md)
+- [Legacy vs Nuovo comparison](docs/COMPARISON.md)
+- [Stanford fork relationship](docs/architecture/UPSTREAM_RELATIONSHIP.md)
+- [Docker guide](docs/guides/DOCKER.md)
+- [Simulation configuration](docs/guides/CONFIGURATORE_SIMULAZIONE.md)
+- [Database schema](docs/database/SCHEMA.md)
+- [Developer onboarding](docs/guides/DEVELOPER_ONBOARDING.md)
+- [Attribution / third-party notices](NOTICE)
 
-## Key design decisions
+## Tests
 
-- **Fork-first**: this repo *is* the Stanford fork — extensions live in `gen_agent/` namespace.
-- **Single boundary**: only `gen_agent/integrations/stanford/adapter.py` imports from `reverie/`.
-- **SQLite → Postgres**: set `DATABASE_URL` to swap; same Alembic migrations work for both.
-- **Stub mode**: all components run without an LLM key (useful for CI and offline development).
+```bash
+pytest                          # unit tests (coverage gate: core modules ≥55%)
+pytest tests/integration/       # integration (requires running server or Postgres)
+```
 
-## Contributing
+Coverage excludes optional research layers (NEAT, social learning, HRM) — see
+`[tool.coverage.run] omit` in `pyproject.toml`.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Open PRs against `develop`, not `main`.
+CI runs lint + unit + Postgres migration + smoke on every PR.
+The 100-tick Ollama simulation is **manual/nightly** (too slow for PR CI).

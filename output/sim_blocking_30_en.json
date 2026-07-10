@@ -1,0 +1,82 @@
+{
+  "project": "Nuovo Gen_Agent (modular)",
+  "scenario": "blocking_100",
+  "llm": "ollama",
+  "ollama_model": "llama3.2:3b",
+  "ticks_requested": 30,
+  "final_tick": 30,
+  "agents": 5,
+  "agent_names": [
+    "Marco",
+    "Lucia",
+    "Giovanni",
+    "Anna",
+    "Elena"
+  ],
+  "block_on_dialogue": true,
+  "interaction_radius": 5.0,
+  "interaction_every_ticks": 10,
+  "min_gap_ticks": 32,
+  "world_pois": 8,
+  "missions_enabled": true,
+  "interactions": 5,
+  "dialogues": 5,
+  "dialogue_utterances": 20,
+  "missions_completed": 11,
+  "memories_total": 23,
+  "real_time_sec": 902.03,
+  "avg_sec_per_tick": 30.068,
+  "dialogue_log": [
+    {
+      "tick": 10,
+      "agents": [
+        "Marco",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 101.886,
+      "preview": "Marco: Elena. How's it going? I was just waiting for you here at the hospital. Heard there were some new patients coming"
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Lucia",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 217.108,
+      "preview": "Lucia: Hey, how's your day going so far? I'm still trying to get used to the new virtual reality experiences we checked "
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Lucia",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 211.807,
+      "preview": "Lucia: Hey, how's your day going so far? I'm still trying to get used to the new virtual reality experiences we checked "
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Giovanni",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 162.462,
+      "preview": "Giovanni: Hey Anna how's your day going so far? I've been meaning to check out the new virtual reality experiences we ch"
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Marco",
+        "Lucia"
+      ],
+      "turns": 4,
+      "elapsed_sec": 160.558,
+      "preview": "Marco: Hey Lucia, how's it going? I'm just grabbing some fresh produce here at the market. The farmer's been doing well "
+    }
+  ],
+  "errors": []
+}

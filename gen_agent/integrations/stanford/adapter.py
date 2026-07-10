@@ -44,8 +44,15 @@ class StanfordAdapter:
     placeholder senza crashare — utile per test e sviluppo offline.
     """
 
-    def __init__(self, *, stub_mode: bool = not _stanford_available) -> None:
+    def __init__(
+        self,
+        *,
+        stub_mode: bool = not _stanford_available,
+        llm: Any = None,
+    ) -> None:
         self._stub = stub_mode
+        self._llm = llm
+        self._persona_registry: Dict[str, Any] = {}
         if not stub_mode:
             self._reverie = importlib.import_module("reverie")
 
@@ -53,78 +60,57 @@ class StanfordAdapter:
     # Implementazione protocollo
     # ------------------------------------------------------------------
 
+    def register_persona(self, agent_id: str, name: str) -> None:
+        self._persona_registry[agent_id] = {"name": name, "scratch": {}}
+
     def run_agent_plan(self, agent_id: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        from gen_agent.integrations.stanford.structured_planner import generate_structured_plan
+
+        persona = self._persona_registry.get(agent_id) or {}
+        name = persona.get("name", agent_id)
+        tick = int(context.get("tick", 0))
+        location = str(context.get("location", "town"))
+        memories = list(context.get("memories") or [])
+        poi_names = list(context.get("poi_names") or [])
+        plan = generate_structured_plan(
+            self._llm, name, memories, tick, location, poi_names=poi_names or None
+        )
         if self._stub:
-            logger.debug("stub: run_agent_plan(%s)", agent_id)
-            return {"plan": [], "action": "idle"}
-        # ponytail: interfaccia minima — espande quando reverie espone API stabile
-        try:
-            persona = self._get_persona(agent_id)
-            if persona is None:
-                return {"plan": [], "action": "idle"}
-            return {"plan": [], "action": "idle", "persona": str(persona)}
-        except Exception as exc:
-            logger.error("Stanford run_agent_plan failed: %s", exc)
-            return {"plan": [], "action": "idle", "error": str(exc)}
+            logger.debug("plan for %s (stub=%s): %s", agent_id, self._stub, plan.get("plan_text", ""))
+        return {"plan": plan.get("plan", []), "action": plan.get("focus", "explore"), "plan_text": plan.get("plan_text", "")}
 
     def run_reflection(self, agent_id: str, memories: List[str]) -> List[str]:
-        if self._stub:
-            logger.debug("stub: run_reflection(%s, %d memories)", agent_id, len(memories))
+        if not memories:
             return []
+        if self._llm is None:
+            return [f"Reflected on {len(memories)} memories."]
+        prompt = (
+            "Summarize these agent memories in 1-2 short reflective sentences:\n"
+            + "\n".join(f"- {m}" for m in memories[:8])
+        )
         try:
-            persona = self._get_persona(agent_id)
-            if persona is None:
-                return []
-            # Stanford reflection API (placeholder — dipende dalla versione)
-            return []
+            text = str(self._llm(prompt)).strip()
+            return [text] if text else []
         except Exception as exc:
             logger.error("Stanford run_reflection failed: %s", exc)
             return []
 
     def get_agent_scratch(self, agent_id: str) -> Dict[str, Any]:
-        if self._stub:
-            return {}
-        try:
-            persona = self._get_persona(agent_id)
-            if persona is None:
-                return {}
-            scratch = getattr(persona, "scratch", None)
-            if scratch is None:
-                return {}
-            return vars(scratch) if hasattr(scratch, "__dict__") else {}
-        except Exception as exc:
-            logger.error("Stanford get_agent_scratch failed: %s", exc)
-            return {}
+        persona = self._persona_registry.get(agent_id, {})
+        return dict(persona.get("scratch") or {})
 
     def set_agent_scratch(self, agent_id: str, data: Dict[str, Any]) -> None:
-        if self._stub:
-            return
-        try:
-            persona = self._get_persona(agent_id)
-            if persona is None:
-                return
-            scratch = getattr(persona, "scratch", None)
-            if scratch is not None:
-                for k, v in data.items():
-                    setattr(scratch, k, v)
-        except Exception as exc:
-            logger.error("Stanford set_agent_scratch failed: %s", exc)
+        persona = self._persona_registry.setdefault(agent_id, {"name": agent_id, "scratch": {}})
+        persona["scratch"].update(data)
 
     # ------------------------------------------------------------------
     # Helpers interni
     # ------------------------------------------------------------------
 
     def _get_persona(self, agent_id: str) -> Any:
-        """Recupera l'oggetto Persona Stanford per un agent_id dato."""
-        # ponytail: lookup naive per ora — estendi con registry se necessario
-        try:
-            persona_module = importlib.import_module("reverie.backend_server.persona.persona")
-            # Il costruttore richiede name e folder — per ora ritorna None se non in sessione
-            return None
-        except Exception:
-            return None
+        return self._persona_registry.get(agent_id)
 
 
-def get_stanford_adapter() -> "StanfordAdapter":
-    """Factory singleton-ish — usa stub_mode automatico."""
-    return StanfordAdapter()
+def get_stanford_adapter(llm: Any = None) -> "StanfordAdapter":
+    """Factory — LLM used for structured plans when reverie is absent."""
+    return StanfordAdapter(llm=llm)

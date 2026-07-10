@@ -65,3 +65,12 @@ def test_agent_limit_raises():
     engine.register_agent(AgentConfig("a2", "Bob"))
     with pytest.raises(RuntimeError, match="Agent limit"):
         engine.register_agent(AgentConfig("a3", "Carol"))
+
+
+def test_note_plan_poi_increments_stats():
+    engine = _make_engine()
+    engine.note_plan_poi("go to the cafe and visit the park", "Cafe")
+    stats = engine.stats()
+    assert stats["plan_goals_extracted"] >= 1
+    assert stats["plan_to_poi_matches"] == 1
+    assert stats["plan_goals_matched_to_poi"] == 1

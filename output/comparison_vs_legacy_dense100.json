@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-07-09T22:34:18Z",
+  "comparison": "QUANTITATIVE COMPARISON — Nuovo vs legacy (dense_100_efficient)",
+  "nuovo_source": "C:\\Users\\39348\\Desktop\\Nuovo Gen_Agent\\output\\sim_blocking_100_full.json",
+  "legacy_source": "C:\\Users\\39348\\Desktop\\Nuovo Gen_Agent\\..\\Gen_Agent\\outputs\\test_simulazioni\\run_20260611_163750\\report_test_100ticks_20260611_164820.json",
+  "nuovo": {
+    "project": "Nuovo Gen_Agent (modular)",
+    "ticks": 100,
+    "agents": 5,
+    "interactions": 16,
+    "dialogues": 16,
+    "dialogue_utterances": 64,
+    "missions_completed": 17,
+    "memories_total": 90,
+    "real_time_sec": 4271.33,
+    "ollama_model": "llama3.2:3b",
+    "core_score_mean": 0.905,
+    "core_score_min": 0.895,
+    "meta_count": 0,
+    "non_english_count": 0,
+    "wrong_addressee_count": 0,
+    "reflections_generated": 29,
+    "reflections_per_agent_per_100tick": 5.8,
+    "plan_to_poi_matches": 3,
+    "plan_goals_extracted": 24,
+    "concrete_goals_used": 4,
+    "plan_to_poi_analysis": {
+      "extraction_rate": 6.0,
+      "matching_rate": 0.125,
+      "usage_rate": 1.333
+    },
+    "block_on_dialogue": true,
+    "scenario": "blocking_100",
+    "per_agent_memory_dbs": 57,
+    "memory_types": {
+      "observation": 0,
+      "social": 0,
+      "reflection": 0,
+      "plan": 0,
+      "other": 0
+    }
+  },
+  "legacy": {
+    "project": "Gen_Agent (legacy)",
+    "preset": "dense_100_efficient",
+    "ticks": 100,
+    "agents": 6,
+    "interactions": 13,
+    "dialogues": 13,
+    "dialogue_utterances": 0,
+    "missions_completed": 18,
+    "memories_total": 4,
+    "plan_goals_extracted": 23,
+    "plan_to_poi_matches": 23,
+    "concrete_goals_used": 18,
+    "memory_coverage_pct": 100.0,
+    "objective_completion_pct": 75.0,
+    "plan_matching_rate": 1.0,
+    "real_time_sec": 629.43,
+    "ollama_model": "llama3.2:3b",
+    "block_on_dialogue": null
+  },
+  "delta": {
+    "dialogues": 3.0,
+    "plan_to_poi_matches": -20.0,
+    "real_time_sec": 3641.9,
+    "core_score_mean": 0.905
+  }
+}

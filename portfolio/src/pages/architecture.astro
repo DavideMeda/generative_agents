@@ -1,0 +1,18 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Architecture — Gen_Agent">
+  <section class="page">
+    <h1>Architecture</h1>
+    <p>Modular Python stack: simulation engine, memory system, personality, and web API.</p>
+    <pre class="diagram">SimEngine → ProximityDetector → Dialogues → MemoryManager
+MemoryManager → models / storage / decay
+Stanford submodule → plan_to_poi</pre>
+    <ul>
+      <li><code>core/sim/</code> — tick engine, pathfinding, events</li>
+      <li><code>core/memory/</code> — universal memory, SQLite, decay</li>
+      <li><code>server/</code> + <code>web/</code> — FastAPI and UI</li>
+    </ul>
+  </section>
+</BaseLayout>

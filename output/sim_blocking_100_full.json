@@ -1,0 +1,202 @@
+{
+  "project": "Nuovo Gen_Agent (modular)",
+  "scenario": "blocking_100",
+  "llm": "ollama",
+  "ollama_model": "llama3.2:3b",
+  "ticks_requested": 100,
+  "final_tick": 100,
+  "agents": 5,
+  "agent_names": [
+    "Marco",
+    "Lucia",
+    "Giovanni",
+    "Anna",
+    "Elena"
+  ],
+  "block_on_dialogue": true,
+  "interaction_radius": 5.0,
+  "interaction_every_ticks": 10,
+  "min_gap_ticks": 32,
+  "world_pois": 8,
+  "missions_enabled": true,
+  "interactions": 16,
+  "dialogues": 16,
+  "dialogue_utterances": 64,
+  "missions_completed": 17,
+  "plan_goals_extracted": 24,
+  "plan_to_poi_matches": 3,
+  "plan_goals_matched_to_poi": 3,
+  "concrete_goals_used": 4,
+  "plan_to_poi_analysis": {
+    "extraction_rate": 6.0,
+    "matching_rate": 0.125,
+    "usage_rate": 1.333
+  },
+  "memories_total": 90,
+  "reflections_generated": 29,
+  "real_time_sec": 4271.33,
+  "avg_sec_per_tick": 42.713,
+  "dialogue_log": [
+    {
+      "tick": 10,
+      "agents": [
+        "Marco",
+        "Lucia"
+      ],
+      "turns": 4,
+      "elapsed_sec": 122.876,
+      "preview": "Marco: Hey Lucia, how's it going? How was your day today? We haven't caught up in a while. I've been meaning to ask you "
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Marco",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 199.448,
+      "preview": "Marco: Giovanni! How's it going? How was your day today? We haven't caught up in a while. I've been meaning to ask you a"
+    },
+    {
+      "tick": 10,
+      "agents": [
+        "Lucia",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 157.56,
+      "preview": "Lucia: Giovanni, how's it going? I've been meaning to ask you about the new coffee shop that just opened up downtown. I "
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Marco",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 221.71,
+      "preview": "Marco: How's it going Elena? How was your day today? We haven't caught up in a while. I've been meaning to ask you about"
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Lucia",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 231.353,
+      "preview": "Lucia: Anna, how's it going? I've been meaning to ask you about the new coffee shop that just opened up downtown. I hear"
+    },
+    {
+      "tick": 20,
+      "agents": [
+        "Giovanni",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 257.077,
+      "preview": "Giovanni: Anna how's it going? How's your day been so far? I feel like we haven't caught up in a while, and I've been me"
+    },
+    {
+      "tick": 30,
+      "agents": [
+        "Anna",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 273.197,
+      "preview": "Anna: Elena, how's it going? I feel like we haven't caught up in a while, and I've been meaning to ask you about the new"
+    },
+    {
+      "tick": 40,
+      "agents": [
+        "Lucia",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 287.767,
+      "preview": "Lucia: Elena, how's it going? I've been meaning to ask you about the new coffee shop that just opened up downtown. I hea"
+    },
+    {
+      "tick": 40,
+      "agents": [
+        "Giovanni",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 277.297,
+      "preview": "Giovanni: Elena how's it going? I've been meaning to ask you about the new coffee shop that just opened up downtown, I h"
+    },
+    {
+      "tick": 50,
+      "agents": [
+        "Marco",
+        "Lucia"
+      ],
+      "turns": 4,
+      "elapsed_sec": 321.675,
+      "preview": "Marco: Lucia, it's great to see you here at the market. How's your day going so far? I've been meaning to ask you about "
+    },
+    {
+      "tick": 50,
+      "agents": [
+        "Lucia",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 314.908,
+      "preview": "Lucia: Giovanni, it's great to see you here at the market. How's your day going so far? I've been meaning to ask you abo"
+    },
+    {
+      "tick": 60,
+      "agents": [
+        "Marco",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 271.781,
+      "preview": "Marco: Elena, it's great to see you here at the market. How's your day going so far? I've been meaning to ask you about "
+    },
+    {
+      "tick": 70,
+      "agents": [
+        "Anna",
+        "Elena"
+      ],
+      "turns": 4,
+      "elapsed_sec": 269.922,
+      "preview": "Anna: Elena, how's it going? I feel like we haven't caught up in a while, and I've been meaning to ask you about the new"
+    },
+    {
+      "tick": 90,
+      "agents": [
+        "Marco",
+        "Anna"
+      ],
+      "turns": 4,
+      "elapsed_sec": 259.817,
+      "preview": "Marco: Hi Anna, it's great to see you here at the market. How's your day going so far? I've been meaning to ask you abou"
+    },
+    {
+      "tick": 100,
+      "agents": [
+        "Marco",
+        "Lucia"
+      ],
+      "turns": 4,
+      "elapsed_sec": 263.52,
+      "preview": "Marco: Hi Lucia, it's great to see you here at the market. How's your day going so far? I've been meaning to ask you abo"
+    },
+    {
+      "tick": 100,
+      "agents": [
+        "Marco",
+        "Giovanni"
+      ],
+      "turns": 4,
+      "elapsed_sec": 297.329,
+      "preview": "Marco: Hey Giovanni, it's great to see you here at the market. How's your day going so far? I've been meaning to ask you"
+    }
+  ],
+  "errors": []
+}

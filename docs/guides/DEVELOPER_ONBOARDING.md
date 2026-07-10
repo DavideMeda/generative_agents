@@ -20,8 +20,9 @@ cd generative_agents
 git remote add upstream https://github.com/joonspk-research/generative_agents.git
 git remote -v   # verify: origin + upstream
 
-# Install dependencies
+# Install dependencies (pyproject.toml is the single source of truth)
 pip install -e ".[dev]"
+# Do NOT use the old Stanford requirements.txt stack (Django, selenium, …)
 
 # Environment
 cp .env.example .env

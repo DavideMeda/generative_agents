@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-07-10T14:10:00Z",
+  "comparison": "QUANTITATIVE COMPARISON — Nuovo vs legacy (dense_100_efficient)",
+  "nuovo_source": "C:\\Users\\39348\\Desktop\\Nuovo Gen_Agent\\output\\sim_blocking_100_v2.json",
+  "legacy_source": "C:\\Users\\39348\\Desktop\\Nuovo Gen_Agent\\..\\Gen_Agent\\outputs\\test_simulazioni\\run_20260611_163750\\report_test_100ticks_20260611_164820.json",
+  "nuovo": {
+    "project": "Nuovo Gen_Agent (modular)",
+    "ticks": 100,
+    "agents": 5,
+    "interactions": 18,
+    "dialogues": 18,
+    "dialogue_utterances": 54,
+    "missions_completed": 33,
+    "memories_total": 87,
+    "real_time_sec": 2937.31,
+    "ollama_model": "llama3.2:3b",
+    "core_score_mean": 0.898,
+    "core_score_min": 0.88,
+    "meta_count": 0,
+    "non_english_count": 0,
+    "wrong_addressee_count": 0,
+    "reflections_generated": 27,
+    "reflections_per_agent_per_100tick": 5.4,
+    "plan_to_poi_matches": 24,
+    "plan_goals_extracted": 48,
+    "concrete_goals_used": 8,
+    "plan_to_poi_analysis": {
+      "extraction_rate": 12.0,
+      "matching_rate": 0.5,
+      "usage_rate": 0.333
+    },
+    "block_on_dialogue": true,
+    "scenario": "blocking_100",
+    "per_agent_memory_dbs": 67,
+    "memory_types": {
+      "observation": 0,
+      "social": 0,
+      "reflection": 0,
+      "plan": 0,
+      "other": 0
+    }
+  },
+  "legacy": {
+    "project": "Gen_Agent (legacy)",
+    "preset": "dense_100_efficient",
+    "ticks": 100,
+    "agents": 6,
+    "interactions": 13,
+    "dialogues": 13,
+    "dialogue_utterances": 0,
+    "missions_completed": 18,
+    "memories_total": 4,
+    "plan_goals_extracted": 23,
+    "plan_to_poi_matches": 23,
+    "concrete_goals_used": 18,
+    "memory_coverage_pct": 100.0,
+    "objective_completion_pct": 75.0,
+    "plan_matching_rate": 1.0,
+    "real_time_sec": 629.43,
+    "ollama_model": "llama3.2:3b",
+    "block_on_dialogue": null
+  },
+  "delta": {
+    "dialogues": 5.0,
+    "plan_to_poi_matches": 1.0,
+    "real_time_sec": 2307.88,
+    "core_score_mean": 0.898
+  }
+}

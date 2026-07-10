@@ -34,8 +34,11 @@ def run_ollama_scenario(ticks: int, report_path: Path | None) -> dict:
     os.environ.setdefault("LLM_PROVIDER", "ollama")
     os.environ.setdefault("OLLAMA_MODEL", "llama3.2:3b")
     os.environ.setdefault("OLLAMA_TIMEOUT", "300")
+    os.environ.setdefault("DIALOGUE_MAX_ATTEMPTS", "2")
     scenario = load_scenario("blocking_100")
     scenario.sim_config.block_on_dialogue = True
+    scenario.sim_config.dialogue_max_turns = 3
+    scenario.sim_config.dialogue_wait_timeout_seconds = 180.0
 
     print(f"LLM provider: ollama  model: {os.getenv('OLLAMA_MODEL', 'llama3.2:3b')}", flush=True)
     print(f"Agents: {scenario.agent_names}", flush=True)
@@ -81,13 +84,16 @@ def run_ollama_scenario(ticks: int, report_path: Path | None) -> dict:
                         f"turns={entry['turns']} elapsed={entry['elapsed_sec']}s",
                         flush=True,
                     )
-            if tick_num % 25 == 0:
+            if tick_num % 10 == 0 or tick_num <= 3:
                 stats = engine.stats()
                 print(
-                    f"  ... tick {tick_num}/{ticks} | "
+                    f"[PROGRESS] tick {tick_num}/{ticks} | "
                     f"interactions={stats['interactions']} "
                     f"dialogues={stats['dialogues']} "
-                    f"missions_done={stats.get('missions_completed', 0)}"
+                    f"goals_extracted={stats.get('plan_goals_extracted', 0)} "
+                    f"goals_matched={stats.get('plan_to_poi_matches', 0)} "
+                    f"missions_done={stats.get('missions_completed', 0)}",
+                    flush=True,
                 )
         except Exception as exc:
             errors.append(f"tick {tick_num}: {exc!r}")
@@ -96,6 +102,19 @@ def run_ollama_scenario(ticks: int, report_path: Path | None) -> dict:
     elapsed = time.perf_counter() - t0
     stats = engine.stats()
     snap = engine.snapshot()
+
+    reflections = 0
+    if memory is not None and hasattr(memory, "reflection_stats"):
+        reflections = memory.reflection_stats().get("total_reflections", 0)
+
+    extracted = int(stats.get("plan_goals_extracted", 0))
+    matched = int(stats.get("plan_to_poi_matches", 0))
+    used = int(stats.get("concrete_goals_used", 0))
+    plan_to_poi_analysis = {
+        "extraction_rate": round(extracted / max(1, ticks / 25), 3),
+        "matching_rate": round(matched / max(1, extracted), 3) if extracted else 0.0,
+        "usage_rate": round(used / max(1, matched), 3) if matched else 0.0,
+    }
 
     summary = {
         "project": "Nuovo Gen_Agent (modular)",
@@ -116,7 +135,13 @@ def run_ollama_scenario(ticks: int, report_path: Path | None) -> dict:
         "dialogues": stats["dialogues"],
         "dialogue_utterances": stats["dialogue_utterances"],
         "missions_completed": stats.get("missions_completed", 0),
+        "plan_goals_extracted": extracted,
+        "plan_to_poi_matches": matched,
+        "plan_goals_matched_to_poi": matched,
+        "concrete_goals_used": used,
+        "plan_to_poi_analysis": plan_to_poi_analysis,
         "memories_total": memory.count() if memory else 0,
+        "reflections_generated": reflections,
         "real_time_sec": round(elapsed, 2),
         "avg_sec_per_tick": round(elapsed / max(ticks, 1), 3),
         "dialogue_log": dialogue_log,
@@ -186,20 +211,34 @@ def run_mock_simple(ticks: int, agent_names: list[str], **kwargs) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="100-tick blocking dialogue simulation")
-    parser.add_argument("--ticks", type=int, default=100)
-    parser.add_argument("--agents", type=int, default=5)
+    parser.add_argument("--ticks", type=int, default=None, help="Override ticks (uses preset default if omitted)")
+    parser.add_argument("--agents", type=int, default=None)
     parser.add_argument("--llm", choices=["mock", "ollama"], default="ollama")
-    parser.add_argument("--report", type=str, default="output/sim_blocking_100_new.json")
+    parser.add_argument("--report", type=str, default="output/sim_blocking_100_v2.json")
+    parser.add_argument("--preset", default="blocking_balanced", choices=["fast", "blocking_balanced", "dense_100", "complex", "long"])
+    parser.add_argument("--neat", action="store_true", help="Enable NEAT during simulation")
     args = parser.parse_args()
 
+    # Load launch profile and apply env flags
+    from config.launch_profile import load_profile, apply_profile_to_env
+    profile = load_profile(args.preset)
+    if args.ticks is not None:
+        profile.ticks = args.ticks
+    if args.agents is not None:
+        profile.agents = args.agents
+    if args.neat:
+        profile.enable_neat = True
+    apply_profile_to_env(profile)
+
+    ticks = profile.ticks
     print("=== Nuovo Gen_Agent — blocking simulation ===")
-    print(f"ticks={args.ticks} agents={args.agents} llm={args.llm}")
+    print(f"preset={args.preset} ticks={ticks} agents={profile.agents} llm={args.llm}")
 
     if args.llm == "ollama":
-        summary = run_ollama_scenario(args.ticks, Path(args.report))
+        summary = run_ollama_scenario(ticks, Path(args.report))
     else:
-        names = DEFAULT_AGENT_NAMES[: args.agents]
-        summary = run_mock_simple(args.ticks, names)
+        names = DEFAULT_AGENT_NAMES[: profile.agents]
+        summary = run_mock_simple(ticks, names)
 
     print("\n=== RESULT ===")
     for key, value in summary.items():
@@ -210,7 +249,10 @@ def main() -> int:
         print("\nFAILED — exceptions during ticks:", summary["errors"])
         return 1
     if summary.get("dialogues", 0) == 0:
-        print("\nWARNING — no dialogues (agents may not have met; try lower min_gap)")
+        print("\nWARNING — no dialogues completed (check Ollama / timeout / min_gap)")
+        return 2
+    if summary.get("dialogue_utterances", 0) < 8:
+        print("\nWARNING — fewer than 8 utterances (parity target for 100 ticks)")
         return 2
     print("\nOK — simulation completed")
     return 0

@@ -21,7 +21,7 @@ jobs:
           extras: dev
 
       - name: Run ruff
-        run: ruff check gen_agent/ tests/
+        run: ruff check gen_agent/ tests/ config/ server/
 
       - name: Run mypy
         run: mypy gen_agent/ --ignore-missing-imports
@@ -49,3 +49,73 @@ jobs:
         with:
           files: ./coverage.xml
           fail_ci_if_error: false
+
+  test-postgres:
+    name: Test with PostgreSQL
+    runs-on: ubuntu-latest
+    needs: lint
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: genagent
+          POSTGRES_PASSWORD: genagent
+          POSTGRES_DB: genagent_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-python-env
+        with:
+          extras: dev,postgres
+
+      - name: Run Alembic migrations
+        env:
+          DATABASE_URL: postgresql://genagent:genagent@localhost:5432/genagent_test
+        run: alembic upgrade head
+
+      - name: Run PostgreSQL integration tests
+        env:
+          DATABASE_URL: postgresql://genagent:genagent@localhost:5432/genagent_test
+        run: pytest tests/integration/ -v -k "postgres or pg"
+
+  smoke:
+    name: Smoke test (mock LLM, 10 ticks)
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-python-env
+        with:
+          extras: dev
+
+      - name: Verify all imports
+        run: python scripts/verify_all.py
+
+      - name: Run 10-tick mock simulation
+        run: python scripts/run_sim_100_ticks_blocking.py --llm mock --ticks 10 --preset fast
+
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t gen-agent:ci .
+
+      - name: Start container and health-check
+        run: |
+          docker run -d --name gen-agent-ci -p 8000:8000 \
+            -e LLM_PROVIDER=mock \
+            gen-agent:ci
+          sleep 5
+          curl -f http://localhost:8000/health || (docker logs gen-agent-ci; exit 1)
+          docker stop gen-agent-ci

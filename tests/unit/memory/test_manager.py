@@ -9,7 +9,7 @@ from gen_agent.memory.storage.sqlite_backend import SQLiteMemoryBackend
 @pytest.fixture
 def manager(tmp_path):
     backend = SQLiteMemoryBackend(db_path=str(tmp_path / "test.db"))
-    return MemoryManager(backend=backend)
+    return MemoryManager(backend=backend, data_dir=str(tmp_path), reflection_trigger=100)
 
 
 def test_store_returns_id(manager):
@@ -40,7 +40,7 @@ def test_retrieve_top_k(manager):
 
 def test_delete_removes_memory(manager):
     mid = manager.store("agent1", "ephemeral", "observation", 3.0)
-    manager.delete(mid)
+    manager.delete(mid, agent_id="agent1")  # must specify agent_id for per-agent backend
     results = manager.retrieve(MemoryQuery(agent_id="agent1", query_text="ephemeral"))
     assert len(results) == 0
 

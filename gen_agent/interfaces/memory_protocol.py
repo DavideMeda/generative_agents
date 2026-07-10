@@ -15,8 +15,9 @@ class MemoryQuery:
     agent_id: str
     query_text: str
     top_k: int = 5
-    memory_types: List[str] = field(default_factory=lambda: ["observation", "reflection", "plan"])
+    memory_types: List[str] = field(default_factory=lambda: ["observation", "reflection", "plan", "social"])
     min_importance: float = 0.0
+    scope: str = ""   # "social" = prefer social/chat memories; "sim" = prefer observation/plan
 
 
 @dataclass

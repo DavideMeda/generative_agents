@@ -1,0 +1,43 @@
+version: "3.9"
+
+# Profilo Stanford UI — aggiunge il frontend Django al backend modulare.
+#
+# Uso:
+#   docker compose -f docker-compose.dev.yml -f docker-compose.stanford.yml up
+#
+# Prerequisiti:
+#   - environment/frontend_server/ presente su disco (non ignorata da Docker)
+#   - .env con STANFORD_SIM_CODE (default: gen_agent_run)
+#
+# Documentazione: docs/guides/STANFORD_UI.md
+
+services:
+  app:
+    environment:
+      STANFORD_UI_EXPORT: "true"
+      STANFORD_UI_DIR: "/stanford_ui"
+      STANFORD_SIM_CODE: ${STANFORD_SIM_CODE:-gen_agent_run}
+      LOG_FORMAT: ${LOG_FORMAT:-dev}
+    volumes:
+      - stanford_storage:/stanford_ui/storage
+      - stanford_temp:/stanford_ui/temp_storage
+
+  stanford-ui:
+    build:
+      context: environment/frontend_server
+      dockerfile: Dockerfile.stanford
+    ports:
+      - "${STANFORD_UI_PORT:-8080}:8080"
+    environment:
+      DJANGO_SETTINGS_MODULE: frontend_server.settings.local
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - stanford_storage:/app/storage
+      - stanford_temp:/app/temp_storage
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  stanford_storage:
+  stanford_temp:

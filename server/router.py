@@ -80,6 +80,7 @@ def run_start(req: StartRequest) -> Dict[str, Any]:
 
     engine = scenario.build_engine()
     store.engine = engine
+    store.extras = getattr(scenario, "_engine_extras", None)
     store.running = True
     logger.info("Simulation started: scenario=%s agents=%s", req.scenario, scenario.agent_names)
     return {"status": "started", "scenario": req.scenario, "agents": scenario.agent_names}
@@ -143,6 +144,117 @@ def agent_state(agent_id: str) -> Dict[str, Any]:
     if agent_id not in agents:
         raise HTTPException(status_code=404, detail=f"Agent '{agent_id}' not found")
     return {"agent_id": agent_id, **agents[agent_id]}
+
+
+@router.get("/api/neat/status")
+def neat_status() -> Dict[str, Any]:
+    store = StateStore.get()
+    mgr = getattr(store.engine, "_neat_manager", None) if store.engine else None
+    if mgr is None:
+        return {"enabled": False, "available": False}
+    return mgr.status()
+
+
+@router.post("/api/neat/start")
+def neat_start() -> Dict[str, Any]:
+    store = StateStore.get()
+    if store.engine is None:
+        raise HTTPException(status_code=400, detail="No simulation running")
+    mgr = getattr(store.engine, "_neat_manager", None)
+    if mgr is None:
+        from server.neat_manager import create_neat_manager
+        mgr = create_neat_manager(store.engine)
+        store.engine._neat_manager = mgr
+    status = mgr.start()
+    return mgr.status() if hasattr(mgr, "status") else {"ok": True, "status": str(status)}
+
+
+@router.post("/api/neat/stop")
+def neat_stop() -> Dict[str, Any]:
+    store = StateStore.get()
+    mgr = getattr(store.engine, "_neat_manager", None) if store.engine else None
+    if mgr is None:
+        return {"ok": False, "error": "neat_not_active"}
+    mgr.stop()
+    return mgr.status()
+
+
+class NeatEnableRequest(BaseModel):
+    mode: str = "movement"
+    agent_id: Optional[str] = None
+
+
+@router.post("/api/neat/enable")
+def neat_enable(req: NeatEnableRequest) -> Dict[str, Any]:
+    """Enable NEAT policy for all agents or a specific one."""
+    store = StateStore.get()
+    if store.engine is None:
+        raise HTTPException(status_code=400, detail="No simulation running")
+    mgr = getattr(store.engine, "_neat_manager", None)
+    if mgr is None:
+        from server.neat_manager import create_neat_manager
+        mgr = create_neat_manager(store.engine)
+        store.engine._neat_manager = mgr
+    try:
+        # Build simple identity policy if NEAT not trained yet
+        if hasattr(mgr, "_trainer") and mgr._trainer is not None:
+            best = getattr(mgr._trainer, "best_genome", None)
+            if best is not None:
+                from gen_agent.training.neat.policy import NeatPolicy
+                if req.agent_id:
+                    store.engine.set_neat_policy_for_agent(req.agent_id, NeatPolicy(best), req.mode)
+                else:
+                    store.engine.set_neat_policy_for_all(lambda _: NeatPolicy(best), req.mode)
+        mgr.start()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    return {"ok": True, "mode": req.mode, **mgr.status()}
+
+
+@router.post("/api/neat/disable")
+def neat_disable() -> Dict[str, Any]:
+    """Disable NEAT for all agents."""
+    store = StateStore.get()
+    if store.engine is None:
+        raise HTTPException(status_code=400, detail="No simulation running")
+    store.engine.disable_neat_for_all()
+    return {"ok": True, "neat_enabled": False}
+
+
+class NeatLoadRequest(BaseModel):
+    path: str
+
+
+@router.post("/api/neat/load")
+def neat_load(req: NeatLoadRequest) -> Dict[str, Any]:
+    """Load a saved NEAT genome from disk and apply to all agents."""
+    store = StateStore.get()
+    if store.engine is None:
+        raise HTTPException(status_code=400, detail="No simulation running")
+    mgr = getattr(store.engine, "_neat_manager", None)
+    if mgr is None:
+        from server.neat_manager import create_neat_manager
+        mgr = create_neat_manager(store.engine)
+        store.engine._neat_manager = mgr
+    return mgr.load_best(req.path)
+
+
+@router.post("/api/neat/continuous/start")
+def neat_continuous_start() -> Dict[str, Any]:
+    store = StateStore.get()
+    mgr = getattr(store.engine, "_neat_manager", None) if store.engine else None
+    if mgr is None:
+        return {"ok": False, "error": "neat_not_active"}
+    return mgr.start_continuous()
+
+
+@router.post("/api/neat/continuous/stop")
+def neat_continuous_stop() -> Dict[str, Any]:
+    store = StateStore.get()
+    mgr = getattr(store.engine, "_neat_manager", None) if store.engine else None
+    if mgr is None:
+        return {"ok": False, "error": "neat_not_active"}
+    return mgr.stop_continuous()
 
 
 # ------------------------------------------------------------------

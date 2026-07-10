@@ -29,7 +29,7 @@ class Memory:
     def __post_init__(self) -> None:
         if not 0.0 <= self.importance <= 10.0:
             raise ValueError(f"importance must be in [0, 10], got {self.importance}")
-        if self.memory_type not in {"observation", "reflection", "plan"}:
+        if self.memory_type not in {"observation", "reflection", "plan", "social"}:
             raise ValueError(f"unknown memory_type: {self.memory_type!r}")
 
     @property
