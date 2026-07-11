@@ -161,6 +161,11 @@ def build_sim_engine(scenario: Any) -> tuple[SimEngine, EngineExtras]:
         except Exception:
             neat_manager = None
 
+    biases = None
+    if _env_bool("ENABLE_BIASES"):
+        from gen_agent.cognitive.biases import BiasLayer
+        biases = BiasLayer()
+
     engine = SimEngine(
         config=cfg,
         stanford_adapter=stanford_adapter,
@@ -176,6 +181,7 @@ def build_sim_engine(scenario: Any) -> tuple[SimEngine, EngineExtras]:
         knowledge_diffusion=knowledge_diffusion,
         stanford_worker=stanford_worker,
         neat_manager=neat_manager,
+        biases=biases,
     )
 
     if stanford_worker:

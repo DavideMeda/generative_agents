@@ -81,10 +81,14 @@ omit = [
     "gen_agent/memory/graph/*",
     "gen_agent/memory/vector/*",
     "gen_agent/memory/privacy/*",
+    # LLM providers require live Ollama/OpenAI/OpenRouter — excluded from unit gate
+    "gen_agent/llm/*",
+    # PostgreSQL backend requires a running Postgres instance
+    "gen_agent/memory/storage/postgres_backend.py",
 ]
 
 [tool.coverage.report]
-fail_under = 55
+fail_under = 70
 show_missing = true
 
 [tool.bandit]

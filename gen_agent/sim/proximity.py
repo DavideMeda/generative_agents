@@ -43,3 +43,6 @@ class ProximityDetector:
 
     def record_interaction(self, id_a: str, id_b: str, tick: int) -> None:
         self._last_interaction[frozenset({id_a, id_b})] = tick
+
+    def last_interaction_tick(self, id_a: str, id_b: str) -> int | None:
+        return self._last_interaction.get(frozenset({id_a, id_b}))

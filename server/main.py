@@ -16,6 +16,8 @@ import os
 import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from server.router import router
 from server.state_store import StateStore
@@ -84,6 +86,17 @@ app.add_middleware(
 )
 
 app.include_router(router)
+
+# Serve the vanilla-JS dashboard at /web/ (same pattern as Stanford's Django static files)
+_WEB_DIR = os.path.join(os.path.dirname(__file__), "..", "web")
+if os.path.isdir(_WEB_DIR):
+    app.mount("/web", StaticFiles(directory=_WEB_DIR, html=True), name="web")
+
+
+@app.get("/", include_in_schema=False)
+def _root_redirect() -> RedirectResponse:
+    return RedirectResponse(url="/web/")
+
 
 _tick_runner: TickRunner | None = None
 

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gen_Agent — Live Dashboard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --border: #2a2d3e;
+    --text: #e2e8f0; --muted: #8892a4; --accent: #6366f1;
+    --green: #22c55e; --yellow: #eab308; --red: #ef4444;
+    --orange: #f97316;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; min-height: 100vh; }
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 16px; }
+  header h1 { font-size: 16px; font-weight: 700; color: var(--accent); letter-spacing: .5px; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 9999px; font-weight: 600; }
+  .badge.green { background: #14532d; color: var(--green); }
+  .badge.red   { background: #450a0a; color: var(--red); }
+  .badge.yellow{ background: #422006; color: var(--yellow); }
+  #status-badge { margin-left: auto; }
+  .stat { font-size: 12px; color: var(--muted); }
+  .stat span { color: var(--text); font-weight: 600; }
+
+  main { display: grid; grid-template-columns: 1fr 340px; grid-template-rows: auto 1fr; gap: 12px; padding: 12px; height: calc(100vh - 53px); }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .panel-header { padding: 8px 14px; border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; display: flex; align-items: center; gap: 8px; }
+  .panel-body { padding: 12px; }
+
+  /* Canvas grid */
+  #canvas-panel { grid-column: 1; grid-row: 1 / 3; display: flex; flex-direction: column; }
+  #sim-canvas { display: block; width: 100%; height: 100%; }
+  .canvas-wrap { flex: 1; position: relative; }
+
+  /* Controls */
+  .controls { display: flex; gap: 8px; padding: 8px 14px; border-top: 1px solid var(--border); }
+  button { padding: 6px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  button:hover { opacity: .85; }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  #btn-start { background: var(--green); color: #052e16; }
+  #btn-pause { background: var(--yellow); color: #1c1917; }
+  #btn-stop  { background: var(--red); color: #fff; }
+
+  /* Scenario input */
+  .scenario-row { display: flex; gap: 8px; padding: 8px 14px; align-items: center; border-bottom: 1px solid var(--border); }
+  .scenario-row label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .scenario-row input { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 4px 8px; border-radius: 4px; font-size: 13px; }
+
+  /* Right column */
+  .right-col { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+
+  /* Event log */
+  #event-log { flex: 1; overflow-y: auto; font-size: 12px; font-family: monospace; color: var(--muted); min-height: 0; }
+  #event-log .ev { padding: 3px 0; border-bottom: 1px solid var(--border); }
+  #event-log .ev .tick-label { color: var(--accent); font-size: 10px; margin-right: 4px; }
+
+  /* Agent table */
+  #agent-table-panel { flex: 0 0 auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { color: var(--muted); font-weight: 600; text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--border); }
+  td { padding: 4px 8px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+
+  /* WS status */
+  #ws-status { font-size: 11px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Gen_Agent</h1>
+  <div class="stat">Tick: <span id="hdr-tick">—</span></div>
+  <div class="stat">Agents: <span id="hdr-agents">—</span></div>
+  <div class="stat">Dialogues: <span id="hdr-dialogues">—</span></div>
+  <span id="status-badge" class="badge red">STOPPED</span>
+</header>
+
+<main>
+  <!-- Left: canvas -->
+  <div class="panel" id="canvas-panel">
+    <div class="panel-header">
+      World Map
+      <span id="ws-status" class="badge yellow">Connecting…</span>
+    </div>
+    <div class="scenario-row">
+      <label>Scenario:</label>
+      <input id="scenario-input" value="default" placeholder="scenario name">
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="sim-canvas"></canvas>
+    </div>
+    <div class="controls">
+      <button id="btn-start">▶ Start</button>
+      <button id="btn-pause" disabled>⏸ Pause</button>
+      <button id="btn-stop" disabled>■ Stop</button>
+    </div>
+  </div>
+
+  <!-- Right: events + agents -->
+  <div class="right-col">
+    <div class="panel" style="flex:1;min-height:0;display:flex;flex-direction:column;">
+      <div class="panel-header">Event Log</div>
+      <div class="panel-body" style="flex:1;overflow:hidden;padding:8px 12px;">
+        <div id="event-log"></div>
+      </div>
+    </div>
+    <div class="panel" id="agent-table-panel">
+      <div class="panel-header">Agents</div>
+      <div class="panel-body" style="padding:0;">
+        <table>
+          <thead><tr><th>Name</th><th>POI</th><th>Emotion</th></tr></thead>
+          <tbody id="agent-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ── Config ──────────────────────────────────────────────
+const API = '';  // same origin
+const WS_URL = `ws://${location.host}/ws`;
+const GRID_W = 50, GRID_H = 50;
+const AGENT_COLORS = ['#6366f1','#22c55e','#f97316','#eab308','#ec4899','#06b6d4','#a855f7','#ef4444'];
+const MAX_LOG = 60;
+
+// ── State ────────────────────────────────────────────────
+let agents = {};
+let currentTick = 0;
+let running = false;
+let ws = null;
+let eventLog = [];
+let colorMap = {};
+let colorIdx = 0;
+let animFrame = null;
+
+// ── Canvas ───────────────────────────────────────────────
+const canvas = document.getElementById('sim-canvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  const wrap = canvas.parentElement;
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+}
+window.addEventListener('resize', () => { resizeCanvas(); drawCanvas(); });
+resizeCanvas();
+
+function agentColor(name) {
+  if (!colorMap[name]) { colorMap[name] = AGENT_COLORS[colorIdx++ % AGENT_COLORS.length]; }
+  return colorMap[name];
+}
+
+function drawCanvas() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // background grid
+  ctx.fillStyle = '#0a0c14';
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = '#1e2235';
+  ctx.lineWidth = 1;
+  const step = Math.min(W, H) / 10;
+  for (let x = 0; x <= W; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y <= H; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // agents
+  const scaleX = W / GRID_W, scaleY = H / GRID_H;
+  for (const [id, ag] of Object.entries(agents)) {
+    const pos = ag.position || [0, 0];
+    const px = pos[0] * scaleX, py = pos[1] * scaleY;
+    const color = agentColor(ag.name || id);
+
+    // glow
+    const grad = ctx.createRadialGradient(px, py, 2, px, py, 18);
+    grad.addColorStop(0, color + '55');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(px, py, 18, 0, Math.PI * 2); ctx.fill();
+
+    // dot
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2); ctx.fill();
+
+    // label
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 11px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText(ag.name || id, px, py - 12);
+
+    // POI label
+    if (ag.target_poi) {
+      ctx.fillStyle = '#8892a4';
+      ctx.font = '10px system-ui';
+      ctx.fillText('→ ' + ag.target_poi, px, py + 20);
+    }
+  }
+}
+
+// ── WebSocket ────────────────────────────────────────────
+function connectWS() {
+  setWsStatus('yellow', 'Connecting…');
+  ws = new WebSocket(WS_URL);
+
+  ws.onopen = () => {
+    setWsStatus('green', 'Live');
+    // load initial snapshot
+    loadSnapshot();
+  };
+
+  ws.onmessage = (ev) => {
+    const msg = JSON.parse(ev.data);
+    if (msg.schema_version !== '1') return;
+    if (msg.type === 'tick_result') handleTick(msg);
+  };
+
+  ws.onclose = () => {
+    setWsStatus('red', 'Disconnected');
+    setTimeout(connectWS, 3000);
+  };
+
+  ws.onerror = () => { ws.close(); };
+}
+
+function handleTick(msg) {
+  currentTick = msg.tick;
+  agents = msg.data.agents || {};
+  const stats = msg.data.stats || {};
+  const events = msg.data.events || [];
+
+  // header
+  document.getElementById('hdr-tick').textContent = currentTick;
+  document.getElementById('hdr-agents').textContent = Object.keys(agents).length;
+  document.getElementById('hdr-dialogues').textContent = stats.dialogues ?? '—';
+
+  running = true;
+  updateStatusBadge();
+  appendEvents(events, currentTick);
+  updateAgentTable();
+
+  if (animFrame) cancelAnimationFrame(animFrame);
+  animFrame = requestAnimationFrame(drawCanvas);
+}
+
+// ── API calls ────────────────────────────────────────────
+async function loadSnapshot() {
+  try {
+    const r = await fetch(API + '/api/snapshot');
+    if (!r.ok) return;
+    const data = await r.json();
+    if (data.agents) {
+      agents = data.agents;
+      currentTick = data.tick || 0;
+      document.getElementById('hdr-tick').textContent = currentTick;
+      document.getElementById('hdr-agents').textContent = Object.keys(agents).length;
+      running = data.running || false;
+      updateStatusBadge();
+      updateAgentTable();
+      drawCanvas();
+    }
+  } catch (_) {}
+}
+
+async function apiPost(path, body) {
+  try {
+    const r = await fetch(API + path, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body || {}) });
+    return await r.json();
+  } catch (e) { return null; }
+}
+
+document.getElementById('btn-start').addEventListener('click', async () => {
+  const scenario = document.getElementById('scenario-input').value.trim() || 'default';
+  await apiPost('/api/run/start', { scenario });
+  running = true;
+  updateStatusBadge();
+  document.getElementById('btn-pause').disabled = false;
+  document.getElementById('btn-stop').disabled = false;
+});
+
+document.getElementById('btn-pause').addEventListener('click', async () => {
+  const st = await apiPost('/api/run/pause');
+  if (st) { running = false; updateStatusBadge(); }
+});
+
+document.getElementById('btn-stop').addEventListener('click', async () => {
+  await apiPost('/api/run/stop');
+  running = false;
+  agents = {}; currentTick = 0;
+  updateStatusBadge();
+  updateAgentTable();
+  drawCanvas();
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-stop').disabled = true;
+  document.getElementById('hdr-tick').textContent = '—';
+  document.getElementById('hdr-agents').textContent = '—';
+  document.getElementById('hdr-dialogues').textContent = '—';
+});
+
+// ── UI helpers ───────────────────────────────────────────
+function setWsStatus(color, text) {
+  const el = document.getElementById('ws-status');
+  el.className = 'badge ' + color;
+  el.textContent = text;
+}
+
+function updateStatusBadge() {
+  const el = document.getElementById('status-badge');
+  el.className = 'badge ' + (running ? 'green' : 'red');
+  el.textContent = running ? 'RUNNING' : 'STOPPED';
+}
+
+function appendEvents(events, tick) {
+  for (const ev of events) {
+    eventLog.unshift({ tick, text: ev });
+  }
+  if (eventLog.length > MAX_LOG) eventLog = eventLog.slice(0, MAX_LOG);
+
+  const log = document.getElementById('event-log');
+  log.innerHTML = eventLog.map(e =>
+    `<div class="ev"><span class="tick-label">#${e.tick}</span>${escHtml(e.text)}</div>`
+  ).join('');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function updateAgentTable() {
+  const tbody = document.getElementById('agent-tbody');
+  const rows = Object.entries(agents).map(([id, ag]) => {
+    const color = agentColor(ag.name || id);
+    const emotion = ag.emotion || ag.emotions?.current || '—';
+    const poi = ag.target_poi || '—';
+    return `<tr>
+      <td><span class="dot" style="background:${color}"></span>${escHtml(ag.name || id)}</td>
+      <td>${escHtml(poi)}</td>
+      <td>${escHtml(emotion)}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="3" style="color:#8892a4;text-align:center">No agents</td></tr>';
+}
+
+// ── Boot ─────────────────────────────────────────────────
+connectWS();
+drawCanvas();
+</script>
+</body>
+</html>

@@ -55,6 +55,21 @@ def get_state() -> dict[str, Any]:
     }
 
 
+@router.get("/api/snapshot")
+def get_snapshot() -> dict[str, Any]:
+    """Snapshot iniziale per la Web UI — caricato al boot prima del primo tick WS."""
+    store = StateStore.get()
+    if store.engine is None:
+        return {"running": False, "tick": 0, "agents": {}, "stats": {}}
+    snap = store.engine.snapshot()
+    return {
+        "running": store.running,
+        "tick": snap.get("tick", 0),
+        "agents": snap.get("agents", {}),
+        "stats": store.engine.stats(),
+    }
+
+
 @router.post("/api/run/start")
 def run_start(req: StartRequest) -> dict[str, Any]:
     """Build and start a simulation from a named scenario."""

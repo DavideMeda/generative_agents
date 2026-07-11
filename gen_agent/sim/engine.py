@@ -24,6 +24,7 @@ from gen_agent.interfaces.stanford_adapter_protocol import StanfordAdapterProtoc
 from gen_agent.sim.proximity import ProximityConfig, ProximityDetector
 
 if TYPE_CHECKING:
+    from gen_agent.cognitive.biases import BiasLayer
     from gen_agent.cognitive.evolutionary import SocialLearner
     from gen_agent.cognitive.hrm import HRMOrchestrator
     from gen_agent.cognitive.rlif import RLIFEngine
@@ -114,6 +115,7 @@ class SimEngine:
         knowledge_diffusion: KnowledgeDiffusion | None = None,
         stanford_worker: Any | None = None,
         neat_manager: Any | None = None,
+        biases: "BiasLayer | None" = None,
     ) -> None:
         self._cfg = config or SimConfig()
         self._adapter = stanford_adapter
@@ -129,6 +131,7 @@ class SimEngine:
         self._knowledge_diffusion = knowledge_diffusion
         self._stanford_worker = stanford_worker
         self._neat_manager = neat_manager
+        self._biases = biases
         self._rng = random.Random(self._cfg.seed)
         self._lock = threading.Lock()
         self._tick = 0
@@ -494,6 +497,15 @@ class SimEngine:
                         continue
                 elif not self._proximity.can_interact(a.agent_id, b.agent_id, self._tick):
                     continue
+                # Optional BiasLayer: gates interaction on willingness modifier
+                if self._biases is not None:
+                    last_tick = self._proximity.last_interaction_tick(a.agent_id, b.agent_id)
+                    modifier = self._biases.willingness_modifier(
+                        a.agent_id, self._tick, last_tick,
+                        recent_events=list(a.extra.get("recent_events", [])),
+                    )
+                    if self._rng.random() > modifier:
+                        continue
                 pairs.append((a.agent_id, b.agent_id))
         return pairs
 
