@@ -20,7 +20,7 @@ class ProximityDetector:
     def __init__(self, config: ProximityConfig | None = None) -> None:
         self._cfg = config or ProximityConfig()
         # Maps frozenset({id_a, id_b}) -> last interaction tick
-        self._last_interaction: dict[frozenset, int] = {}
+        self._last_interaction: dict[frozenset[str], int] = {}
 
     @property
     def config(self) -> ProximityConfig:
@@ -37,7 +37,7 @@ class ProximityDetector:
         self, id_a: str, id_b: str, current_tick: int, min_gap: int | None = None
     ) -> bool:
         gap = self._cfg.min_gap_ticks if min_gap is None else min_gap
-        key: frozenset = frozenset({id_a, id_b})
+        key: frozenset[str] = frozenset({id_a, id_b})
         last = self._last_interaction.get(key, -gap)
         return (current_tick - last) >= gap
 

@@ -417,12 +417,11 @@ class SimEngine:
     def _tick_missions(self) -> None:
         for state in self._agents.values():
             if state.mission is None or state.mission.completed:
-                # HRM: use mission_priority if available
+                # HRM: log agent mission priority (int, lower = higher priority)
                 if self._hrm and hasattr(self._hrm, "mission_priority"):
                     try:
-                        priority_poi = self._hrm.mission_priority(state.agent_id, self._world)
-                        if priority_poi and not state.target_poi:
-                            state.target_poi = priority_poi
+                        _prio = self._hrm.mission_priority(state.agent_id)
+                        logger.debug("HRM priority for %s: %d", state.agent_id, _prio)
                     except Exception:
                         pass
                 m = self._missions.assign(state.agent_id, self._tick)  # type: ignore[union-attr]

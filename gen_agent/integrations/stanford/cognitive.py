@@ -94,10 +94,11 @@ class AssociativeMemoryBridge:
             return ["Explore the town", "Meet a neighbor", "Rest at home"]
         try:
             plan = generate_structured_plan(
+                llm=self._llm,
                 agent_name=self._agent_name,
                 memories=self.retrieve_memories("daily routine", top_k=3),
+                tick=int(context.get("tick", 0)),
                 location=context.get("location", "town"),
-                llm=self._llm,
             )
             return plan.get("steps", [])
         except Exception as exc:
