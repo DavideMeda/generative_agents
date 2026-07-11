@@ -17,18 +17,17 @@ import logging
 import os
 import random
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
 # Payoff matrices: (row_player_payoff, col_player_payoff)
 # Actions: 0=cooperate, 1=defect
-PRISONER_DILEMMA: List[List[Tuple[float, float]]] = [
+PRISONER_DILEMMA: list[list[tuple[float, float]]] = [
     [(3.0, 3.0), (0.0, 5.0)],   # cooperate vs cooperate | cooperate vs defect
     [(5.0, 0.0), (1.0, 1.0)],   # defect vs cooperate   | defect vs defect
 ]
 
-STAG_HUNT: List[List[Tuple[float, float]]] = [
+STAG_HUNT: list[list[tuple[float, float]]] = [
     [(4.0, 4.0), (0.0, 3.0)],
     [(3.0, 0.0), (2.0, 2.0)],
 ]
@@ -46,7 +45,7 @@ class GameResult:
     outcome: str   # "positive" | "neutral" | "negative" — for RLIF
 
 
-def pure_nash_equilibria(matrix: List[List[Tuple[float, float]]]) -> List[Tuple[int, int]]:
+def pure_nash_equilibria(matrix: list[list[tuple[float, float]]]) -> list[tuple[int, int]]:
     """
     Find all pure strategy Nash Equilibria in a 2×2 payoff matrix.
     Returns list of (row_action, col_action) pairs.
@@ -84,8 +83,8 @@ class GameEngine:
         id_a: str,
         id_b: str,
         game: str = "prisoner_dilemma",
-        traits_a: Optional[Dict[str, float]] = None,
-        traits_b: Optional[Dict[str, float]] = None,
+        traits_a: dict[str, float] | None = None,
+        traits_b: dict[str, float] | None = None,
     ) -> GameResult:
         matrix = _GAMES.get(game, PRISONER_DILEMMA)
         action_a = self._choose_action(traits_a)
@@ -115,7 +114,7 @@ class GameEngine:
         )
         return result
 
-    def _choose_action(self, traits: Optional[Dict[str, float]]) -> int:
+    def _choose_action(self, traits: dict[str, float] | None) -> int:
         """
         Action choice: high agreeableness → more likely to cooperate.
         Without traits, 50/50.
@@ -126,7 +125,7 @@ class GameEngine:
         return 0 if self._rng.random() < agr else 1  # 0=cooperate
 
 
-def make_game_engine_if_enabled() -> Optional[GameEngine]:
+def make_game_engine_if_enabled() -> GameEngine | None:
     if os.getenv("ENABLE_GAME_THEORY", "false").lower() in ("1", "true", "yes"):
         return GameEngine()
     return None

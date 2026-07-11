@@ -10,8 +10,8 @@ Rule: only gen_agent/integrations/stanford/ may import reverie/.
 from __future__ import annotations
 
 import logging
-import time
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -29,13 +29,13 @@ class AssociativeMemoryBridge:
         agent_id: str,
         agent_name: str,
         memory_store: Any,  # MemoryProtocol
-        llm: Optional[Callable[[str], str]] = None,
+        llm: Callable[[str], str] | None = None,
     ) -> None:
         self._agent_id = agent_id
         self._agent_name = agent_name
         self._memory = memory_store
         self._llm = llm
-        self._scratch: Dict[str, Any] = {
+        self._scratch: dict[str, Any] = {
             "name": agent_name,
             "curr_time": None,
             "curr_tile": None,
@@ -46,13 +46,13 @@ class AssociativeMemoryBridge:
     # Scratch interface (used by worker/plan logic)
     # ------------------------------------------------------------------
 
-    def get_scratch(self) -> Dict[str, Any]:
+    def get_scratch(self) -> dict[str, Any]:
         return dict(self._scratch)
 
     def set_scratch(self, key: str, value: Any) -> None:
         self._scratch[key] = value
 
-    def update_scratch(self, updates: Dict[str, Any]) -> None:
+    def update_scratch(self, updates: dict[str, Any]) -> None:
         self._scratch.update(updates)
 
     # ------------------------------------------------------------------
@@ -65,7 +65,6 @@ class AssociativeMemoryBridge:
         memory_type: str = "observation",
         importance: float = 5.0,
     ) -> str:
-        from gen_agent.interfaces.memory_protocol import MemoryQuery
         return self._memory.store(
             agent_id=self._agent_id,
             content=content,
@@ -73,7 +72,7 @@ class AssociativeMemoryBridge:
             importance=importance,
         )
 
-    def retrieve_memories(self, query: str, top_k: int = 5) -> List[str]:
+    def retrieve_memories(self, query: str, top_k: int = 5) -> list[str]:
         from gen_agent.interfaces.memory_protocol import MemoryQuery
         try:
             records = self._memory.retrieve(
@@ -88,7 +87,7 @@ class AssociativeMemoryBridge:
     # Planning interface
     # ------------------------------------------------------------------
 
-    def generate_daily_plan(self, context: Dict[str, Any]) -> List[str]:
+    def generate_daily_plan(self, context: dict[str, Any]) -> list[str]:
         """Generate a structured daily plan using the Stanford structured planner."""
         from gen_agent.integrations.stanford.structured_planner import generate_structured_plan
         if self._llm is None:
@@ -107,8 +106,8 @@ class AssociativeMemoryBridge:
 
     def run_reflection(self) -> str:
         """Generate a reflection and store it as a memory."""
-        from gen_agent.memory.reflection import generate_reflection
         from gen_agent.interfaces.memory_protocol import MemoryQuery
+        from gen_agent.memory.reflection import generate_reflection
         try:
             records = self._memory.retrieve(
                 MemoryQuery(agent_id=self._agent_id, query_text="", top_k=5,
@@ -142,11 +141,11 @@ class StanfordCognitionBridge:
     def __init__(
         self,
         memory_store: Any,
-        llm: Optional[Callable[[str], str]] = None,
+        llm: Callable[[str], str] | None = None,
     ) -> None:
         self._memory = memory_store
         self._llm = llm
-        self._personas: Dict[str, AssociativeMemoryBridge] = {}
+        self._personas: dict[str, AssociativeMemoryBridge] = {}
 
     def register_agent(self, agent_id: str, name: str) -> AssociativeMemoryBridge:
         if agent_id not in self._personas:
@@ -158,7 +157,7 @@ class StanfordCognitionBridge:
             )
         return self._personas[agent_id]
 
-    def get_persona(self, agent_id: str) -> Optional[AssociativeMemoryBridge]:
+    def get_persona(self, agent_id: str) -> AssociativeMemoryBridge | None:
         return self._personas.get(agent_id)
 
     def tick_all(self, tick: int) -> None:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Dict, Iterable, List, Optional
 
 import numpy as np
 
@@ -21,19 +21,19 @@ class ConnectionGene:
 class NEATGenome:
     input_size: int
     output_size: int
-    hidden_nodes: List[int] = field(default_factory=list)
-    connections: List[ConnectionGene] = field(default_factory=list)
+    hidden_nodes: list[int] = field(default_factory=list)
+    connections: list[ConnectionGene] = field(default_factory=list)
     fitness: float = 0.0
 
     @property
-    def output_nodes(self) -> List[int]:
+    def output_nodes(self) -> list[int]:
         return list(range(self.input_size, self.input_size + self.output_size))
 
     @property
     def node_count(self) -> int:
         return self.input_size + self.output_size + len(self.hidden_nodes)
 
-    def clone(self) -> "NEATGenome":
+    def clone(self) -> NEATGenome:
         return NEATGenome(
             input_size=self.input_size,
             output_size=self.output_size,
@@ -46,7 +46,7 @@ class NEATGenome:
         )
 
     @classmethod
-    def minimal(cls, cfg: NEATConfig, rng: np.random.Generator) -> "NEATGenome":
+    def minimal(cls, cfg: NEATConfig, rng: np.random.Generator) -> NEATGenome:
         hidden = [
             cfg.input_size + cfg.output_size + idx
             for idx in range(max(0, cfg.hidden_nodes_initial))
@@ -123,9 +123,9 @@ class NEATGenome:
         )
         return innovation + 2
 
-    def distance(self, other: "NEATGenome") -> float:
-        by_innovation: Dict[int, ConnectionGene] = {c.innovation: c for c in self.connections}
-        other_by_innovation: Dict[int, ConnectionGene] = {
+    def distance(self, other: NEATGenome) -> float:
+        by_innovation: dict[int, ConnectionGene] = {c.innovation: c for c in self.connections}
+        other_by_innovation: dict[int, ConnectionGene] = {
             c.innovation: c for c in other.connections
         }
         all_keys = set(by_innovation) | set(other_by_innovation)
@@ -146,8 +146,8 @@ class NEATGenome:
 
     @staticmethod
     def crossover(
-        parent_a: "NEATGenome", parent_b: "NEATGenome", rng: np.random.Generator
-    ) -> "NEATGenome":
+        parent_a: NEATGenome, parent_b: NEATGenome, rng: np.random.Generator
+    ) -> NEATGenome:
         if parent_b.fitness > parent_a.fitness:
             parent_a, parent_b = parent_b, parent_a
         child = NEATGenome(
@@ -170,7 +170,7 @@ class NEATGenome:
             )
         return child
 
-    def to_arrays(self) -> Dict[str, np.ndarray]:
+    def to_arrays(self) -> dict[str, np.ndarray]:
         data = np.asarray(
             [
                 [c.in_node, c.out_node, c.weight, 1.0 if c.enabled else 0.0, c.innovation]
@@ -187,7 +187,7 @@ class NEATGenome:
         }
 
     @classmethod
-    def from_arrays(cls, arrays: Dict[str, np.ndarray]) -> "NEATGenome":
+    def from_arrays(cls, arrays: dict[str, np.ndarray]) -> NEATGenome:
         genome = cls(
             input_size=int(arrays["input_size"][0]),
             output_size=int(arrays["output_size"][0]),

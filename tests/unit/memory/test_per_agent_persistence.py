@@ -1,9 +1,6 @@
 """Tests for per-agent SQLite persistence."""
 from __future__ import annotations
 
-import os
-import time
-
 
 class TestPerAgentPersistence:
     def test_creates_separate_dbs(self, tmp_path):
@@ -15,8 +12,8 @@ class TestPerAgentPersistence:
         assert (tmp_path / "agents" / "agent_b" / "memory.db").exists()
 
     def test_memories_isolated_per_agent(self, tmp_path):
-        from gen_agent.memory.manager import MemoryManager
         from gen_agent.interfaces.memory_protocol import MemoryQuery
+        from gen_agent.memory.manager import MemoryManager
         mm = MemoryManager(data_dir=str(tmp_path))
 
         mm.store("agent_a", "Marco went to the library.", "observation", 5.0)
@@ -33,8 +30,8 @@ class TestPerAgentPersistence:
         assert any("Lucia" in c for c in contents_b)
 
     def test_persistence_across_manager_instances(self, tmp_path):
-        from gen_agent.memory.manager import MemoryManager
         from gen_agent.interfaces.memory_protocol import MemoryQuery
+        from gen_agent.memory.manager import MemoryManager
 
         mm1 = MemoryManager(data_dir=str(tmp_path))
         mm1.store("agent_a", "Persistent memory content.", "observation", 5.0)

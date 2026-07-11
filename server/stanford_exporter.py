@@ -16,10 +16,9 @@ Documentazione: docs/guides/STANFORD_UI.md
 from __future__ import annotations
 
 import json
-import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 import structlog
 
@@ -45,7 +44,7 @@ class StanfordExporter:
         self._env_dir.mkdir(parents=True, exist_ok=True)
         self._temp_dir.mkdir(parents=True, exist_ok=True)
 
-    def export_tick(self, tick: int, agents: Dict[str, Any]) -> None:
+    def export_tick(self, tick: int, agents: dict[str, Any]) -> None:
         """
         Scrive il file movement/{tick}.json nel formato Stanford.
 
@@ -60,19 +59,19 @@ class StanfordExporter:
           "<step>": tick
         }
         """
-        movement: Dict[str, Any] = {}
-        env: Dict[str, Any] = {}
+        movement: dict[str, Any] = {}
+        env: dict[str, Any] = {}
 
         for agent_id, state in agents.items():
             name = state.get("name", agent_id)
             pos = state.get("position", [0.0, 0.0])
             # Stanford usa coordinate intere su griglia
-            x = int(round(pos[0])) if isinstance(pos, (list, tuple)) and len(pos) >= 1 else 0
-            y = int(round(pos[1])) if isinstance(pos, (list, tuple)) and len(pos) >= 2 else 0
+            x = int(round(pos[0])) if isinstance(pos, list | tuple) and len(pos) >= 1 else 0
+            y = int(round(pos[1])) if isinstance(pos, list | tuple) and len(pos) >= 2 else 0
 
             target = state.get("target_poi")
             description = f"going to {target}" if target else "exploring"
-            emotion = state.get("emotion", "")
+            state.get("emotion", "")
             pronunciatio = _DEFAULT_PRONUNCIATIO
 
             movement[name] = {
@@ -96,10 +95,10 @@ class StanfordExporter:
         path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
-_exporter: Optional[StanfordExporter] = None
+_exporter: StanfordExporter | None = None
 
 
-def get_exporter() -> Optional[StanfordExporter]:
+def get_exporter() -> StanfordExporter | None:
     """
     Restituisce l'exporter se STANFORD_UI_EXPORT=true,
     None altrimenti (esportazione disabilitata).

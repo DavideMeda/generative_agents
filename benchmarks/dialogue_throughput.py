@@ -27,9 +27,9 @@ def _stub_llm(prompt: str) -> str:
 
 
 def run() -> dict:
-    from gen_agent.sim.engine import SimConfig, SimEngine
-    from gen_agent.interfaces.sim_protocol import AgentConfig
     from gen_agent.dialogue.dialogue_engine import DialogueEngine
+    from gen_agent.interfaces.sim_protocol import AgentConfig
+    from gen_agent.sim.engine import SimConfig, SimEngine
 
     dialogue = DialogueEngine(llm=_stub_llm, max_turns=2)
     cfg = SimConfig(
@@ -50,7 +50,6 @@ def run() -> dict:
 
     t0 = time.perf_counter()
     total_dialogues = 0
-    total_utterances = 0
     for _ in range(TICKS):
         result = engine.advance()
         for ev in result.events:

@@ -4,7 +4,8 @@ from __future__ import annotations
 import json
 import logging
 import re
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -13,10 +14,10 @@ LLMCallable = Callable[[str], str]
 
 def build_plan_prompt(
     agent_name: str,
-    memories: List[str],
+    memories: list[str],
     tick: int,
     location: str,
-    poi_names: Optional[List[str]] = None,
+    poi_names: list[str] | None = None,
 ) -> str:
     mem = "\n".join(f"- {m}" for m in memories[:8]) or "None"
     places = ""
@@ -37,7 +38,7 @@ def build_plan_prompt(
     )
 
 
-def parse_plan_response(text: str) -> Dict[str, Any]:
+def parse_plan_response(text: str) -> dict[str, Any]:
     text = (text or "").strip()
     try:
         data = json.loads(text)
@@ -58,13 +59,13 @@ def parse_plan_response(text: str) -> Dict[str, Any]:
 
 
 def generate_structured_plan(
-    llm: Optional[LLMCallable],
+    llm: LLMCallable | None,
     agent_name: str,
-    memories: List[str],
+    memories: list[str],
     tick: int,
     location: str = "town",
-    poi_names: Optional[List[str]] = None,
-) -> Dict[str, Any]:
+    poi_names: list[str] | None = None,
+) -> dict[str, Any]:
     if llm is None:
         dest = (poi_names or ["town"])[0] if poi_names else location
         return {"plan": [f"{agent_name} goes to the {dest}"], "focus": "idle", "stub": True}

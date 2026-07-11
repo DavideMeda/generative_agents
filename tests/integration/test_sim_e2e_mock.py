@@ -5,11 +5,7 @@ Verifies the full engine stack: memory, dialogue (mock), missions, emotions.
 from __future__ import annotations
 
 import math
-import time
 
-import pytest
-
-from gen_agent.agents.emotions import EmotionState
 from gen_agent.dialogue.dialogue_engine import DialogueEngine
 from gen_agent.interfaces.sim_protocol import AgentConfig
 from gen_agent.memory.manager import MemoryManager

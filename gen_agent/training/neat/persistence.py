@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Union
 
 import numpy as np
 
 from gen_agent.training.neat.genome import NEATGenome
 
-
-PathLike = Union[str, Path]
+PathLike = str | Path
 
 
 def save_individual(genome: NEATGenome, path: PathLike) -> str:

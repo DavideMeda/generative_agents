@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 from gen_agent.dialogue.dialogue_guards import (
-    clean_utterance,
-    sanitize_memory_for_prompt,
     build_retry_hint,
+    clean_utterance,
     detect_italian,
+    sanitize_memory_for_prompt,
 )
 
 

@@ -6,13 +6,16 @@ l'envelope versionato documentato in docs/guides/WEBSOCKET_PROTOCOL.md.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 
-import pytest
-
-from server.tick_runner import WS_SCHEMA_VERSION, _make_envelope, _broadcast, register_ws, unregister_ws
-import asyncio
-
+from server.tick_runner import (
+    WS_SCHEMA_VERSION,
+    _broadcast,
+    _make_envelope,
+    register_ws,
+    unregister_ws,
+)
 
 REQUIRED_ENVELOPE_KEYS = {"schema_version", "type", "tick", "timestamp", "data"}
 REQUIRED_DATA_KEYS = {"events", "agents", "stats"}

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -11,8 +11,8 @@ class FaissVectorStore:
     """ponytail: naive in-memory fallback when faiss not installed."""
 
     def __init__(self) -> None:
-        self._vectors: List[List[float]] = []
-        self._ids: List[str] = []
+        self._vectors: list[list[float]] = []
+        self._ids: list[str] = []
         self._faiss = None
         try:
             import faiss  # type: ignore
@@ -20,15 +20,15 @@ class FaissVectorStore:
         except ImportError:
             logger.info("faiss-cpu not installed — vector store uses keyword fallback")
 
-    def add(self, memory_id: str, embedding: List[float]) -> None:
+    def add(self, memory_id: str, embedding: list[float]) -> None:
         self._ids.append(memory_id)
         self._vectors.append(embedding)
 
-    def search(self, embedding: List[float], top_k: int = 5) -> List[str]:
+    def search(self, embedding: list[float], top_k: int = 5) -> list[str]:
         if not self._ids:
             return []
         # ponytail: O(n) cosine without faiss
-        def dot(a: List[float], b: List[float]) -> float:
+        def dot(a: list[float], b: list[float]) -> float:
             return sum(x * y for x, y in zip(a, b))
         scores = [(dot(embedding, v), mid) for v, mid in zip(self._vectors, self._ids)]
         scores.sort(reverse=True)

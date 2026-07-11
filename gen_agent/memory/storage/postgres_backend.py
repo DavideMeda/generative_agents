@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import threading
 import time
-from typing import Any, List, Optional
+from typing import Any
 
 from gen_agent.interfaces.memory_protocol import MemoryQuery, MemoryRecord
 
@@ -93,10 +93,10 @@ class PostgresMemoryBackend:
             )
         conn.commit()
 
-    def retrieve(self, query: MemoryQuery) -> List[MemoryRecord]:
+    def retrieve(self, query: MemoryQuery) -> list[MemoryRecord]:
         if not query.memory_types:
             return []
-        placeholders = ", ".join(f"%s" for _ in query.memory_types)
+        placeholders = ", ".join("%s" for _ in query.memory_types)
         conn = self._conn()
         with conn.cursor() as cur:
             cur.execute(
@@ -142,7 +142,7 @@ class PostgresMemoryBackend:
             cur.execute("DELETE FROM memories WHERE memory_id = %s", (memory_id,))
         conn.commit()
 
-    def count(self, agent_id: Optional[str] = None) -> int:
+    def count(self, agent_id: str | None = None) -> int:
         conn = self._conn()
         with conn.cursor() as cur:
             if agent_id:

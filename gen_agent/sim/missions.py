@@ -14,8 +14,7 @@ Usage:
 from __future__ import annotations
 
 import random
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from dataclasses import dataclass
 
 from gen_agent.world.poi import POI
 from gen_agent.world.world import World
@@ -24,7 +23,7 @@ from gen_agent.world.world import World
 @dataclass
 class Mission:
     mission_type: str                    # "visit_poi" | "patrol_zone" | "assist_ally"
-    target_poi: Optional[POI]
+    target_poi: POI | None
     assigned_tick: int
     expires_tick: int
     completed: bool = False
@@ -50,9 +49,9 @@ class MissionSystem:
         self._world = world
         self._duration = mission_duration_ticks
         self._rng = rng or random.Random()
-        self._history: Dict[str, List[str]] = {}  # agent_id -> [poi_ids visited]
+        self._history: dict[str, list[str]] = {}  # agent_id -> [poi_ids visited]
 
-    def assign(self, agent_id: str, current_tick: int) -> Optional[Mission]:
+    def assign(self, agent_id: str, current_tick: int) -> Mission | None:
         """Return a new mission for agent_id."""
         # Prefer a POI not recently visited
         visited = self._history.get(agent_id, [])

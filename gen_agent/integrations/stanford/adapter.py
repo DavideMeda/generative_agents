@@ -15,7 +15,7 @@ import importlib
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class StanfordAdapter:
     ) -> None:
         self._stub = stub_mode
         self._llm = llm
-        self._persona_registry: Dict[str, Any] = {}
+        self._persona_registry: dict[str, Any] = {}
         if not stub_mode:
             self._reverie = importlib.import_module("reverie")
 
@@ -63,7 +63,7 @@ class StanfordAdapter:
     def register_persona(self, agent_id: str, name: str) -> None:
         self._persona_registry[agent_id] = {"name": name, "scratch": {}}
 
-    def run_agent_plan(self, agent_id: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def run_agent_plan(self, agent_id: str, context: dict[str, Any]) -> dict[str, Any]:
         from gen_agent.integrations.stanford.structured_planner import generate_structured_plan
 
         persona = self._persona_registry.get(agent_id) or {}
@@ -77,9 +77,13 @@ class StanfordAdapter:
         )
         if self._stub:
             logger.debug("plan for %s (stub=%s): %s", agent_id, self._stub, plan.get("plan_text", ""))
-        return {"plan": plan.get("plan", []), "action": plan.get("focus", "explore"), "plan_text": plan.get("plan_text", "")}
+        return {
+            "plan": plan.get("plan", []),
+            "action": plan.get("focus", "explore"),
+            "plan_text": plan.get("plan_text", ""),
+        }
 
-    def run_reflection(self, agent_id: str, memories: List[str]) -> List[str]:
+    def run_reflection(self, agent_id: str, memories: list[str]) -> list[str]:
         if not memories:
             return []
         if self._llm is None:
@@ -95,11 +99,11 @@ class StanfordAdapter:
             logger.error("Stanford run_reflection failed: %s", exc)
             return []
 
-    def get_agent_scratch(self, agent_id: str) -> Dict[str, Any]:
+    def get_agent_scratch(self, agent_id: str) -> dict[str, Any]:
         persona = self._persona_registry.get(agent_id, {})
         return dict(persona.get("scratch") or {})
 
-    def set_agent_scratch(self, agent_id: str, data: Dict[str, Any]) -> None:
+    def set_agent_scratch(self, agent_id: str, data: dict[str, Any]) -> None:
         persona = self._persona_registry.setdefault(agent_id, {"name": agent_id, "scratch": {}})
         persona["scratch"].update(data)
 
@@ -111,6 +115,6 @@ class StanfordAdapter:
         return self._persona_registry.get(agent_id)
 
 
-def get_stanford_adapter(llm: Any = None) -> "StanfordAdapter":
+def get_stanford_adapter(llm: Any = None) -> StanfordAdapter:
     """Factory — LLM used for structured plans when reverie is absent."""
     return StanfordAdapter(llm=llm)

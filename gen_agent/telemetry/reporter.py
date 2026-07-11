@@ -11,7 +11,7 @@ import logging
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from gen_agent.interfaces.sim_protocol import TickResult
 
@@ -25,7 +25,7 @@ class TickMetrics:
     event_count: int
     interaction_count: int
     agent_count: int
-    extra: Dict[str, Any] = field(default_factory=dict)
+    extra: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -35,13 +35,13 @@ class SimReport:
     finished_at: float
     total_ticks: int
     total_interactions: int
-    ticks: List[TickMetrics] = field(default_factory=list)
+    ticks: list[TickMetrics] = field(default_factory=list)
 
     @property
     def duration_sec(self) -> float:
         return self.finished_at - self.started_at
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
     def to_json(self, indent: int = 2) -> str:
@@ -62,10 +62,10 @@ class TelemetryReporter:
         print(report.to_json())
     """
 
-    def __init__(self, sim_id: Optional[str] = None) -> None:
+    def __init__(self, sim_id: str | None = None) -> None:
         self._sim_id = sim_id or f"sim-{int(time.time())}"
         self._started_at: float = 0.0
-        self._ticks: List[TickMetrics] = []
+        self._ticks: list[TickMetrics] = []
 
     def start(self) -> None:
         self._started_at = time.time()

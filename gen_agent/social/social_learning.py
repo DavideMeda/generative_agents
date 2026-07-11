@@ -17,7 +17,6 @@ from __future__ import annotations
 import logging
 import os
 import random
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +70,7 @@ class KnowledgeDiffusion:
             logger.debug("KnowledgeDiffusion skipped: %s", exc)
 
 
-def make_knowledge_diffusion_if_enabled(memory_store=None) -> Optional[KnowledgeDiffusion]:
+def make_knowledge_diffusion_if_enabled(memory_store=None) -> KnowledgeDiffusion | None:
     if os.getenv("ENABLE_SOCIAL_LEARNING", "false").lower() in ("1", "true", "yes"):
         return KnowledgeDiffusion(memory_store=memory_store)
     return None

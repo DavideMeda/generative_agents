@@ -12,10 +12,10 @@ import random
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Tuple
+from typing import Any
 
 from gen_agent.interfaces.sim_protocol import AgentConfig
-from gen_agent.sim.engine import SimConfig, SimEngine
+from gen_agent.sim.engine import SimEngine
 
 
 def _env_bool(name: str, default: bool = False) -> bool:
@@ -30,10 +30,10 @@ class EngineExtras:
 
 
 def build_memory(data_dir: str = "data", llm: Any = None) -> Any:
-    from gen_agent.memory.manager import MemoryManager
-    from gen_agent.memory.graph.graphrag_retriever import make_graphrag_if_enabled
-    from gen_agent.memory.privacy.mars_engine import make_mars_if_enabled
     from gen_agent.memory.compression.compressor import make_compressor_if_enabled
+    from gen_agent.memory.graph.graphrag_retriever import make_graphrag_if_enabled
+    from gen_agent.memory.manager import MemoryManager
+    from gen_agent.memory.privacy.mars_engine import make_mars_if_enabled
     from gen_agent.memory.storage.sqlite_backend import SQLiteMemoryBackend
 
     Path(data_dir).mkdir(parents=True, exist_ok=True)
@@ -80,7 +80,7 @@ def build_memory(data_dir: str = "data", llm: Any = None) -> Any:
     return memory
 
 
-def build_sim_engine(scenario: Any) -> Tuple[SimEngine, EngineExtras]:
+def build_sim_engine(scenario: Any) -> tuple[SimEngine, EngineExtras]:
     from gen_agent.dialogue.dialogue_engine import DialogueEngine
     from gen_agent.llm.provider import get_llm_provider
     from gen_agent.sim.missions import MissionSystem

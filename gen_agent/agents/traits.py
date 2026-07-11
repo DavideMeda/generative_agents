@@ -7,11 +7,10 @@ Provides normalization, random generation, and trait-based behavior hints.
 from __future__ import annotations
 
 import random
-from typing import Dict
 
 BIG_FIVE = ("openness", "conscientiousness", "extraversion", "agreeableness", "neuroticism")
 
-_ALIASES: Dict[str, str] = {
+_ALIASES: dict[str, str] = {
     "open": "openness",
     "conscientious": "conscientiousness",
     "extravert": "extraversion",
@@ -20,9 +19,9 @@ _ALIASES: Dict[str, str] = {
 }
 
 
-def normalize(traits: Dict[str, float]) -> Dict[str, float]:
+def normalize(traits: dict[str, float]) -> dict[str, float]:
     """Ensure all Big Five keys exist and values are clamped to [0, 1]."""
-    out: Dict[str, float] = {}
+    out: dict[str, float] = {}
     for key in BIG_FIVE:
         alias = _ALIASES.get(key, key)
         v = traits.get(key, traits.get(alias, 0.5))
@@ -30,12 +29,12 @@ def normalize(traits: Dict[str, float]) -> Dict[str, float]:
     return out
 
 
-def random_traits(rng: random.Random | None = None) -> Dict[str, float]:
+def random_traits(rng: random.Random | None = None) -> dict[str, float]:
     r = rng or random
     return {k: round(r.gauss(0.5, 0.15), 3) for k in BIG_FIVE}
 
 
-def interaction_willingness(traits: Dict[str, float]) -> float:
+def interaction_willingness(traits: dict[str, float]) -> float:
     """
     Proxy for how likely an agent is to initiate interaction.
     High extraversion and agreeableness → more willing.

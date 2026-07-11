@@ -13,9 +13,9 @@ from __future__ import annotations
 import logging
 import os
 import re
-from typing import Any, List, Optional
+from typing import Any
 
-from gen_agent.interfaces.memory_protocol import MemoryProtocol, MemoryQuery, MemoryRecord
+from gen_agent.interfaces.memory_protocol import MemoryQuery, MemoryRecord
 from gen_agent.memory.graph.knowledge_graph import KnowledgeGraph
 from gen_agent.memory.storage.sqlite_backend import SQLiteMemoryBackend
 
@@ -38,8 +38,8 @@ class GraphRAGRetriever:
 
     def __init__(
         self,
-        backend: Optional[SQLiteMemoryBackend] = None,
-        graph: Optional[KnowledgeGraph] = None,
+        backend: SQLiteMemoryBackend | None = None,
+        graph: KnowledgeGraph | None = None,
     ) -> None:
         self._backend = backend or SQLiteMemoryBackend()
         self._graph = graph or KnowledgeGraph()
@@ -54,6 +54,7 @@ class GraphRAGRetriever:
     ) -> str:
         import time
         import uuid
+
         from gen_agent.interfaces.memory_protocol import MemoryRecord
 
         mem_id = str(kwargs.get("memory_id") or uuid.uuid4())
@@ -71,7 +72,7 @@ class GraphRAGRetriever:
         self._graph.add_memory(mem_id, content)
         return mem_id
 
-    def retrieve(self, query: MemoryQuery) -> List[MemoryRecord]:
+    def retrieve(self, query: MemoryQuery) -> list[MemoryRecord]:
         query_kw = _keywords(query.query_text)
 
         # 1. Get all memories for agent
@@ -103,7 +104,7 @@ class GraphRAGRetriever:
         self._backend.delete(memory_id)
 
 
-def make_graphrag_if_enabled(backend=None) -> Optional[GraphRAGRetriever]:
+def make_graphrag_if_enabled(backend=None) -> GraphRAGRetriever | None:
     if os.getenv("ENABLE_GRAPHRAG", "false").lower() in ("1", "true", "yes"):
         return GraphRAGRetriever(backend=backend)
     return None

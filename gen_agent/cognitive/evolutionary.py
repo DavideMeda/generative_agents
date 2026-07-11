@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class SocialLearner:
         self._tick_counter = 0
         logger.info("SocialLearner active (copy_every=%d)", copy_every)
 
-    def tick(self, agents: "List[_AgentState]") -> None:
+    def tick(self, agents: list[_AgentState]) -> None:
         self._tick_counter += 1
         if self._tick_counter % self._copy_every != 0:
             return
@@ -44,7 +44,7 @@ class SocialLearner:
 
         if self._rlif is not None:
             # Find agent with highest vs lowest total reward
-            totals: Dict[str, float] = {}
+            totals: dict[str, float] = {}
             for a in agents:
                 aid = a.agent_id
                 totals[aid] = sum(
@@ -82,7 +82,7 @@ class IntrinsicMotivation:
     """
 
     def __init__(self, bonus: float = 2.0) -> None:
-        self._visited: Dict[str, set] = {}
+        self._visited: dict[str, set] = {}
         self._bonus = bonus
 
     def on_poi_visit(self, agent_id: str, poi_id: str) -> float:
@@ -94,7 +94,7 @@ class IntrinsicMotivation:
         return 0.0
 
 
-def make_social_learner_if_enabled(rlif=None) -> Optional[SocialLearner]:
+def make_social_learner_if_enabled(rlif=None) -> SocialLearner | None:
     if os.getenv("ENABLE_SOCIAL_LEARNING", "false").lower() in ("1", "true", "yes"):
         return SocialLearner(rlif=rlif)
     return None

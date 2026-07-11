@@ -8,8 +8,6 @@ Classification via keyword matching:
 """
 from __future__ import annotations
 
-from typing import List
-
 _PRIVATE_KEYWORDS = frozenset([
     "secret", "health", "sick", "ill", "medical", "diagnosis",
     "afraid", "ashamed", "embarrass", "private", "confidential",

@@ -16,10 +16,9 @@ from __future__ import annotations
 import asyncio
 import datetime
 import json
-import logging
 import threading
 import time
-from typing import Any, Dict, Set
+from typing import Any
 
 import structlog
 
@@ -28,7 +27,7 @@ WS_SCHEMA_VERSION = "1"
 logger = structlog.get_logger(__name__)
 
 # Global set of active WebSocket queues (one per connected client)
-_ws_queues: Set[asyncio.Queue] = set()  # type: ignore[type-arg]
+_ws_queues: set[asyncio.Queue] = set()  # type: ignore[type-arg]
 _ws_lock = threading.Lock()
 
 
@@ -42,7 +41,7 @@ def unregister_ws(queue: asyncio.Queue) -> None:  # type: ignore[type-arg]
         _ws_queues.discard(queue)
 
 
-def _make_envelope(event_type: str, *, tick: int, data: Dict[str, Any]) -> Dict[str, Any]:
+def _make_envelope(event_type: str, *, tick: int, data: dict[str, Any]) -> dict[str, Any]:
     """Build a versioned WS envelope. Schema defined in docs/guides/WEBSOCKET_PROTOCOL.md."""
     return {
         "schema_version": WS_SCHEMA_VERSION,
@@ -53,7 +52,7 @@ def _make_envelope(event_type: str, *, tick: int, data: Dict[str, Any]) -> Dict[
     }
 
 
-def _broadcast(payload: Dict[str, Any]) -> None:
+def _broadcast(payload: dict[str, Any]) -> None:
     """Push payload to all registered WS queues (non-blocking, thread-safe)."""
     msg = json.dumps(payload)
     with _ws_lock:

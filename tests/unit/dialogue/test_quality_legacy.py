@@ -1,11 +1,9 @@
 """Tests for dialogue quality scoring and guards — ported from legacy."""
 from __future__ import annotations
 
-import pytest
-
-from gen_agent.dialogue.dialogue_guards import validate_utterance, detect_meta, build_retry_hint
-from gen_agent.dialogue.quality_legacy import score_utterance_legacy
+from gen_agent.dialogue.dialogue_guards import detect_meta, validate_utterance
 from gen_agent.dialogue.intent_pack import build_intent_pack, intent_pack_to_prompt_section
+from gen_agent.dialogue.quality_legacy import score_utterance_legacy
 
 
 class TestValidateUtterance:

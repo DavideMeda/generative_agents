@@ -13,7 +13,6 @@ from __future__ import annotations
 import logging
 import os
 from collections import defaultdict
-from typing import Dict, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +20,7 @@ _REWARD_MAP = {"positive": +1.0, "neutral": 0.0, "negative": -1.5}
 _DECAY = 0.90   # per-interaction decay on cumulative reward
 
 
-def _pair_key(a: str, b: str) -> Tuple[str, str]:
+def _pair_key(a: str, b: str) -> tuple[str, str]:
     return (a, b) if a < b else (b, a)
 
 
@@ -37,7 +36,7 @@ class RLIFEngine:
     ) -> None:
         self._base_radius = base_radius
         self._base_gap = base_gap
-        self._rewards: Dict[Tuple[str, str], float] = defaultdict(float)
+        self._rewards: dict[tuple[str, str], float] = defaultdict(float)
         logger.info("RLIFEngine active (base_radius=%.1f, base_gap=%d)", base_radius, base_gap)
 
     def update(self, id_a: str, id_b: str, outcome: str) -> None:
@@ -64,7 +63,7 @@ class RLIFEngine:
         return sorted_pairs[:n]
 
 
-def make_rlif_if_enabled(base_radius: float = 2.5, base_gap: int = 5) -> Optional[RLIFEngine]:
+def make_rlif_if_enabled(base_radius: float = 2.5, base_gap: int = 5) -> RLIFEngine | None:
     if os.getenv("ENABLE_RLIF", "false").lower() in ("1", "true", "yes"):
         return RLIFEngine(base_radius=base_radius, base_gap=base_gap)
     return None

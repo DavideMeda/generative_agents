@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import logging
-import os
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 from gen_agent.dialogue.dialogue_guards import (
     build_retry_hint,
@@ -14,7 +14,7 @@ from gen_agent.dialogue.dialogue_guards import (
     validate_utterance,
 )
 from gen_agent.dialogue.intent_pack import build_intent_pack, intent_pack_to_prompt_section
-from gen_agent.dialogue.ollama_manager import build_ollama_prompt, is_output_valid
+from gen_agent.dialogue.ollama_manager import build_ollama_prompt
 from gen_agent.dialogue.quality import score_utterance
 from gen_agent.interfaces.memory_protocol import MemoryProtocol, MemoryQuery
 
@@ -38,9 +38,9 @@ class Utterance:
 
 @dataclass
 class Conversation:
-    participants: List[str]
-    utterances: List[Utterance] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    participants: list[str]
+    utterances: list[Utterance] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def add(self, utterance: Utterance) -> None:
         self.utterances.append(utterance)
@@ -53,8 +53,8 @@ class Conversation:
 class DialogueEngine:
     def __init__(
         self,
-        llm: Optional[LLMCallable] = None,
-        memory_store: Optional[MemoryProtocol] = None,
+        llm: LLMCallable | None = None,
+        memory_store: MemoryProtocol | None = None,
         max_turns: int = 6,
         min_words: int = 25,
         max_attempts: int = 2,
@@ -76,14 +76,14 @@ class DialogueEngine:
         agent_b_id: str,
         agent_b_name: str,
         context: str = "",
-        known_names: Optional[List[str]] = None,
+        known_names: list[str] | None = None,
         location: str = "town square",
-        traits_a: Optional[Dict[str, float]] = None,
-        traits_b: Optional[Dict[str, float]] = None,
-        emotions_a: Optional[Dict[str, float]] = None,
-        emotions_b: Optional[Dict[str, float]] = None,
-        relationship: Optional[Dict[str, float]] = None,
-        deadline: Optional[float] = None,
+        traits_a: dict[str, float] | None = None,
+        traits_b: dict[str, float] | None = None,
+        emotions_a: dict[str, float] | None = None,
+        emotions_b: dict[str, float] | None = None,
+        relationship: dict[str, float] | None = None,
+        deadline: float | None = None,
     ) -> Conversation:
         conversation = Conversation(participants=[agent_a_id, agent_b_id])
         names = known_names or [agent_a_name, agent_b_name]
@@ -109,7 +109,7 @@ class DialogueEngine:
         ]
         turns = max(1, self._max_turns)
         per_turn_min = max(8, self._min_words // turns)
-        history_texts: List[str] = []
+        history_texts: list[str] = []
         timed_out = False
         for turn in range(turns):
             if deadline is not None and time.perf_counter() >= deadline:
@@ -141,14 +141,14 @@ class DialogueEngine:
             conversation.metadata["timed_out"] = True
         return conversation
 
-    def _fetch_memories(self, agent_id: str, query_text: str, scope: str = "social") -> List[str]:
+    def _fetch_memories(self, agent_id: str, query_text: str, scope: str = "social") -> list[str]:
         if self._memory is None:
             return []
         try:
             records = self._memory.retrieve(
                 MemoryQuery(agent_id=agent_id, query_text=query_text, top_k=5, scope=scope)
             )
-            out: List[str] = []
+            out: list[str] = []
             for r in records:
                 clean = sanitize_memory_for_prompt(r.content)
                 if clean:
@@ -162,16 +162,16 @@ class DialogueEngine:
         self,
         speaker_name: str,
         listener_name: str,
-        memories: List[str],
+        memories: list[str],
         location: str,
         history: str,
-        history_list: Optional[List[str]] = None,
-        known_names: Optional[List[str]] = None,
+        history_list: list[str] | None = None,
+        known_names: list[str] | None = None,
         intent_section: str = "",
-        traits: Optional[Dict[str, float]] = None,
-        emotions: Optional[Dict[str, float]] = None,
-        min_words: Optional[int] = None,
-        deadline: Optional[float] = None,
+        traits: dict[str, float] | None = None,
+        emotions: dict[str, float] | None = None,
+        min_words: int | None = None,
+        deadline: float | None = None,
     ) -> str:
         if self._llm is None:
             return (
@@ -250,11 +250,11 @@ class DialogueEngine:
     def _score_text(
         self,
         text: str,
-        history: List[str],
+        history: list[str],
         speaker_name: str,
         listener_name: str,
-        known_names: Optional[List[str]],
-        min_words: Optional[int] = None,
+        known_names: list[str] | None,
+        min_words: int | None = None,
     ) -> float:
         mw = min_words if min_words is not None else self._min_words
         ok, _ = validate_utterance(

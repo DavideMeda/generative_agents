@@ -12,8 +12,6 @@ Usage:
 from __future__ import annotations
 
 import logging
-from collections import Counter
-from typing import List
 
 from gen_agent.llm.provider import LLMProvider
 
@@ -35,7 +33,7 @@ class LLMCouncil(LLMProvider):
 
     def __init__(
         self,
-        providers: List[LLMProvider],
+        providers: list[LLMProvider],
         strategy: str = "majority",
     ) -> None:
         if not providers:

@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import TYPE_CHECKING, Optional
 
 from gen_agent.memory.privacy.classifier import classify
 
@@ -57,7 +56,7 @@ class MaRSEngine:
         return classify(content)
 
 
-def make_mars_if_enabled() -> Optional[MaRSEngine]:
+def make_mars_if_enabled() -> MaRSEngine | None:
     if os.getenv("ENABLE_MARS", "false").lower() in ("1", "true", "yes"):
         return MaRSEngine()
     return None

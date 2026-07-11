@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
-from typing import List
 from unittest.mock import MagicMock
 
 from gen_agent.integrations.stanford.adapter import StanfordAdapter, get_stanford_adapter
@@ -154,7 +153,7 @@ class TestBoundaryImportRule:
     def test_no_reverie_import_outside_stanford_integration(self):
         project_root = Path(__file__).resolve().parents[4]
         allowed_dir = project_root / "gen_agent" / "integrations" / "stanford"
-        violations: List[str] = []
+        violations: list[str] = []
 
         for top in self._SCAN_DIRS:
             top_dir = project_root / top
@@ -184,5 +183,5 @@ class TestBoundaryImportRule:
 
         assert violations == [], (
             "Boundary violation: i seguenti file importano reverie fuori da "
-            f"gen_agent/integrations/stanford/:\n" + "\n".join(violations)
+            "gen_agent/integrations/stanford/:\n" + "\n".join(violations)
         )

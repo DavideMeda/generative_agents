@@ -11,7 +11,6 @@ from __future__ import annotations
 import math
 import random
 from dataclasses import dataclass, field
-from typing import List, Optional
 
 from gen_agent.world.poi import POI
 
@@ -20,14 +19,14 @@ from gen_agent.world.poi import POI
 class World:
     width: float = 20.0
     height: float = 20.0
-    pois: List[POI] = field(default_factory=list)
+    pois: list[POI] = field(default_factory=list)
 
     def nearest_poi(
         self,
         pos: tuple[float, float],
-        tag: Optional[str] = None,
-        exclude_id: Optional[str] = None,
-    ) -> Optional[POI]:
+        tag: str | None = None,
+        exclude_id: str | None = None,
+    ) -> POI | None:
         """Return the closest POI to pos, optionally filtered by tag."""
         candidates = [
             p for p in self.pois
@@ -38,7 +37,7 @@ class World:
             return None
         return min(candidates, key=lambda p: math.hypot(p.x - pos[0], p.y - pos[1]))
 
-    def random_poi(self, rng: random.Random | None = None, tag: Optional[str] = None) -> Optional[POI]:
+    def random_poi(self, rng: random.Random | None = None, tag: str | None = None) -> POI | None:
         """Return a random POI, optionally filtered by tag."""
         candidates = [p for p in self.pois if tag is None or tag in p.tags]
         if not candidates:

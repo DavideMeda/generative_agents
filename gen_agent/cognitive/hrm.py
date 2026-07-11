@@ -14,14 +14,13 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
 _ROLES = ("leader", "mediator", "observer", "member")
 
 
-def _classify_role(traits: Dict[str, float]) -> str:
+def _classify_role(traits: dict[str, float]) -> str:
     ext = traits.get("extraversion", 0.5)
     con = traits.get("conscientiousness", 0.5)
     agr = traits.get("agreeableness", 0.5)
@@ -42,10 +41,10 @@ class HRMOrchestrator:
     """
 
     def __init__(self) -> None:
-        self._roles: Dict[str, str] = {}
+        self._roles: dict[str, str] = {}
         logger.info("HRMOrchestrator active")
 
-    def assign_roles(self, agent_traits: Dict[str, Dict[str, float]]) -> None:
+    def assign_roles(self, agent_traits: dict[str, dict[str, float]]) -> None:
         """Compute and cache roles for all agents. Call once after registration."""
         for agent_id, traits in agent_traits.items():
             self._roles[agent_id] = _classify_role(traits)
@@ -59,7 +58,7 @@ class HRMOrchestrator:
         id_a: str,
         id_b: str,
         outcome: str,
-        traits_a: Dict[str, float],
+        traits_a: dict[str, float],
     ) -> None:
         """
         React to an interaction outcome.
@@ -78,7 +77,7 @@ class HRMOrchestrator:
         return order.get(self._roles.get(agent_id, "member"), 2)
 
 
-def make_hrm_if_enabled() -> Optional[HRMOrchestrator]:
+def make_hrm_if_enabled() -> HRMOrchestrator | None:
     if os.getenv("ENABLE_HRM", "false").lower() in ("1", "true", "yes"):
         return HRMOrchestrator()
     return None

@@ -4,9 +4,8 @@ FastAPI router — REST endpoints and WebSocket for the Gen_Agent server.
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
@@ -24,9 +23,9 @@ router = APIRouter()
 
 class StartRequest(BaseModel):
     scenario: str = "default"
-    agent_names: Optional[List[str]] = None
-    ticks: Optional[int] = None
-    llm_provider: Optional[str] = None
+    agent_names: list[str] | None = None
+    ticks: int | None = None
+    llm_provider: str | None = None
 
 
 # ------------------------------------------------------------------
@@ -34,7 +33,7 @@ class StartRequest(BaseModel):
 # ------------------------------------------------------------------
 
 @router.get("/health")
-def health() -> Dict[str, str]:
+def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
@@ -43,7 +42,7 @@ def health() -> Dict[str, str]:
 # ------------------------------------------------------------------
 
 @router.get("/api/state")
-def get_state() -> Dict[str, Any]:
+def get_state() -> dict[str, Any]:
     store = StateStore.get()
     if store.engine is None:
         return {"running": False, "tick": 0, "agents": {}}
@@ -57,7 +56,7 @@ def get_state() -> Dict[str, Any]:
 
 
 @router.post("/api/run/start")
-def run_start(req: StartRequest) -> Dict[str, Any]:
+def run_start(req: StartRequest) -> dict[str, Any]:
     """Build and start a simulation from a named scenario."""
     store = StateStore.get()
     if store.running:
@@ -87,14 +86,14 @@ def run_start(req: StartRequest) -> Dict[str, Any]:
 
 
 @router.post("/api/run/pause")
-def run_pause() -> Dict[str, str]:
+def run_pause() -> dict[str, str]:
     store = StateStore.get()
     store.running = False
     return {"status": "paused"}
 
 
 @router.post("/api/run/resume")
-def run_resume() -> Dict[str, str]:
+def run_resume() -> dict[str, str]:
     store = StateStore.get()
     if store.engine is None:
         raise HTTPException(status_code=400, detail="No engine loaded. Call /api/run/start first.")
@@ -103,7 +102,7 @@ def run_resume() -> Dict[str, str]:
 
 
 @router.post("/api/run/stop")
-def run_stop() -> Dict[str, str]:
+def run_stop() -> dict[str, str]:
     store = StateStore.get()
     store.running = False
     store.engine = None
@@ -115,7 +114,7 @@ def run_stop() -> Dict[str, str]:
 # ------------------------------------------------------------------
 
 @router.get("/api/agent/{agent_id}/memories")
-def agent_memories(agent_id: str, limit: int = 20) -> Dict[str, Any]:
+def agent_memories(agent_id: str, limit: int = 20) -> dict[str, Any]:
     store = StateStore.get()
     if store.engine is None:
         raise HTTPException(status_code=404, detail="No simulation running")
@@ -135,7 +134,7 @@ def agent_memories(agent_id: str, limit: int = 20) -> Dict[str, Any]:
 
 
 @router.get("/api/agent/{agent_id}/state")
-def agent_state(agent_id: str) -> Dict[str, Any]:
+def agent_state(agent_id: str) -> dict[str, Any]:
     store = StateStore.get()
     if store.engine is None:
         raise HTTPException(status_code=404, detail="No simulation running")
@@ -147,7 +146,7 @@ def agent_state(agent_id: str) -> Dict[str, Any]:
 
 
 @router.get("/api/neat/status")
-def neat_status() -> Dict[str, Any]:
+def neat_status() -> dict[str, Any]:
     store = StateStore.get()
     mgr = getattr(store.engine, "_neat_manager", None) if store.engine else None
     if mgr is None:
@@ -156,7 +155,7 @@ def neat_status() -> Dict[str, Any]:
 
 
 @router.post("/api/neat/start")
-def neat_start() -> Dict[str, Any]:
+def neat_start() -> dict[str, Any]:
     store = StateStore.get()
     if store.engine is None:
         raise HTTPException(status_code=400, detail="No simulation running")
@@ -170,7 +169,7 @@ def neat_start() -> Dict[str, Any]:
 
 
 @router.post("/api/neat/stop")
-def neat_stop() -> Dict[str, Any]:
+def neat_stop() -> dict[str, Any]:
     store = StateStore.get()
     mgr = getattr(store.engine, "_neat_manager", None) if store.engine else None
     if mgr is None:
@@ -181,11 +180,11 @@ def neat_stop() -> Dict[str, Any]:
 
 class NeatEnableRequest(BaseModel):
     mode: str = "movement"
-    agent_id: Optional[str] = None
+    agent_id: str | None = None
 
 
 @router.post("/api/neat/enable")
-def neat_enable(req: NeatEnableRequest) -> Dict[str, Any]:
+def neat_enable(req: NeatEnableRequest) -> dict[str, Any]:
     """Enable NEAT policy for all agents or a specific one."""
     store = StateStore.get()
     if store.engine is None:
@@ -212,7 +211,7 @@ def neat_enable(req: NeatEnableRequest) -> Dict[str, Any]:
 
 
 @router.post("/api/neat/disable")
-def neat_disable() -> Dict[str, Any]:
+def neat_disable() -> dict[str, Any]:
     """Disable NEAT for all agents."""
     store = StateStore.get()
     if store.engine is None:
@@ -226,7 +225,7 @@ class NeatLoadRequest(BaseModel):
 
 
 @router.post("/api/neat/load")
-def neat_load(req: NeatLoadRequest) -> Dict[str, Any]:
+def neat_load(req: NeatLoadRequest) -> dict[str, Any]:
     """Load a saved NEAT genome from disk and apply to all agents."""
     store = StateStore.get()
     if store.engine is None:
@@ -240,7 +239,7 @@ def neat_load(req: NeatLoadRequest) -> Dict[str, Any]:
 
 
 @router.post("/api/neat/continuous/start")
-def neat_continuous_start() -> Dict[str, Any]:
+def neat_continuous_start() -> dict[str, Any]:
     store = StateStore.get()
     mgr = getattr(store.engine, "_neat_manager", None) if store.engine else None
     if mgr is None:
@@ -249,7 +248,7 @@ def neat_continuous_start() -> Dict[str, Any]:
 
 
 @router.post("/api/neat/continuous/stop")
-def neat_continuous_stop() -> Dict[str, Any]:
+def neat_continuous_stop() -> dict[str, Any]:
     store = StateStore.get()
     mgr = getattr(store.engine, "_neat_manager", None) if store.engine else None
     if mgr is None:

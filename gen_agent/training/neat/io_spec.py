@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Any, Dict, Iterable, List
+from typing import Any
 
 import numpy as np
-
 from core.personality.trait_schema import trait_get
 
-
-ACTION_KEYS: List[str] = [
+ACTION_KEYS: list[str] = [
     "move_up",
     "move_down",
     "move_left",
@@ -127,13 +126,13 @@ class NEATInputSpec:
 class NEATOutputSpec:
     """Converts network activations into the action dictionary expected by SimEngine."""
 
-    keys: List[str] = field(default_factory=lambda: list(ACTION_KEYS))
+    keys: list[str] = field(default_factory=lambda: list(ACTION_KEYS))
 
     @property
     def size(self) -> int:
         return len(self.keys)
 
-    def decode(self, values: Iterable[float]) -> Dict[str, float]:
+    def decode(self, values: Iterable[float]) -> dict[str, float]:
         arr = np.asarray(list(values), dtype=np.float64)
         if arr.size < self.size:
             arr = np.pad(arr, (0, self.size - arr.size), constant_values=0.0)

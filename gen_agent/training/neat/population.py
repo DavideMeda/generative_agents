@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
 
 import numpy as np
 
@@ -13,7 +12,7 @@ from gen_agent.training.neat.genome import NEATGenome, max_innovation
 @dataclass
 class Species:
     representative: NEATGenome
-    members: List[NEATGenome] = field(default_factory=list)
+    members: list[NEATGenome] = field(default_factory=list)
 
 
 class NEATPopulation:
@@ -23,13 +22,13 @@ class NEATPopulation:
         self.cfg = cfg
         self.evaluator = evaluator
         self.rng = np.random.default_rng(int(cfg.random_seed))
-        self.genomes: List[NEATGenome] = [
+        self.genomes: list[NEATGenome] = [
             NEATGenome.minimal(cfg, self.rng) for _ in range(max(2, int(cfg.pop_size)))
         ]
         self.generation: int = 0
-        self.best_genome: Optional[NEATGenome] = None
-        self.last_scores: List[float] = []
-        self.last_agent_scores: Dict[str, float] = {}
+        self.best_genome: NEATGenome | None = None
+        self.last_scores: list[float] = []
+        self.last_agent_scores: dict[str, float] = {}
         self._next_innovation = max_innovation(self.genomes) + 1
 
     def run_generation(self, mode: str = "collective") -> NEATGenome:
@@ -45,8 +44,8 @@ class NEATPopulation:
         self.generation += 1
         return self.best_genome.clone()
 
-    def _species(self) -> List[Species]:
-        species: List[Species] = []
+    def _species(self) -> list[Species]:
+        species: list[Species] = []
         threshold = max(0.05, float(self.cfg.compatibility_threshold))
         for genome in self.genomes:
             placed = False
@@ -62,7 +61,7 @@ class NEATPopulation:
     def _reproduce(self) -> None:
         target_size = max(2, int(self.cfg.pop_size))
         species = self._species()
-        next_genomes: List[NEATGenome] = []
+        next_genomes: list[NEATGenome] = []
 
         elite_count = max(1, int(target_size * max(0.01, float(self.cfg.elite_fraction))))
         next_genomes.extend(g.clone() for g in self.genomes[:elite_count])
@@ -82,7 +81,7 @@ class NEATPopulation:
 
         self.genomes = next_genomes[:target_size]
 
-    def _survivors(self, genomes: List[NEATGenome]) -> List[NEATGenome]:
+    def _survivors(self, genomes: list[NEATGenome]) -> list[NEATGenome]:
         ordered = sorted(genomes, key=lambda g: g.fitness, reverse=True)
         count = max(1, int(len(ordered) * max(0.05, min(1.0, self.cfg.survival_threshold))))
         return ordered[:count]

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Dict, List
-
 import numpy as np
 
 from gen_agent.training.neat.genome import NEATGenome
@@ -17,7 +15,7 @@ class FeedForwardNetwork:
         self.output_nodes = list(genome.output_nodes)
         self.hidden_nodes = sorted(set(genome.hidden_nodes))
         self.node_order = self.hidden_nodes + self.output_nodes
-        self.incoming: Dict[int, List[tuple[int, float]]] = {}
+        self.incoming: dict[int, list[tuple[int, float]]] = {}
         for conn in genome.connections:
             if not conn.enabled:
                 continue
@@ -26,7 +24,7 @@ class FeedForwardNetwork:
             )
 
     def activate(self, inputs: np.ndarray) -> np.ndarray:
-        values: Dict[int, float] = {}
+        values: dict[int, float] = {}
         arr = np.asarray(inputs, dtype=np.float64)
         if arr.size < self.input_size:
             arr = np.pad(arr, (0, self.input_size - arr.size), constant_values=0.0)

@@ -7,7 +7,7 @@ import re
 import string
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from gen_agent.dialogue.dialogue_guards import validate_utterance
 
@@ -57,39 +57,39 @@ DISAGREEMENT_PHRASES = [
 ]
 
 
-def _tokenize(text: str) -> List[str]:
+def _tokenize(text: str) -> list[str]:
     text = (text or "").lower().strip()
     for p in string.punctuation:
         text = text.replace(p, " ")
     return [w for w in text.split() if w]
 
 
-def _filter_stopwords(words: List[str]) -> List[str]:
+def _filter_stopwords(words: list[str]) -> list[str]:
     return [w for w in words if w.lower() not in ENGLISH_STOP_WORDS]
 
 
-def _get_bigrams(words: List[str]) -> List[tuple]:
+def _get_bigrams(words: list[str]) -> list[tuple]:
     if len(words) < 2:
         return []
     return [(words[i], words[i + 1]) for i in range(len(words) - 1)]
 
 
-def _get_trigrams(words: List[str]) -> List[tuple]:
+def _get_trigrams(words: list[str]) -> list[tuple]:
     if len(words) < 3:
         return []
     return [(words[i], words[i + 1], words[i + 2]) for i in range(len(words) - 2)]
 
 
-def _split_sentences(text: str) -> List[str]:
+def _split_sentences(text: str) -> list[str]:
     if not (text or "").strip():
         return []
     parts = re.split(r"[.!?]+", text)
     return [p.strip().lower() for p in parts if p.strip()]
 
 
-def _extract_turns(dialogue_text: str) -> List[str]:
+def _extract_turns(dialogue_text: str) -> list[str]:
     lines = [ln.strip() for ln in (dialogue_text or "").splitlines() if ln.strip()]
-    turns: List[str] = []
+    turns: list[str] = []
     name_colon = re.compile(r"^([^:]+):\s*(.*)$", re.DOTALL)
     for line in lines:
         m = name_colon.match(line)
@@ -102,7 +102,7 @@ def _extract_turns(dialogue_text: str) -> List[str]:
     return turns or ([dialogue_text.strip()] if dialogue_text else [])
 
 
-def _jaccard_overlap(tokens_a: List[str], tokens_b: List[str]) -> float:
+def _jaccard_overlap(tokens_a: list[str], tokens_b: list[str]) -> float:
     sa, sb = set(tokens_a), set(tokens_b)
     if not sa and not sb:
         return 0.0
@@ -110,10 +110,10 @@ def _jaccard_overlap(tokens_a: List[str], tokens_b: List[str]) -> float:
     return len(sa & sb) / union if union else 0.0
 
 
-def compute_format_score(dialogue_text: str) -> Dict[str, Any]:
+def compute_format_score(dialogue_text: str) -> dict[str, Any]:
     turns = _extract_turns(dialogue_text)
     penalty = 0.0
-    details: Dict[str, Any] = {"num_turns": len(turns), "issues": []}
+    details: dict[str, Any] = {"num_turns": len(turns), "issues": []}
     if not turns:
         return {"format_penalty": 1.0, "details": details}
     empty_turns = sum(1 for t in turns if not (t or "").strip())
@@ -125,8 +125,8 @@ def compute_format_score(dialogue_text: str) -> Dict[str, Any]:
 
 def compute_core_score(
     dialogue_text: str,
-    recent_utterances: Optional[List[str]] = None,
-) -> Dict[str, Any]:
+    recent_utterances: list[str] | None = None,
+) -> dict[str, Any]:
     words = _tokenize(dialogue_text)
     words_filtered = _filter_stopwords(words)
     bigrams = _get_bigrams(words_filtered)
@@ -135,7 +135,7 @@ def compute_core_score(
     lexical_variety = unique_bigrams / max(1, total_bigrams)
 
     sentences = _split_sentences(dialogue_text)
-    seen: Dict[str, int] = {}
+    seen: dict[str, int] = {}
     for s in sentences:
         key = re.sub(r"\s+", " ", s).strip()
         if key:
@@ -161,7 +161,7 @@ def compute_core_score(
     }
 
 
-def compute_consensagent_style_score(dialogue_text: str) -> Dict[str, Any]:
+def compute_consensagent_style_score(dialogue_text: str) -> dict[str, Any]:
     turns = _extract_turns(dialogue_text)
     sentences = _split_sentences(dialogue_text)
     num_sentences = max(1, len(sentences))
@@ -172,7 +172,7 @@ def compute_consensagent_style_score(dialogue_text: str) -> Dict[str, Any]:
     dialogue_lower = (dialogue_text or "").lower()
     has_disagreement = any(p in dialogue_lower for p in DISAGREEMENT_PHRASES)
 
-    overlaps: List[float] = []
+    overlaps: list[float] = []
     for i in range(len(turns) - 1):
         ta = _filter_stopwords(_tokenize(turns[i]))
         tb = _filter_stopwords(_tokenize(turns[i + 1]))
@@ -197,10 +197,10 @@ def compute_composite_quality_score(
 
 def score_utterance_legacy(
     text: str,
-    history: List[str],
+    history: list[str],
     speaker_name: str = "",
     listener_name: str = "",
-    known_names: Optional[List[str]] = None,
+    known_names: list[str] | None = None,
 ) -> float:
     """Single-utterance gate used by DialogueEngine retries."""
     ok, _ = validate_utterance(
@@ -220,7 +220,7 @@ def score_utterance_legacy(
     return composite
 
 
-def should_regenerate(text: str, history: List[str]) -> bool:
+def should_regenerate(text: str, history: list[str]) -> bool:
     words = _tokenize(text)
     if len(words) < DIALOGUE_MIN_WORDS:
         return True
@@ -233,7 +233,7 @@ def should_regenerate(text: str, history: List[str]) -> bool:
     return False
 
 
-def append_quality_trace(record: Dict[str, Any], trace_path: Optional[str] = None) -> None:
+def append_quality_trace(record: dict[str, Any], trace_path: str | None = None) -> None:
     """Append one NDJSON quality trace line (ponytail: optional debug file)."""
     path = trace_path or os.getenv("DIALOGUE_QUALITY_TRACE", "output/dialogue_quality.ndjson")
     try:

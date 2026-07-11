@@ -7,8 +7,8 @@ The LLM is optional: if none is provided, a template-based reflection is generat
 from __future__ import annotations
 
 import random
-import time
-from typing import Any, Callable, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 LLMCallable = Callable[[str], str]
 
@@ -32,8 +32,8 @@ _NEUTRAL_TEMPLATES = [
 def generate_reflection(
     agent_id: str,
     agent_name: str,
-    memories: List[Any],  # List[MemoryRecord]
-    llm: Optional[LLMCallable] = None,
+    memories: list[Any],  # List[MemoryRecord]
+    llm: LLMCallable | None = None,
 ) -> str:
     """Return a reflection string from the top memories."""
     if not memories:
@@ -65,7 +65,7 @@ def generate_reflection(
     return f"{base} Particularly notable: {snippet}"
 
 
-def _build_reflection_prompt(agent_name: str, contents: List[str]) -> str:
+def _build_reflection_prompt(agent_name: str, contents: list[str]) -> str:
     items = "\n".join(f"- {c[:120]}" for c in contents)
     return (
         f"You are {agent_name}. Write a single brief reflective thought (2-3 sentences, "

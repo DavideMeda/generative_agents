@@ -10,10 +10,9 @@ Uso:
 from __future__ import annotations
 
 import sys
-import time
 import tempfile
+import time
 from pathlib import Path
-from typing import List
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -25,10 +24,10 @@ QUERIES_PER_SIZE = 20
 
 
 def run() -> dict:
-    from gen_agent.memory.manager import MemoryManager
     from gen_agent.interfaces.memory_protocol import MemoryQuery
+    from gen_agent.memory.manager import MemoryManager
 
-    samples: List[dict] = []
+    samples: list[dict] = []
 
     for n_memories in MEMORY_SIZES:
         with tempfile.TemporaryDirectory() as tmpdir:

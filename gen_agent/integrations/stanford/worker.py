@@ -4,8 +4,9 @@ from __future__ import annotations
 import logging
 import queue
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 from gen_agent.integrations.stanford.plan_to_poi import apply_plan_to_agent
 from gen_agent.integrations.stanford.structured_planner import generate_structured_plan
@@ -27,7 +28,7 @@ class StanfordCognitionWorker:
         adapter: Any,
         world: Any,
         memory_store: Any = None,
-        get_agent: Optional[Callable[[str], Any]] = None,
+        get_agent: Callable[[str], Any] | None = None,
         max_queue: int = 200,
     ) -> None:
         self._adapter = adapter
@@ -36,7 +37,7 @@ class StanfordCognitionWorker:
         self._get_agent = get_agent
         self._q: queue.Queue[StanfordCognitionJob] = queue.Queue(maxsize=max_queue)
         self._stop = False
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
         self._busy = False
         self._engine: Any = None
 
@@ -91,7 +92,7 @@ class StanfordCognitionWorker:
         if agent is None:
             return
         name = getattr(agent, "name", job.agent_id)
-        memories: List[str] = []
+        memories: list[str] = []
         if self._memory is not None:
             try:
                 from gen_agent.interfaces.memory_protocol import MemoryQuery

@@ -7,13 +7,12 @@ DialogueEngine uses it to retry generation when score < threshold.
 from __future__ import annotations
 
 import re
-from typing import List
 
 _MIN_WORDS = 5
 _STUB_MARKERS = ("[stub]", "[llm", "[ollama", "[openrouter", "[council", "[error")
 
 
-def score_utterance(text: str, history: List[str]) -> float:
+def score_utterance(text: str, history: list[str]) -> float:
     """
     Composite quality score for a single utterance.
 
@@ -49,5 +48,5 @@ def score_utterance(text: str, history: List[str]) -> float:
     return round((rep_score * 0.7 + length_score * 0.3), 3)
 
 
-def _tokenise(text: str) -> List[str]:
+def _tokenise(text: str) -> list[str]:
     return [w for w in re.split(r"\W+", text) if len(w) > 2]

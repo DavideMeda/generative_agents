@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import re
 from difflib import SequenceMatcher
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # ponytail: static aliases; upgrade path = load from world tags / POI metadata
-POI_ALIASES: Dict[str, str] = {
+POI_ALIASES: dict[str, str] = {
     "coffee": "cafe",
     "café": "cafe",
     "shop": "market",
@@ -21,12 +21,12 @@ POI_ALIASES: Dict[str, str] = {
 }
 
 
-def _split_goal_candidate(goal: str) -> List[str]:
+def _split_goal_candidate(goal: str) -> list[str]:
     parts = re.split(r"\s+(?:and|then|e|poi|dopo)\s+", goal, flags=re.IGNORECASE)
     return [p.strip() for p in parts if p.strip()]
 
 
-def extract_concrete_goals(text: str) -> List[str]:
+def extract_concrete_goals(text: str) -> list[str]:
     if not text:
         return []
     patterns = [
@@ -37,7 +37,7 @@ def extract_concrete_goals(text: str) -> List[str]:
         r"walk to (?:the )?([a-z]+(?:\s+[a-z]+)*)",
         r"(?:at|in) the ([a-z]+(?:\s+[a-z]+)*)",
     ]
-    goals: List[str] = []
+    goals: list[str] = []
     seen: set[str] = set()
     stop = {"and", "or", "the", "a", "il", "la", "di", "da", "in", "un", "una", "with", "friend"}
     for pattern in patterns:
@@ -50,10 +50,10 @@ def extract_concrete_goals(text: str) -> List[str]:
     return goals
 
 
-def _keywords_from_text(text: str, *, limit: int = 10) -> List[str]:
+def _keywords_from_text(text: str, *, limit: int = 10) -> list[str]:
     words = [w.strip(" ,.;:!?\"'()[]{}").lower() for w in (text or "").split()]
     words = [w for w in words if 3 <= len(w) <= 18]
-    out: List[str] = []
+    out: list[str] = []
     for w in words:
         if w not in out:
             out.append(w)
@@ -66,7 +66,7 @@ def _fuzzy_match_ratio(a: str, b: str) -> float:
     return SequenceMatcher(None, a.lower(), b.lower()).ratio()
 
 
-def _poi_dict(poi: Any) -> Dict[str, Any]:
+def _poi_dict(poi: Any) -> dict[str, Any]:
     if isinstance(poi, dict):
         return poi
     return {
@@ -79,7 +79,7 @@ def _poi_dict(poi: Any) -> Dict[str, Any]:
     }
 
 
-def _find_poi_object(pois: List[Any], match: Dict[str, Any]) -> Optional[Any]:
+def _find_poi_object(pois: list[Any], match: dict[str, Any]) -> Any | None:
     mid = str(match.get("id") or "")
     mname = match.get("name")
     for poi in pois:
@@ -91,14 +91,14 @@ def _find_poi_object(pois: List[Any], match: Dict[str, Any]) -> Optional[Any]:
     return None
 
 
-def match_goal_to_poi(goal: str, pois: List[Any], world: Any = None) -> Optional[Dict[str, Any]]:
+def match_goal_to_poi(goal: str, pois: list[Any], world: Any = None) -> dict[str, Any] | None:
     if not goal or not pois:
         return None
     goal_lower = goal.lower().strip()
     if goal_lower in POI_ALIASES:
         goal_lower = POI_ALIASES[goal_lower]
     goal_words = set(goal_lower.split())
-    best_match: Optional[Dict[str, Any]] = None
+    best_match: dict[str, Any] | None = None
     best_score = 0.0
     for raw in pois:
         poi = _poi_dict(raw)
@@ -123,14 +123,14 @@ def resolve_plan_to_poi(
     *,
     rr_index: int = 0,
     allow_fallback: bool = True,
-) -> Tuple[Optional[Any], Optional[str], str]:
+) -> tuple[Any | None, str | None, str]:
     """Return (poi_object, display_name, match_kind). kind: strict|keyword|fallback|none."""
     pois = getattr(world, "pois", []) or []
     if not pois:
         return None, None, "none"
 
     goals = extract_concrete_goals(plan_text or "")
-    matched_pairs: List[Tuple[str, Dict[str, Any]]] = []
+    matched_pairs: list[tuple[str, dict[str, Any]]] = []
     for goal in goals:
         match = match_goal_to_poi(goal, pois, world)
         if match:
@@ -184,7 +184,7 @@ def apply_plan_to_agent(
     *,
     rr_index: int = 0,
     allow_fallback: bool = True,
-) -> Optional[str]:
+) -> str | None:
     """Set agent target POI from plan text. Returns matched POI name or None."""
     poi, name, kind = resolve_plan_to_poi(
         plan_text, world, rr_index=rr_index, allow_fallback=allow_fallback

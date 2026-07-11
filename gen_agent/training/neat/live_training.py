@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import logging
 import threading
-import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from gen_agent.training.neat.config import ContinuousNEATConfig, NEATConfig, config_from_continuous
 from gen_agent.training.neat.evaluation import NEATEvaluator
@@ -28,7 +27,7 @@ class NEATStatus:
     best_fitness: float = 0.0
     best_path: str = "outputs/neat/best_individual.npz"
     last_scores: list = field(default_factory=list)
-    last_agent_scores: Dict[str, float] = field(default_factory=dict)
+    last_agent_scores: dict[str, float] = field(default_factory=dict)
 
 
 class LiveNEATTrainingManager:
@@ -37,7 +36,7 @@ class LiveNEATTrainingManager:
     def __init__(
         self,
         engine: Any,
-        config: Optional[NEATConfig] = None,
+        config: NEATConfig | None = None,
         best_path: str = "outputs/neat/best_individual.npz",
     ) -> None:
         self.engine = engine
@@ -46,11 +45,11 @@ class LiveNEATTrainingManager:
         self.best_path = str(best_path)
         self.evaluator = NEATEvaluator(engine)
         self.population = NEATPopulation(self.config, self.evaluator)
-        self.best_genome: Optional[NEATGenome] = None
+        self.best_genome: NEATGenome | None = None
         self._status = NEATStatus(best_path=self.best_path)
         self._lock = threading.RLock()
         self._continuous_stop = threading.Event()
-        self._continuous_thread: Optional[threading.Thread] = None
+        self._continuous_thread: threading.Thread | None = None
 
     def start(self) -> NEATStatus:
         with self._lock:
@@ -73,11 +72,11 @@ class LiveNEATTrainingManager:
             self._status.message = "NEAT disabled"
             return self._status
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         with self._lock:
             return asdict(self._status)
 
-    def load_best(self, path: str) -> Dict[str, Any]:
+    def load_best(self, path: str) -> dict[str, Any]:
         with self._lock:
             try:
                 genome = load_individual(path)
@@ -91,7 +90,7 @@ class LiveNEATTrainingManager:
                 logger.warning("Unable to load NEAT individual from %s", path, exc_info=True)
                 return {"ok": False, "error": str(exc), "path": str(path)}
 
-    def load_best_for_agent(self, agent_id: str, path: str) -> Dict[str, Any]:
+    def load_best_for_agent(self, agent_id: str, path: str) -> dict[str, Any]:
         with self._lock:
             try:
                 genome = load_individual(path)
@@ -118,7 +117,7 @@ class LiveNEATTrainingManager:
                     "path": str(path),
                 }
 
-    def start_continuous(self, cfg: Optional[ContinuousNEATConfig] = None) -> Dict[str, Any]:
+    def start_continuous(self, cfg: ContinuousNEATConfig | None = None) -> dict[str, Any]:
         with self._lock:
             if cfg is not None:
                 seed = int(getattr(getattr(self.engine, "config", None), "seed", 1337))
@@ -143,7 +142,7 @@ class LiveNEATTrainingManager:
             self._status.message = "NEAT continuous training running"
             return {"ok": True, "status": self.status()}
 
-    def stop_continuous(self) -> Dict[str, Any]:
+    def stop_continuous(self) -> dict[str, Any]:
         self._continuous_stop.set()
         thread = self._continuous_thread
         if thread and thread.is_alive() and thread is not threading.current_thread():
@@ -177,7 +176,7 @@ class LiveNEATTrainingManager:
 
         self.engine.set_neat_policy_for_all(factory, mode=mode)
 
-    def _load_best_if_exists(self) -> Optional[NEATGenome]:
+    def _load_best_if_exists(self) -> NEATGenome | None:
         path = Path(self.best_path)
         if not path.exists():
             return None

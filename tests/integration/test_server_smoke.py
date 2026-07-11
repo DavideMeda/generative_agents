@@ -8,6 +8,7 @@ import pytest
 
 try:
     from fastapi.testclient import TestClient
+
     from server.main import app
     CLIENT_AVAILABLE = True
 except Exception:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Tuple
+from collections.abc import Iterable
+from typing import Any
 
 import numpy as np
 
@@ -8,7 +9,7 @@ from gen_agent.training.neat.genome import NEATGenome
 from gen_agent.training.neat.policy import NEATPolicy
 
 
-def _dist(a: Tuple[int, int], b: Tuple[int, int]) -> float:
+def _dist(a: tuple[int, int], b: tuple[int, int]) -> float:
     return float(abs(int(a[0]) - int(b[0])) + abs(int(a[1]) - int(b[1])))
 
 
@@ -30,13 +31,13 @@ class NEATEvaluator:
             return 0.0
         return float(np.mean(list(agent_scores.values())))
 
-    def evaluate_agents(self, genome: NEATGenome, mode: str = "collective") -> Dict[str, float]:
+    def evaluate_agents(self, genome: NEATGenome, mode: str = "collective") -> dict[str, float]:
         agents = list(getattr(self.engine, "agents", []) or [])[: self.eval_agents]
         world = getattr(self.engine, "world", None)
         if not agents or world is None:
             return {}
         policy = NEATPolicy(genome)
-        scores: Dict[str, float] = {}
+        scores: dict[str, float] = {}
         for agent in agents:
             others = [
                 o
@@ -51,7 +52,7 @@ class NEATEvaluator:
         return scores
 
     def _score_action(
-        self, agent: Any, world: Any, others: Iterable[Any], action: Dict[str, float], mode: str
+        self, agent: Any, world: Any, others: Iterable[Any], action: dict[str, float], mode: str
     ) -> float:
         pos = getattr(agent, "pos", (0, 0))
         stress = float((getattr(agent, "emotions", {}) or {}).get("stress", 0.3))
@@ -67,7 +68,7 @@ class NEATEvaluator:
         return float(max(0.0, min(1.0, base - stress_penalty + 0.10)))
 
     def _social_score(
-        self, pos: Tuple[int, int], others: Iterable[Any], action: Dict[str, float]
+        self, pos: tuple[int, int], others: Iterable[Any], action: dict[str, float]
     ) -> float:
         nearest = None
         for other in others:
@@ -81,7 +82,7 @@ class NEATEvaluator:
             return max(0.0, min(1.0, social_drive * 0.6 + avoid_drive * 0.4))
         return max(0.0, min(1.0, social_drive * 0.8 + 0.2))
 
-    def _poi_score(self, pos: Tuple[int, int], world: Any, action: Dict[str, float]) -> float:
+    def _poi_score(self, pos: tuple[int, int], world: Any, action: dict[str, float]) -> float:
         pois = getattr(world, "pois", []) or []
         if not pois:
             return float(action.get("explore", 0.0))
@@ -97,7 +98,7 @@ class NEATEvaluator:
         proximity = 1.0 - max(0.0, min(1.0, nearest / max(1.0, world.width + world.height)))
         return max(0.0, min(1.0, 0.6 * float(action.get("seek_poi", 0.0)) + 0.4 * proximity))
 
-    def _move_score(self, action: Dict[str, float]) -> float:
+    def _move_score(self, action: dict[str, float]) -> float:
         movement = max(
             float(action.get("move_up", 0.0)),
             float(action.get("move_down", 0.0)),

@@ -17,9 +17,6 @@ from __future__ import annotations
 import logging
 import os
 import re
-import time
-import uuid
-from typing import List, Optional
 
 from gen_agent.interfaces.memory_protocol import MemoryQuery, MemoryRecord
 
@@ -84,12 +81,12 @@ class MemoryCompressor:
             logger.info("MemoryCompressor: agent %s compressed %d memories", agent_id, removed)
         return removed
 
-    def _cluster(self, records: List[MemoryRecord]) -> List[List[MemoryRecord]]:
+    def _cluster(self, records: list[MemoryRecord]) -> list[list[MemoryRecord]]:
         if not records:
             return []
         token_sets = [_tokens(r.content) for r in records]
         assigned = [-1] * len(records)
-        clusters: List[List[int]] = []
+        clusters: list[list[int]] = []
 
         for i in range(len(records)):
             if assigned[i] != -1:
@@ -107,13 +104,13 @@ class MemoryCompressor:
         return [[records[idx] for idx in cl] for cl in clusters]
 
     @staticmethod
-    def _summarise(cluster: List[MemoryRecord]) -> str:
+    def _summarise(cluster: list[MemoryRecord]) -> str:
         parts = [r.content[:80] for r in cluster]
         joined = " | ".join(parts)
         return f"[compressed {len(cluster)}] {joined}"[:_SUMMARY_MAX_CHARS]
 
 
-def make_compressor_if_enabled(memory_store=None) -> Optional[MemoryCompressor]:
+def make_compressor_if_enabled(memory_store=None) -> MemoryCompressor | None:
     if os.getenv("ENABLE_MEMORY_COMPRESSION", "false").lower() in ("1", "true", "yes"):
         return MemoryCompressor(memory_store=memory_store)
     return None

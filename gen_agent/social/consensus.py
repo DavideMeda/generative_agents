@@ -24,8 +24,8 @@ import logging
 import os
 import random
 from collections import Counter
-from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional
+from collections.abc import Callable
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ConsensusResult:
     winner: str
-    votes: Dict[str, int]
+    votes: dict[str, int]
     method: str
     rounds: int = 1
 
@@ -47,7 +47,7 @@ class ConsensusEngine:
 
     def __init__(
         self,
-        llm: Optional[Callable[[str], str]] = None,
+        llm: Callable[[str], str] | None = None,
         rng: random.Random | None = None,
     ) -> None:
         self._llm = llm
@@ -55,9 +55,9 @@ class ConsensusEngine:
 
     def decide(
         self,
-        agent_ids: List[str],
+        agent_ids: list[str],
         question: str,
-        options: List[str],
+        options: list[str],
         method: str = "majority_vote",
         max_delphi_rounds: int = 3,
     ) -> ConsensusResult:
@@ -76,8 +76,8 @@ class ConsensusEngine:
     # ------------------------------------------------------------------
 
     def _collect_votes(
-        self, agent_ids: List[str], question: str, options: List[str]
-    ) -> List[str]:
+        self, agent_ids: list[str], question: str, options: list[str]
+    ) -> list[str]:
         votes = []
         for agent_id in agent_ids:
             vote = self._get_vote(agent_id, question, options)
@@ -85,8 +85,8 @@ class ConsensusEngine:
         return votes
 
     def _collect_rankings(
-        self, agent_ids: List[str], question: str, options: List[str]
-    ) -> List[List[str]]:
+        self, agent_ids: list[str], question: str, options: list[str]
+    ) -> list[list[str]]:
         rankings = []
         for agent_id in agent_ids:
             shuffled = list(options)
@@ -119,7 +119,7 @@ class ConsensusEngine:
             rankings.append(shuffled)
         return rankings
 
-    def _get_vote(self, agent_id: str, question: str, options: List[str]) -> str:
+    def _get_vote(self, agent_id: str, question: str, options: list[str]) -> str:
         if self._llm is None:
             return self._rng.choice(options)
         prompt = (
@@ -139,14 +139,14 @@ class ConsensusEngine:
     # Aggregation
     # ------------------------------------------------------------------
 
-    def _majority(self, votes: List[str], method: str) -> ConsensusResult:
+    def _majority(self, votes: list[str], method: str) -> ConsensusResult:
         counts = Counter(votes)
         winner = counts.most_common(1)[0][0]
         return ConsensusResult(winner=winner, votes=dict(counts), method=method)
 
-    def _borda(self, rankings: List[List[str]], method: str) -> ConsensusResult:
+    def _borda(self, rankings: list[list[str]], method: str) -> ConsensusResult:
         n = len(rankings[0]) if rankings else 1
-        scores: Dict[str, int] = {}
+        scores: dict[str, int] = {}
         for ranking in rankings:
             for i, opt in enumerate(ranking):
                 scores[opt] = scores.get(opt, 0) + (n - i)
@@ -154,7 +154,7 @@ class ConsensusEngine:
         return ConsensusResult(winner=winner, votes=scores, method=method)
 
     def _delphi(
-        self, agent_ids: List[str], question: str, options: List[str], max_rounds: int
+        self, agent_ids: list[str], question: str, options: list[str], max_rounds: int
     ) -> ConsensusResult:
         current_votes = self._collect_votes(agent_ids, question, options)
         for round_n in range(1, max_rounds + 1):
@@ -176,7 +176,7 @@ class ConsensusEngine:
         return ConsensusResult(winner=winner, votes=dict(counts), method="delphi_round", rounds=max_rounds)
 
 
-def make_consensus_if_enabled(llm=None) -> Optional[ConsensusEngine]:
+def make_consensus_if_enabled(llm=None) -> ConsensusEngine | None:
     if os.getenv("ENABLE_CONSENSUS", "false").lower() in ("1", "true", "yes"):
         return ConsensusEngine(llm=llm)
     return None

@@ -1,15 +1,17 @@
 """Tests for memory reflection and consolidation."""
 from __future__ import annotations
 
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../.."))
 
-from gen_agent.memory.manager import MemoryManager
-from gen_agent.memory.storage.sqlite_backend import SQLiteMemoryBackend
-from gen_agent.memory.reflection import generate_reflection
-from gen_agent.interfaces.memory_protocol import MemoryRecord
 import time
+
+from gen_agent.interfaces.memory_protocol import MemoryRecord
+from gen_agent.memory.manager import MemoryManager
+from gen_agent.memory.reflection import generate_reflection
+from gen_agent.memory.storage.sqlite_backend import SQLiteMemoryBackend
 
 
 def _make_record(agent_id: str, content: str, importance: float = 5.0,

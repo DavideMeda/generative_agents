@@ -15,7 +15,7 @@ import logging
 import os
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ CANONICAL_PRESETS = (
 # Preset definitions
 # ------------------------------------------------------------------
 
-_PRESETS: Dict[str, Dict[str, Any]] = {
+_PRESETS: dict[str, dict[str, Any]] = {
     "fast": {
         "ticks": 20,
         "agents": 3,
@@ -141,11 +141,11 @@ class LaunchProfile:
         "and offices. When they meet, they chat naturally about everyday matters."
     )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "LaunchProfile":
+    def from_dict(cls, d: dict[str, Any]) -> LaunchProfile:
         valid = {k: v for k, v in d.items() if k in cls.__dataclass_fields__}
         return cls(**valid)
 
@@ -195,11 +195,11 @@ def apply_profile_to_env(profile: LaunchProfile) -> None:
     _set_flag(env, "ENABLE_LEGACY_DIALOGUE_QUALITY", profile.enable_legacy_dialogue_quality)
 
 
-def _set_flag(env: Dict[str, str], name: str, value: bool) -> None:
+def _set_flag(env: dict[str, str], name: str, value: bool) -> None:
     env.setdefault(name, "1" if value else "0")
 
 
-def save_profile(profile: LaunchProfile, path: Optional[Path] = None) -> None:
+def save_profile(profile: LaunchProfile, path: Path | None = None) -> None:
     target = path or (_CONFIG_DIR / "user_simulation_profile.json")
     target.write_text(json.dumps(profile.to_dict(), indent=2), encoding="utf-8")
     logger.info("Profile saved to %s", target)

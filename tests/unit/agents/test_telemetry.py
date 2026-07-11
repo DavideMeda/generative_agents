@@ -41,6 +41,7 @@ def test_save_to_file(tmp_path):
     reporter = _run_sim(2)
     out = str(tmp_path / "report.json")
     reporter.save(out)
-    import json, pathlib
+    import json
+    import pathlib
     data = json.loads(pathlib.Path(out).read_text())
     assert data["sim_id"] == "test-run"

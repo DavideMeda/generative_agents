@@ -10,13 +10,12 @@ Design principles:
 """
 from __future__ import annotations
 
-import logging
 import math
 import random
 import threading
 import time
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any
 
 import structlog
 
@@ -25,17 +24,15 @@ from gen_agent.interfaces.stanford_adapter_protocol import StanfordAdapterProtoc
 from gen_agent.sim.proximity import ProximityConfig, ProximityDetector
 
 if TYPE_CHECKING:
-    from gen_agent.agents.emotions import EmotionState
+    from gen_agent.cognitive.evolutionary import SocialLearner
     from gen_agent.cognitive.hrm import HRMOrchestrator
     from gen_agent.cognitive.rlif import RLIFEngine
     from gen_agent.cognitive.seal import SEALEnhancer
-    from gen_agent.cognitive.evolutionary import SocialLearner
     from gen_agent.dialogue.dialogue_engine import DialogueEngine
     from gen_agent.interfaces.memory_protocol import MemoryProtocol
-    from gen_agent.sim.missions import Mission, MissionSystem
+    from gen_agent.sim.missions import MissionSystem
     from gen_agent.social.game_theory import GameEngine
     from gen_agent.social.social_learning import KnowledgeDiffusion
-    from gen_agent.world.poi import POI
     from gen_agent.world.world import World
 
 logger = structlog.get_logger(__name__)
@@ -45,23 +42,23 @@ logger = structlog.get_logger(__name__)
 class _AgentState:
     agent_id: str
     name: str
-    position: Tuple[float, float]
-    extra: Dict[str, Any] = field(default_factory=dict)
-    target_poi: Optional[Any] = field(default=None, repr=False)   # POI | None
-    mission: Optional[Any] = field(default=None, repr=False)       # Mission | None
-    emotions: Optional[Any] = field(default=None, repr=False)      # EmotionState | None
-    traits: Dict[str, float] = field(default_factory=lambda: {
+    position: tuple[float, float]
+    extra: dict[str, Any] = field(default_factory=dict)
+    target_poi: Any | None = field(default=None, repr=False)   # POI | None
+    mission: Any | None = field(default=None, repr=False)       # Mission | None
+    emotions: Any | None = field(default=None, repr=False)      # EmotionState | None
+    traits: dict[str, float] = field(default_factory=lambda: {
         "openness": 0.5, "conscientiousness": 0.5,
         "extraversion": 0.5, "agreeableness": 0.5, "neuroticism": 0.5,
     })
     # NEAT fields
     neat_enabled: bool = False
-    neat_policy: Optional[Any] = field(default=None, repr=False)
+    neat_policy: Any | None = field(default=None, repr=False)
     neat_mode: str = "movement"
-    neat_last_action: Optional[Any] = field(default=None, repr=False)
+    neat_last_action: Any | None = field(default=None, repr=False)
 
     @property
-    def pos(self) -> Tuple[int, int]:
+    def pos(self) -> tuple[int, int]:
         """Alias for NEAT evaluator (legacy uses integer grid coords)."""
         return (int(round(self.position[0])), int(round(self.position[1])))
 
@@ -103,20 +100,20 @@ class SimEngine:
     def __init__(
         self,
         config: SimConfig | None = None,
-        stanford_adapter: Optional[StanfordAdapterProtocol] = None,
-        dialogue_engine: Optional["DialogueEngine"] = None,
-        memory_store: Optional["MemoryProtocol"] = None,
-        world: Optional["World"] = None,
-        mission_system: Optional["MissionSystem"] = None,
+        stanford_adapter: StanfordAdapterProtocol | None = None,
+        dialogue_engine: DialogueEngine | None = None,
+        memory_store: MemoryProtocol | None = None,
+        world: World | None = None,
+        mission_system: MissionSystem | None = None,
         # cognitive layer plugins (all optional)
-        hrm: Optional["HRMOrchestrator"] = None,
-        rlif: Optional["RLIFEngine"] = None,
-        seal: Optional["SEALEnhancer"] = None,
-        social_learner: Optional["SocialLearner"] = None,
-        game_engine: Optional["GameEngine"] = None,
-        knowledge_diffusion: Optional["KnowledgeDiffusion"] = None,
-        stanford_worker: Optional[Any] = None,
-        neat_manager: Optional[Any] = None,
+        hrm: HRMOrchestrator | None = None,
+        rlif: RLIFEngine | None = None,
+        seal: SEALEnhancer | None = None,
+        social_learner: SocialLearner | None = None,
+        game_engine: GameEngine | None = None,
+        knowledge_diffusion: KnowledgeDiffusion | None = None,
+        stanford_worker: Any | None = None,
+        neat_manager: Any | None = None,
     ) -> None:
         self._cfg = config or SimConfig()
         self._adapter = stanford_adapter
@@ -135,14 +132,14 @@ class SimEngine:
         self._rng = random.Random(self._cfg.seed)
         self._lock = threading.Lock()
         self._tick = 0
-        self._agents: Dict[str, _AgentState] = {}
+        self._agents: dict[str, _AgentState] = {}
         self._proximity = ProximityDetector(
             ProximityConfig(
                 interaction_radius=self._cfg.interaction_radius,
                 min_gap_ticks=self._cfg.min_gap_ticks,
             )
         )
-        self._stats: Dict[str, Any] = {
+        self._stats: dict[str, Any] = {
             "interactions": 0,
             "dialogues": 0,
             "dialogue_utterances": 0,
@@ -153,18 +150,18 @@ class SimEngine:
             "concrete_goals_used": 0,
         }
         self._stats_lock = threading.Lock()
-        self._plan_poi_rr: Dict[str, int] = {}
+        self._plan_poi_rr: dict[str, int] = {}
 
     @property
     def config(self) -> SimConfig:
         return self._cfg
 
     @property
-    def agents(self) -> List[_AgentState]:
+    def agents(self) -> list[_AgentState]:
         return list(self._agents.values())
 
     @property
-    def world(self) -> Optional["World"]:
+    def world(self) -> World | None:
         return self._world
 
     # ------------------------------------------------------------------
@@ -223,12 +220,12 @@ class SimEngine:
             logger.debug("Agent registered: %s (%s)", config.agent_id, config.name)
             return config.agent_id
 
-    def stats(self) -> Dict[str, Any]:
+    def stats(self) -> dict[str, Any]:
         with self._lock:
             with self._stats_lock:
                 return dict(self._stats)
 
-    def note_plan_poi(self, plan_text: str, matched: Optional[str] = None) -> None:
+    def note_plan_poi(self, plan_text: str, matched: str | None = None) -> None:
         """Record plan goal extraction and POI match (safe from worker thread)."""
         from gen_agent.integrations.stanford.plan_to_poi import extract_concrete_goals
 
@@ -240,7 +237,7 @@ class SimEngine:
                 self._stats["plan_to_poi_matches"] += 1
                 self._stats["plan_goals_matched_to_poi"] += 1
 
-    def _apply_plan_poi_for_state(self, state: _AgentState, plan_text: str) -> Optional[str]:
+    def _apply_plan_poi_for_state(self, state: _AgentState, plan_text: str) -> str | None:
         if not self._world or not plan_text:
             return None
         from gen_agent.integrations.stanford.plan_to_poi import apply_plan_to_agent
@@ -258,7 +255,7 @@ class SimEngine:
     def advance(self) -> TickResult:
         with self._lock:
             self._tick += 1
-            events: List[Dict[str, Any]] = []
+            events: list[dict[str, Any]] = []
 
             self._decay_emotions()
             self._contagion_step()
@@ -296,7 +293,7 @@ class SimEngine:
             logger.debug("engine.tick_advanced", tick=self._tick, events=len(events))
             return TickResult(tick=self._tick, events=events, agent_states=snapshot)
 
-    def snapshot(self) -> Dict[str, Any]:
+    def snapshot(self) -> dict[str, Any]:
         with self._lock:
             return {"tick": self._tick, "agents": self._build_snapshot()}
 
@@ -476,12 +473,12 @@ class SimEngine:
     # Interactions
     # ------------------------------------------------------------------
 
-    def _detect_interactions(self) -> List[Tuple[str, str]]:
+    def _detect_interactions(self) -> list[tuple[str, str]]:
         if self._cfg.interaction_every_ticks > 1 and (
             self._tick % self._cfg.interaction_every_ticks != 0
         ):
             return []
-        pairs: List[Tuple[str, str]] = []
+        pairs: list[tuple[str, str]] = []
         agents = list(self._agents.values())
         for i, a in enumerate(agents):
             for b in agents[i + 1:]:
@@ -500,14 +497,14 @@ class SimEngine:
                 pairs.append((a.agent_id, b.agent_id))
         return pairs
 
-    def _run_interaction(self, id_a: str, id_b: str) -> Optional[Dict[str, Any]]:
+    def _run_interaction(self, id_a: str, id_b: str) -> dict[str, Any] | None:
         self._proximity.record_interaction(id_a, id_b, self._tick)
         self._stats["interactions"] += 1
 
         a_state = self._agents[id_a]
         b_state = self._agents[id_b]
 
-        event: Dict[str, Any] = {
+        event: dict[str, Any] = {
             "type": "interaction",
             "tick": self._tick,
             "agents": [id_a, id_b],
@@ -518,7 +515,7 @@ class SimEngine:
             try:
                 recent_plan = (self._tick - int(a_state.extra.get("last_plan_tick", -999))) < 25
                 skip_plan_llm = bool(self._stanford_worker and recent_plan)
-                memories: List[str] = []
+                memories: list[str] = []
                 if self._memory is not None:
                     from gen_agent.interfaces.memory_protocol import MemoryQuery
                     records = self._memory.retrieve(
@@ -597,8 +594,8 @@ class SimEngine:
         id_b: str,
         a_state: _AgentState,
         b_state: _AgentState,
-        relationship: Optional[Dict[str, Any]] = None,
-    ) -> Optional[Dict[str, Any]]:
+        relationship: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | None:
         if self._dialogue is None:
             return None
 
@@ -607,7 +604,7 @@ class SimEngine:
         known_names = [s.name for s in self._agents.values()]
 
         # Extract emotions as plain dicts for the dialogue engine
-        def _em_dict(s: _AgentState) -> Optional[Dict[str, float]]:
+        def _em_dict(s: _AgentState) -> dict[str, float] | None:
             if s.emotions is None:
                 return None
             return {
@@ -712,7 +709,7 @@ class SimEngine:
                 except Exception as exc:
                     logger.debug("NEAT emotions hook failed for %s: %s", state.agent_id, exc)
 
-    def _build_neat_observation(self, state: _AgentState) -> List[float]:
+    def _build_neat_observation(self, state: _AgentState) -> list[float]:
         """Build the observation vector for NEAT (position + emotions + traits)."""
         em = state.emotions
         return [
@@ -729,10 +726,10 @@ class SimEngine:
     # Snapshot helpers
     # ------------------------------------------------------------------
 
-    def _build_snapshot(self) -> Dict[str, Any]:
+    def _build_snapshot(self) -> dict[str, Any]:
         result = {}
         for aid, s in self._agents.items():
-            entry: Dict[str, Any] = {
+            entry: dict[str, Any] = {
                 "name": s.name,
                 "position": s.position,
             }

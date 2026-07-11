@@ -5,9 +5,7 @@ Ported from Gen_Agent legacy ollama_dialogue_manager.py (English-only).
 from __future__ import annotations
 
 import logging
-import os
 import re
-from typing import Any, Callable, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -65,8 +63,8 @@ def build_ollama_prompt(
     min_words: int,
     intent_section: str = "",
     retry_hint: str = "",
-    traits: Optional[Dict[str, float]] = None,
-    emotions: Optional[Dict[str, float]] = None,
+    traits: dict[str, float] | None = None,
+    emotions: dict[str, float] | None = None,
 ) -> str:
     """Build a full LLM prompt with intent pack, traits, and emotion context."""
     memories = "\n".join(f"  - {m}" for m in memory_snippets) or "  - none"

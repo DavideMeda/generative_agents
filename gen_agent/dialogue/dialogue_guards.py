@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import re
-from typing import List, Optional, Tuple
 
 # Italian markers — reject if too many appear in output
 _ITALIAN_MARKERS = re.compile(
@@ -74,7 +73,7 @@ def detect_meta(text: str) -> bool:
 def detect_wrong_addressee(
     text: str,
     listener_name: str,
-    known_names: Optional[List[str]] = None,
+    known_names: list[str] | None = None,
 ) -> bool:
     """True if the utterance greets or addresses someone other than the listener."""
     if not text or not listener_name:
@@ -103,8 +102,8 @@ def validate_utterance(
     speaker_name: str,
     listener_name: str,
     min_words: int = 25,
-    known_names: Optional[List[str]] = None,
-) -> Tuple[bool, str]:
+    known_names: list[str] | None = None,
+) -> tuple[bool, str]:
     cleaned = clean_utterance(text, speaker_name)
     words = cleaned.split()
     if len(words) < min_words:

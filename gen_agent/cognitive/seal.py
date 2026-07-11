@@ -17,7 +17,6 @@ from __future__ import annotations
 import logging
 import os
 from collections import defaultdict
-from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -36,13 +35,13 @@ class SEALEnhancer:
     """
 
     def __init__(self) -> None:
-        self._interaction_count: Dict[str, int] = defaultdict(int)
+        self._interaction_count: dict[str, int] = defaultdict(int)
         logger.info("SEALEnhancer active")
 
     def update_traits(
         self,
         agent_id: str,
-        traits: Dict[str, float],
+        traits: dict[str, float],
         outcome: str,
     ) -> None:
         """
@@ -65,7 +64,7 @@ class SEALEnhancer:
             logger.debug("SEAL %s extraversion → %.3f", agent_id, traits["extraversion"])
 
 
-def make_seal_if_enabled() -> Optional[SEALEnhancer]:
+def make_seal_if_enabled() -> SEALEnhancer | None:
     if os.getenv("ENABLE_SEAL", "false").lower() in ("1", "true", "yes"):
         return SEALEnhancer()
     return None

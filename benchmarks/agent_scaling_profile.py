@@ -12,7 +12,6 @@ from __future__ import annotations
 import sys
 import time
 from pathlib import Path
-from typing import List
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -24,7 +23,7 @@ PRESET = "agent_scaling_profile"
 
 
 def run() -> dict:
-    samples: List[dict] = []
+    samples: list[dict] = []
     for n in AGENT_COUNTS:
         engine = simple_engine(n_agents=n)
         t0 = time.perf_counter()

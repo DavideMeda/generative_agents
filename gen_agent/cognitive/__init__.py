@@ -8,10 +8,10 @@ Activate individually:
     ENABLE_SEAL=true
     ENABLE_SOCIAL_LEARNING=true
 """
+from gen_agent.cognitive.evolutionary import SocialLearner, make_social_learner_if_enabled
 from gen_agent.cognitive.hrm import HRMOrchestrator, make_hrm_if_enabled
 from gen_agent.cognitive.rlif import RLIFEngine, make_rlif_if_enabled
 from gen_agent.cognitive.seal import SEALEnhancer, make_seal_if_enabled
-from gen_agent.cognitive.evolutionary import SocialLearner, make_social_learner_if_enabled
 
 __all__ = [
     "HRMOrchestrator", "make_hrm_if_enabled",

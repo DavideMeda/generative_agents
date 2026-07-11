@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,9 @@ NEAT_AVAILABLE = False
 LiveNEATTrainingManager = None  # type: ignore
 
 try:
-    from gen_agent.training.neat.live_training import LiveNEATTrainingManager as _LiveNEATTrainingManager
+    from gen_agent.training.neat.live_training import (
+        LiveNEATTrainingManager as _LiveNEATTrainingManager,
+    )
     LiveNEATTrainingManager = _LiveNEATTrainingManager
     NEAT_AVAILABLE = True
 except Exception as exc:
@@ -25,7 +27,7 @@ class NeatStatus:
     available: bool = False
     message: str = "NEAT module not installed"
     last_scores: list = field(default_factory=list)
-    last_agent_scores: Dict[str, float] = field(default_factory=dict)
+    last_agent_scores: dict[str, float] = field(default_factory=dict)
 
 
 class NoopNeatManager:
@@ -38,16 +40,16 @@ class NoopNeatManager:
     def stop(self) -> NeatStatus:
         return self._status
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         return asdict(self._status)
 
-    def load_best(self, path: str) -> Dict[str, Any]:
+    def load_best(self, path: str) -> dict[str, Any]:
         return {"ok": False, "error": "neat_not_available", "path": path}
 
-    def start_continuous(self, cfg: Optional[Any] = None) -> Dict[str, Any]:
+    def start_continuous(self, cfg: Any | None = None) -> dict[str, Any]:
         return {"ok": False, "error": "neat_not_available"}
 
-    def stop_continuous(self) -> Dict[str, Any]:
+    def stop_continuous(self) -> dict[str, Any]:
         return {"ok": False, "error": "neat_not_available"}
 
 

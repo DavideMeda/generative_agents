@@ -15,13 +15,12 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Dict, List, Set, Tuple
 
 
 @dataclass
 class Node:
     entity: str
-    sources: List[str] = field(default_factory=list)  # memory_ids
+    sources: list[str] = field(default_factory=list)  # memory_ids
 
 
 @dataclass
@@ -38,8 +37,8 @@ class KnowledgeGraph:
     """
 
     def __init__(self) -> None:
-        self._nodes: Dict[str, Node] = {}
-        self._edges: Dict[Tuple[str, str], Edge] = {}
+        self._nodes: dict[str, Node] = {}
+        self._edges: dict[tuple[str, str], Edge] = {}
 
     def add_memory(self, memory_id: str, content: str) -> None:
         """Extract entities from content and add edges for co-occurring pairs."""
@@ -56,7 +55,7 @@ class KnowledgeGraph:
                 else:
                     self._edges[key] = Edge(a=key[0], b=key[1], weight=1.0)
 
-    def neighbours(self, entity: str) -> List[str]:
+    def neighbours(self, entity: str) -> list[str]:
         entity = entity.lower()
         result = []
         for (a, b), _ in self._edges.items():
@@ -66,12 +65,12 @@ class KnowledgeGraph:
                 result.append(a)
         return result
 
-    def related_memory_ids(self, entity: str, depth: int = 1) -> Set[str]:
+    def related_memory_ids(self, entity: str, depth: int = 1) -> set[str]:
         """Return memory IDs reachable from entity within `depth` hops."""
-        visited: Set[str] = set()
+        visited: set[str] = set()
         frontier = {entity.lower()}
         for _ in range(depth):
-            next_frontier: Set[str] = set()
+            next_frontier: set[str] = set()
             for ent in frontier:
                 node = self._nodes.get(ent)
                 if node:
@@ -80,13 +79,13 @@ class KnowledgeGraph:
             frontier = next_frontier - visited
         return visited
 
-    def community_detection(self) -> Dict[str, int]:
+    def community_detection(self) -> dict[str, int]:
         """
         Greedy label propagation: assign community IDs to entities.
         Returns dict {entity: community_id}.
         ponytail: O(n²) — fine for small graphs (<1k nodes).
         """
-        communities: Dict[str, int] = {e: i for i, e in enumerate(self._nodes)}
+        communities: dict[str, int] = {e: i for i, e in enumerate(self._nodes)}
         changed = True
         while changed:
             changed = False
@@ -94,7 +93,7 @@ class KnowledgeGraph:
                 nbrs = self.neighbours(ent)
                 if not nbrs:
                     continue
-                counts: Dict[int, int] = defaultdict(int)
+                counts: dict[int, int] = defaultdict(int)
                 for n in nbrs:
                     counts[communities.get(n, -1)] += 1
                 dominant = max(counts, key=lambda k: counts[k])
@@ -104,7 +103,7 @@ class KnowledgeGraph:
         return communities
 
     @staticmethod
-    def _extract_entities(text: str) -> List[str]:
+    def _extract_entities(text: str) -> list[str]:
         """
         Simple heuristic: capitalised words and known POI keywords.
         ponytail: upgrade to spaCy NER if entity quality matters.

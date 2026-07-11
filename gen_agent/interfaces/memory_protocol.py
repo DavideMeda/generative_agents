@@ -7,7 +7,7 @@ dipendere da questa interfaccia, mai dall'implementazione concreta.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, List, Optional, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 
 @dataclass
@@ -15,7 +15,7 @@ class MemoryQuery:
     agent_id: str
     query_text: str
     top_k: int = 5
-    memory_types: List[str] = field(default_factory=lambda: ["observation", "reflection", "plan", "social"])
+    memory_types: list[str] = field(default_factory=lambda: ["observation", "reflection", "plan", "social"])
     min_importance: float = 0.0
     scope: str = ""   # "social" = prefer social/chat memories; "sim" = prefer observation/plan
 
@@ -45,7 +45,7 @@ class MemoryProtocol(Protocol):
         """Salva una memoria. Ritorna l'ID assegnato."""
         ...
 
-    def retrieve(self, query: MemoryQuery) -> List[MemoryRecord]:
+    def retrieve(self, query: MemoryQuery) -> list[MemoryRecord]:
         """Recupera memorie rilevanti per la query."""
         ...
 

@@ -11,9 +11,9 @@ This class implements MemoryProtocol implicitly (structural subtyping via Protoc
 """
 from __future__ import annotations
 
-import logging
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 import structlog
 
@@ -41,32 +41,32 @@ class MemoryManager:
 
     def __init__(
         self,
-        backend: Optional[SQLiteMemoryBackend] = None,
-        decay_engine: Optional[MemoryDecayEngine] = None,
-        graphrag: Optional[Any] = None,   # GraphRAGRetriever | None
-        mars: Optional[Any] = None,        # MaRSEngine | None
-        compressor: Optional[Any] = None,  # MemoryCompressor | None
+        backend: SQLiteMemoryBackend | None = None,
+        decay_engine: MemoryDecayEngine | None = None,
+        graphrag: Any | None = None,   # GraphRAGRetriever | None
+        mars: Any | None = None,        # MaRSEngine | None
+        compressor: Any | None = None,  # MemoryCompressor | None
         data_dir: str = "data",
-        llm: Optional[Callable[[str], str]] = None,
+        llm: Callable[[str], str] | None = None,
         reflection_trigger: int = 5,
         consolidation_interval: int = 50,
     ) -> None:
         self._data_dir = Path(data_dir)
         self._data_dir.mkdir(parents=True, exist_ok=True)
-        self._agent_backends: Dict[str, SQLiteMemoryBackend] = {}
+        self._agent_backends: dict[str, SQLiteMemoryBackend] = {}
         self._backend = backend or SQLiteMemoryBackend(str(self._data_dir / "central_memory.db"))
         self._decay = decay_engine or get_decay_engine()
         self._graphrag = graphrag
         self._mars = mars
         self._compressor = compressor
-        self._vector_store: Optional[Any] = None
+        self._vector_store: Any | None = None
         self._llm = llm
         self._reflection_trigger = reflection_trigger
         self._consolidation_interval = consolidation_interval
         # Per-agent counters for reflection triggers
-        self._agent_memory_count: Dict[str, int] = {}
-        self._agent_last_salience_reflect: Dict[str, int] = {}
-        self._agent_reflection_count: Dict[str, int] = {}
+        self._agent_memory_count: dict[str, int] = {}
+        self._agent_last_salience_reflect: dict[str, int] = {}
+        self._agent_reflection_count: dict[str, int] = {}
         self._stats_reflections: int = 0
 
     def ensure_agent(self, agent_id: str) -> None:
@@ -183,7 +183,7 @@ class MemoryManager:
         except Exception as exc:
             logger.warning("Reflection failed for %s: %s", agent_id, exc)
 
-    def run_consolidation_batch(self, agent_ids: List[str], tick: int) -> None:
+    def run_consolidation_batch(self, agent_ids: list[str], tick: int) -> None:
         """Consolidate oldest low-importance memories to keep DB lean."""
         if tick % self._consolidation_interval != 0:
             return
@@ -205,13 +205,13 @@ class MemoryManager:
             except Exception as exc:
                 logger.warning("Consolidation failed for %s: %s", agent_id, exc)
 
-    def reflection_stats(self) -> Dict[str, Any]:
+    def reflection_stats(self) -> dict[str, Any]:
         return {
             "total_reflections": self._stats_reflections,
             "per_agent": dict(self._agent_reflection_count),
         }
 
-    def retrieve(self, query: MemoryQuery) -> List[MemoryRecord]:
+    def retrieve(self, query: MemoryQuery) -> list[MemoryRecord]:
         """
         Retrieve and rank memories by composite score.
         Uses GraphRAG retriever if enabled, otherwise plain SQLite.
@@ -252,19 +252,19 @@ class MemoryManager:
         )
         return [record for _, record in scored[: query.top_k]]
 
-    def touch(self, memory_id: str, agent_id: Optional[str] = None) -> None:
+    def touch(self, memory_id: str, agent_id: str | None = None) -> None:
         if agent_id:
             self._backend_for(agent_id).touch(memory_id)
         else:
             self._backend.touch(memory_id)
 
-    def delete(self, memory_id: str, agent_id: Optional[str] = None) -> None:
+    def delete(self, memory_id: str, agent_id: str | None = None) -> None:
         if agent_id:
             self._backend_for(agent_id).delete(memory_id)
         else:
             self._backend.delete(memory_id)
 
-    def count(self, agent_id: Optional[str] = None) -> int:
+    def count(self, agent_id: str | None = None) -> int:
         if agent_id:
             return self._backend_for(agent_id).count(agent_id)
         total = self._backend.count(agent_id)
@@ -272,7 +272,7 @@ class MemoryManager:
             total += bid.count(agent_id)
         return total
 
-    def run_decay_batch(self, agent_ids: List[str], tick: int) -> None:
+    def run_decay_batch(self, agent_ids: list[str], tick: int) -> None:
         """Apply importance decay across all agent DBs every N ticks."""
         if tick % 10 != 0:
             return
@@ -295,7 +295,7 @@ class MemoryManager:
                     record.importance = new_imp
                     backend.store(record)
 
-    def maybe_compress(self, tick: int, agent_ids: List[str]) -> None:
+    def maybe_compress(self, tick: int, agent_ids: list[str]) -> None:
         """Call each tick from engine; compression runs only every N ticks."""
         if self._compressor is None:
             return

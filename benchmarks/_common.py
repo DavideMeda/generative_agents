@@ -5,9 +5,8 @@ import datetime
 import json
 import subprocess
 import sys
-import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 OUTPUT_DIR = Path(__file__).resolve().parents[1] / "output" / "benchmarks"
 
@@ -21,7 +20,7 @@ def _git_commit() -> str:
         return "unknown"
 
 
-def make_meta(preset: str, model: str = "stub") -> Dict[str, Any]:
+def make_meta(preset: str, model: str = "stub") -> dict[str, Any]:
     return {
         "commit": _git_commit(),
         "preset": preset,
@@ -31,7 +30,7 @@ def make_meta(preset: str, model: str = "stub") -> Dict[str, Any]:
     }
 
 
-def save_result(name: str, result: Dict[str, Any]) -> Path:
+def save_result(name: str, result: dict[str, Any]) -> Path:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     ts = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     out = OUTPUT_DIR / f"{name}_{ts}.json"
@@ -42,8 +41,8 @@ def save_result(name: str, result: Dict[str, Any]) -> Path:
 
 def simple_engine(n_agents: int = 3, seed: int = 42) -> Any:
     """Build a minimal stub SimEngine (no LLM, no Ollama required)."""
-    from gen_agent.sim.engine import SimConfig, SimEngine
     from gen_agent.interfaces.sim_protocol import AgentConfig
+    from gen_agent.sim.engine import SimConfig, SimEngine
 
     cfg = SimConfig(
         block_on_dialogue=False,

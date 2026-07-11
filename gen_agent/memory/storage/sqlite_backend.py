@@ -11,10 +11,8 @@ import sqlite3
 import threading
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 from gen_agent.interfaces.memory_protocol import MemoryQuery, MemoryRecord
-
 
 _CREATE_TABLE = """
 CREATE TABLE IF NOT EXISTS memories (
@@ -80,7 +78,7 @@ class SQLiteMemoryBackend:
         )
         self._conn().commit()
 
-    def retrieve(self, query: MemoryQuery) -> List[MemoryRecord]:
+    def retrieve(self, query: MemoryQuery) -> list[MemoryRecord]:
         placeholders = ", ".join("?" * len(query.memory_types))
         rows = self._conn().execute(
             f"""
@@ -106,7 +104,7 @@ class SQLiteMemoryBackend:
         self._conn().execute("DELETE FROM memories WHERE memory_id = ?", (memory_id,))
         self._conn().commit()
 
-    def count(self, agent_id: Optional[str] = None) -> int:
+    def count(self, agent_id: str | None = None) -> int:
         if agent_id:
             return self._conn().execute(
                 "SELECT COUNT(*) FROM memories WHERE agent_id = ?", (agent_id,)

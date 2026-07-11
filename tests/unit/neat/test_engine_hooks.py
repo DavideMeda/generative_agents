@@ -1,10 +1,8 @@
 """Tests for NEAT hooks on SimEngine."""
 from __future__ import annotations
 
-import pytest
-
-from gen_agent.sim.engine import SimConfig, SimEngine
 from gen_agent.interfaces.sim_protocol import AgentConfig
+from gen_agent.sim.engine import SimConfig, SimEngine
 
 
 def _make_engine(seed: int = 42) -> SimEngine:

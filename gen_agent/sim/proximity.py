@@ -7,8 +7,7 @@ and enforces a minimum cooldown between consecutive interactions.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
-from typing import Dict, Tuple
+from dataclasses import dataclass
 
 
 @dataclass
@@ -21,14 +20,14 @@ class ProximityDetector:
     def __init__(self, config: ProximityConfig | None = None) -> None:
         self._cfg = config or ProximityConfig()
         # Maps frozenset({id_a, id_b}) -> last interaction tick
-        self._last_interaction: Dict[frozenset, int] = {}
+        self._last_interaction: dict[frozenset, int] = {}
 
     @property
     def config(self) -> ProximityConfig:
         return self._cfg
 
     def within_radius(
-        self, pos_a: Tuple[float, float], pos_b: Tuple[float, float]
+        self, pos_a: tuple[float, float], pos_b: tuple[float, float]
     ) -> bool:
         dx = pos_a[0] - pos_b[0]
         dy = pos_a[1] - pos_b[1]

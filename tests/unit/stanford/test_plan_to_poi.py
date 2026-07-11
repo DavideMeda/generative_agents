@@ -1,14 +1,11 @@
 """Tests for Stanford plan-to-POI matching."""
 from __future__ import annotations
 
-import pytest
-
 from gen_agent.integrations.stanford.plan_to_poi import (
+    _fuzzy_match_ratio,
     apply_plan_to_agent,
     extract_concrete_goals,
     match_goal_to_poi,
-    resolve_plan_to_poi,
-    _fuzzy_match_ratio,
 )
 
 

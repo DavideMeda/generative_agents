@@ -2,9 +2,8 @@
 from __future__ import annotations
 
 import os
-import pytest
 
-from config.launch_profile import load_profile, apply_profile_to_env, LaunchProfile, list_presets
+from config.launch_profile import LaunchProfile, apply_profile_to_env, list_presets, load_profile
 
 
 class TestLaunchProfile:

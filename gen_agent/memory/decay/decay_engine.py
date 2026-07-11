@@ -33,14 +33,14 @@ class MemoryDecayEngine:
             raise ValueError("decay_factor must be in (0, 1)")
         self._decay = decay_factor
 
-    def recency_score(self, memory: "Memory") -> float:
+    def recency_score(self, memory: Memory) -> float:
         hours_elapsed = (time.time() - memory.last_accessed) / 3600
         return self._decay ** hours_elapsed
 
-    def importance_score(self, memory: "Memory") -> float:
+    def importance_score(self, memory: Memory) -> float:
         return memory.importance / 10.0
 
-    def relevance_score(self, memory: "Memory", query: str) -> float:
+    def relevance_score(self, memory: Memory, query: str) -> float:
         """
         Keyword-overlap relevance (stub).
         ponytail: replace with embedding cosine similarity when vector store is added.
@@ -52,7 +52,7 @@ class MemoryDecayEngine:
         overlap = len(query_words & content_words)
         return overlap / math.sqrt(len(query_words) * max(len(content_words), 1))
 
-    def score(self, memory: "Memory", query: str = "") -> float:
+    def score(self, memory: Memory, query: str = "") -> float:
         """
         Composite retrieval score in [0, 1].
         Weights mirror the original Gen_Agent legacy implementation.

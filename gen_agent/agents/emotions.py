@@ -11,9 +11,7 @@ by interactions with other agents.
 """
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
-
 
 _DECAY = 0.95        # per-tick decay factor toward baseline
 _BASELINE_VALENCE = 0.0
@@ -32,7 +30,7 @@ class EmotionState:
         self.arousal = _clamp(self.arousal, 0.0, 1.0)
         self.stress = _clamp(self.stress, 0.0, 1.0)
 
-    def decay(self) -> "EmotionState":
+    def decay(self) -> EmotionState:
         """Return a new state decayed one step toward the neutral baseline."""
         return EmotionState(
             valence=_lerp(self.valence, _BASELINE_VALENCE, 1 - _DECAY),

@@ -5,7 +5,7 @@ emotions, and relationship data. Ported slim from Gen_Agent legacy.
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 CANONICAL_TRAIT_KEYS = ("openness", "conscientiousness", "extraversion", "agreeableness", "neuroticism")
 _TRAIT_ALIASES = (
@@ -17,7 +17,7 @@ _TRAIT_ALIASES = (
 )
 
 
-def trait_get(traits: Optional[Dict[str, Any]], canonical: str, default: float = 0.5) -> float:
+def trait_get(traits: dict[str, Any] | None, canonical: str, default: float = 0.5) -> float:
     if not traits:
         return float(default)
     for canon, alts in _TRAIT_ALIASES:
@@ -33,8 +33,8 @@ def trait_get(traits: Optional[Dict[str, Any]], canonical: str, default: float =
     return float(default)
 
 
-def normalize_personality(traits: Optional[Dict[str, Any]]) -> Dict[str, float]:
-    out: Dict[str, float] = {}
+def normalize_personality(traits: dict[str, Any] | None) -> dict[str, float]:
+    out: dict[str, float] = {}
     for canon, alts in _TRAIT_ALIASES:
         val = 0.5
         if traits:
@@ -58,12 +58,12 @@ _RE_CLEAN_MEM = re.compile(
 
 
 def build_intent_pack(
-    sp_traits: Optional[Dict[str, float]],
-    li_traits: Optional[Dict[str, float]],
-    rel_data: Optional[Dict[str, float]],
-    sp_em: Optional[Dict[str, float]],
-    sp_memories: Optional[List[str]] = None,
-) -> Dict[str, Any]:
+    sp_traits: dict[str, float] | None,
+    li_traits: dict[str, float] | None,
+    rel_data: dict[str, float] | None,
+    sp_em: dict[str, float] | None,
+    sp_memories: list[str] | None = None,
+) -> dict[str, Any]:
     """
     Build a structured intent pack from speaker's Big Five, emotions, and relationship.
     Drives the LLM prompt toward personality-consistent behaviour.
@@ -125,7 +125,7 @@ def build_intent_pack(
     else:
         voice_style = "direct"
 
-    memory_anchors: List[str] = []
+    memory_anchors: list[str] = []
     if sp_memories:
         for mem in sp_memories[:4]:
             raw = str(mem).strip()
@@ -135,7 +135,7 @@ def build_intent_pack(
             if len(memory_anchors) >= 2:
                 break
 
-    forbidden: List[str] = []
+    forbidden: list[str] = []
     if not conflict_allowed:
         forbidden.extend(["explicit disagreement", "direct attack"])
     if stance in ("competitive", "provocative"):
@@ -159,7 +159,7 @@ def has_explicit_disagreement(text: str) -> bool:
         text or "", re.IGNORECASE))
 
 
-def intent_pack_to_prompt_section(pack: Dict[str, Any], speaker_name: str) -> str:
+def intent_pack_to_prompt_section(pack: dict[str, Any], speaker_name: str) -> str:
     """Render an intent pack as a compact prompt section."""
     lines = [
         "CHARACTER GUIDANCE:",
