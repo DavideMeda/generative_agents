@@ -59,5 +59,6 @@ environment/frontend_server/static_dirs/
 # ponytail: reverie/ e le altre dir di environment sono escluse (boundary rule);
 # environment/frontend_server/Dockerfile.stanford è tracciato per il compose M5
 
-# Output benchmarks (JSON generati, non committare risultati locali)
-output/benchmarks/*.json
+# Output generati localmente — non committare risultati di simulazione
+output/
+!output/.gitkeep
