@@ -1,8 +1,6 @@
 """Tests for gen_agent/cognitive/biases.py — algebra only, no LLM calls."""
 from __future__ import annotations
 
-import math
-
 import pytest
 
 from gen_agent.cognitive.biases import (
@@ -12,7 +10,6 @@ from gen_agent.cognitive.biases import (
     ConfirmationBias,
     RecencyBias,
 )
-
 
 # ── RecencyBias ──────────────────────────────────────────────────────────────
 

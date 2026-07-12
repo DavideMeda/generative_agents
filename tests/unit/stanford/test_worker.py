@@ -1,10 +1,7 @@
 """Tests for StanfordCognitionWorker — stub mode only (no Ollama, no LLM)."""
 from __future__ import annotations
 
-import time
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 from gen_agent.integrations.stanford.worker import StanfordCognitionJob, StanfordCognitionWorker
 

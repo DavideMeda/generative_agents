@@ -1,8 +1,6 @@
 """Tests for gen_agent/dialogue/ollama_manager.py — no real Ollama calls."""
 from __future__ import annotations
 
-import pytest
-
 from gen_agent.dialogue.ollama_manager import (
     build_ollama_prompt,
     clean_dialogue_output,

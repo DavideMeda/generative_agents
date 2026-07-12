@@ -115,7 +115,7 @@ class SimEngine:
         knowledge_diffusion: KnowledgeDiffusion | None = None,
         stanford_worker: Any | None = None,
         neat_manager: Any | None = None,
-        biases: "BiasLayer | None" = None,
+        biases: BiasLayer | None = None,
     ) -> None:
         self._cfg = config or SimConfig()
         self._adapter = stanford_adapter
