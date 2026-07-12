@@ -6,6 +6,11 @@ have personality-driven conversations, form memories, reflect, and evolve via NE
 Built on top of [Stanford Generative Agents](https://github.com/joonspk-research/generative_agents):
 this repo is a **fork** of it (`upstream`), with the reference implementation vendored under `reverie/`.
 
+The fork adds a modular Python package (`gen_agent/`), a FastAPI server with WebSocket live updates,
+structured logging via `structlog`, cognitive biases, NEAT-based agent evolution, dual-mode storage
+(SQLite / PostgreSQL), and a full CI/CD pipeline — while preserving full functional parity with the
+original Stanford simulation metrics.
+
 ## Quick start
 
 ```bash
