@@ -170,7 +170,7 @@ class NEATGenome:
             )
         return child
 
-    def to_arrays(self) -> dict[str, np.ndarray]:
+    def to_arrays(self) -> dict[str, np.ndarray]:  # type: ignore[type-arg]
         data = np.asarray(
             [
                 [c.in_node, c.out_node, c.weight, 1.0 if c.enabled else 0.0, c.innovation]
@@ -187,7 +187,7 @@ class NEATGenome:
         }
 
     @classmethod
-    def from_arrays(cls, arrays: dict[str, np.ndarray]) -> NEATGenome:
+    def from_arrays(cls, arrays: dict[str, np.ndarray]) -> NEATGenome:  # type: ignore[type-arg]
         genome = cls(
             input_size=int(arrays["input_size"][0]),
             output_size=int(arrays["output_size"][0]),

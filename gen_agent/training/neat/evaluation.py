@@ -96,7 +96,7 @@ class NEATEvaluator:
         if nearest is None:
             return 0.5
         proximity = 1.0 - max(0.0, min(1.0, nearest / max(1.0, world.width + world.height)))
-        return max(0.0, min(1.0, 0.6 * float(action.get("seek_poi", 0.0)) + 0.4 * proximity))
+        return float(max(0.0, min(1.0, 0.6 * float(action.get("seek_poi", 0.0)) + 0.4 * proximity)))
 
     def _move_score(self, action: dict[str, float]) -> float:
         movement = max(

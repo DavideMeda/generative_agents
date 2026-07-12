@@ -40,7 +40,7 @@ class Memory:
     def recency_score(self) -> float:
         """Exponential recency decay (half-life ≈ 1 hour)."""
         hours_since_access = (time.time() - self.last_accessed) / 3600
-        return 0.99 ** hours_since_access
+        return float(0.99 ** hours_since_access)
 
 
 @dataclass

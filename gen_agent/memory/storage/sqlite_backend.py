@@ -47,7 +47,7 @@ class SQLiteMemoryBackend:
         if not getattr(self._local, "conn", None):
             self._local.conn = sqlite3.connect(self._db_path, check_same_thread=False)
             self._local.conn.row_factory = sqlite3.Row
-        return self._local.conn
+        return self._local.conn  # type: ignore[no-any-return]
 
     def _init_schema(self) -> None:
         self._conn().executescript(_CREATE_TABLE)
@@ -106,10 +106,10 @@ class SQLiteMemoryBackend:
 
     def count(self, agent_id: str | None = None) -> int:
         if agent_id:
-            return self._conn().execute(
+            return int(self._conn().execute(
                 "SELECT COUNT(*) FROM memories WHERE agent_id = ?", (agent_id,)
-            ).fetchone()[0]
-        return self._conn().execute("SELECT COUNT(*) FROM memories").fetchone()[0]
+            ).fetchone()[0])
+        return int(self._conn().execute("SELECT COUNT(*) FROM memories").fetchone()[0])
 
     # ------------------------------------------------------------------
     # Helpers

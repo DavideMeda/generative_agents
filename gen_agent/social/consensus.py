@@ -26,6 +26,7 @@ import random
 from collections import Counter
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -176,7 +177,7 @@ class ConsensusEngine:
         return ConsensusResult(winner=winner, votes=dict(counts), method="delphi_round", rounds=max_rounds)
 
 
-def make_consensus_if_enabled(llm=None) -> ConsensusEngine | None:
+def make_consensus_if_enabled(llm: Any = None) -> ConsensusEngine | None:
     if os.getenv("ENABLE_CONSENSUS", "false").lower() in ("1", "true", "yes"):
         return ConsensusEngine(llm=llm)
     return None

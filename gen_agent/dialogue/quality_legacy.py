@@ -68,13 +68,13 @@ def _filter_stopwords(words: list[str]) -> list[str]:
     return [w for w in words if w.lower() not in ENGLISH_STOP_WORDS]
 
 
-def _get_bigrams(words: list[str]) -> list[tuple]:
+def _get_bigrams(words: list[str]) -> list[tuple[str, str]]:
     if len(words) < 2:
         return []
     return [(words[i], words[i + 1]) for i in range(len(words) - 1)]
 
 
-def _get_trigrams(words: list[str]) -> list[tuple]:
+def _get_trigrams(words: list[str]) -> list[tuple[str, str, str]]:
     if len(words) < 3:
         return []
     return [(words[i], words[i + 1], words[i + 2]) for i in range(len(words) - 2)]
@@ -235,7 +235,7 @@ def should_regenerate(text: str, history: list[str]) -> bool:
 
 def append_quality_trace(record: dict[str, Any], trace_path: str | None = None) -> None:
     """Append one NDJSON quality trace line (ponytail: optional debug file)."""
-    path = trace_path or os.getenv("DIALOGUE_QUALITY_TRACE", "output/dialogue_quality.ndjson")
+    path = trace_path or os.getenv("DIALOGUE_QUALITY_TRACE") or "output/dialogue_quality.ndjson"
     try:
         p = Path(path)
         p.parent.mkdir(parents=True, exist_ok=True)

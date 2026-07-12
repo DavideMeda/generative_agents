@@ -43,7 +43,7 @@ class NEATInputSpec:
 
     size: int = 18
 
-    def encode(self, agent: Any, world: Any, others: Iterable[Any]) -> np.ndarray:
+    def encode(self, agent: Any, world: Any, others: Iterable[Any]) -> np.ndarray:  # type: ignore[type-arg]
         width = max(1.0, _safe_float(getattr(world, "width", 1), 1.0))
         height = max(1.0, _safe_float(getattr(world, "height", 1), 1.0))
         x, y = getattr(agent, "pos", (0, 0))

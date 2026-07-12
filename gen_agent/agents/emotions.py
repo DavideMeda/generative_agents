@@ -38,7 +38,7 @@ class EmotionState:
             stress=_lerp(self.stress, _BASELINE_STRESS, 1 - _DECAY),
         )
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, float]:
         return {
             "valence": round(self.valence, 3),
             "arousal": round(self.arousal, 3),

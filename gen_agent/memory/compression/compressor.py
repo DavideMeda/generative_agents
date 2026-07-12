@@ -17,6 +17,7 @@ from __future__ import annotations
 import logging
 import os
 import re
+from typing import Any
 
 from gen_agent.interfaces.memory_protocol import MemoryQuery, MemoryRecord
 
@@ -27,11 +28,11 @@ _MIN_CLUSTER_SIZE = 3       # don't compress lone memories
 _SUMMARY_MAX_CHARS = 300
 
 
-def _tokens(text: str) -> set:
+def _tokens(text: str) -> set[str]:
     return {w.lower() for w in re.split(r"\W+", text) if len(w) > 2}
 
 
-def _jaccard(a: set, b: set) -> float:
+def _jaccard(a: set[str], b: set[str]) -> float:
     union = a | b
     return len(a & b) / len(union) if union else 0.0
 
@@ -41,7 +42,7 @@ class MemoryCompressor:
     Compresses memories for all agents tracked by the given memory store.
     """
 
-    def __init__(self, memory_store=None, trigger_every_ticks: int = 50) -> None:
+    def __init__(self, memory_store: Any = None, trigger_every_ticks: int = 50) -> None:
         self._mem = memory_store
         self._trigger = trigger_every_ticks
 
@@ -110,7 +111,7 @@ class MemoryCompressor:
         return f"[compressed {len(cluster)}] {joined}"[:_SUMMARY_MAX_CHARS]
 
 
-def make_compressor_if_enabled(memory_store=None) -> MemoryCompressor | None:
+def make_compressor_if_enabled(memory_store: Any = None) -> MemoryCompressor | None:
     if os.getenv("ENABLE_MEMORY_COMPRESSION", "false").lower() in ("1", "true", "yes"):
         return MemoryCompressor(memory_store=memory_store)
     return None

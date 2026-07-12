@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class SocialLearner:
     Requires an RLIFEngine to read reward signals.
     """
 
-    def __init__(self, rlif=None, copy_every: int = 10) -> None:
+    def __init__(self, rlif: Any = None, copy_every: int = 10) -> None:
         self._rlif = rlif
         self._copy_every = copy_every
         self._tick_counter = 0
@@ -82,7 +82,7 @@ class IntrinsicMotivation:
     """
 
     def __init__(self, bonus: float = 2.0) -> None:
-        self._visited: dict[str, set] = {}
+        self._visited: dict[str, set[str]] = {}
         self._bonus = bonus
 
     def on_poi_visit(self, agent_id: str, poi_id: str) -> float:
@@ -94,7 +94,7 @@ class IntrinsicMotivation:
         return 0.0
 
 
-def make_social_learner_if_enabled(rlif=None) -> SocialLearner | None:
+def make_social_learner_if_enabled(rlif: Any = None) -> SocialLearner | None:
     if os.getenv("ENABLE_SOCIAL_LEARNING", "false").lower() in ("1", "true", "yes"):
         return SocialLearner(rlif=rlif)
     return None

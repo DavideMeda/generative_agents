@@ -35,9 +35,9 @@ class OllamaProvider(LLMProvider):
         model: str | None = None,
         timeout: int | None = None,
     ) -> None:
-        self._base_url = (base_url or os.getenv("OLLAMA_BASE_URL", _DEFAULT_BASE_URL)).rstrip("/")
-        self._model = model or os.getenv("OLLAMA_MODEL", _DEFAULT_MODEL)
-        self._timeout = int(timeout or os.getenv("OLLAMA_TIMEOUT", str(_DEFAULT_TIMEOUT)))
+        self._base_url = (base_url or os.getenv("OLLAMA_BASE_URL") or _DEFAULT_BASE_URL).rstrip("/")
+        self._model = model or os.getenv("OLLAMA_MODEL") or _DEFAULT_MODEL
+        self._timeout = int(timeout or os.getenv("OLLAMA_TIMEOUT") or _DEFAULT_TIMEOUT)
         logger.debug("OllamaProvider: %s model=%s", self._base_url, self._model)
 
     def complete(self, prompt: str) -> str:
@@ -54,7 +54,7 @@ class OllamaProvider(LLMProvider):
         try:
             with urllib.request.urlopen(req, timeout=self._timeout) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
-                return data.get("response", "").strip()
+                return str(data.get("response", "")).strip()
         except urllib.error.URLError as exc:
             logger.warning("Ollama request failed: %s", exc)
             return f"[Ollama unavailable: {exc}]"

@@ -35,7 +35,7 @@ class MemoryDecayEngine:
 
     def recency_score(self, memory: Memory) -> float:
         hours_elapsed = (time.time() - memory.last_accessed) / 3600
-        return self._decay ** hours_elapsed
+        return float(self._decay ** hours_elapsed)
 
     def importance_score(self, memory: Memory) -> float:
         return memory.importance / 10.0

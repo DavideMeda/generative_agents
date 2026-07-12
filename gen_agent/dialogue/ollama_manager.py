@@ -56,7 +56,7 @@ def is_output_valid(text: str, min_words: int = 10) -> bool:
 def build_ollama_prompt(
     speaker_name: str,
     listener_name: str,
-    memory_snippets: list,
+    memory_snippets: list[str],
     location: str,
     history: str,
     scenario: str,

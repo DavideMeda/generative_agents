@@ -26,7 +26,7 @@ class NEATStatus:
     continuous_running: bool = False
     best_fitness: float = 0.0
     best_path: str = "outputs/neat/best_individual.npz"
-    last_scores: list = field(default_factory=list)
+    last_scores: list[Any] = field(default_factory=list)
     last_agent_scores: dict[str, float] = field(default_factory=dict)
 
 

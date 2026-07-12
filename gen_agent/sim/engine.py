@@ -762,9 +762,7 @@ class SimEngine:
             if s.neat_enabled:
                 entry["neat"] = {
                     "mode": s.neat_mode,
-                    "last_action": (list(s.neat_last_action)
-                                    if hasattr(s.neat_last_action, "__iter__")
-                                    else s.neat_last_action),
+                    "last_action": list(s.neat_last_action or []),
                 }
             result[aid] = entry
         return result

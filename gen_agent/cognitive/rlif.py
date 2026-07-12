@@ -13,6 +13,7 @@ from __future__ import annotations
 import logging
 import os
 from collections import defaultdict
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class RLIFEngine:
         gap = self._base_gap - int(r / 3.0)
         return max(1, min(self._base_gap * 2, gap))
 
-    def top_pairs(self, n: int = 5) -> list:
+    def top_pairs(self, n: int = 5) -> list[Any]:
         """Return n pairs with highest reward (for social learning)."""
         sorted_pairs = sorted(self._rewards.items(), key=lambda x: x[1], reverse=True)
         return sorted_pairs[:n]

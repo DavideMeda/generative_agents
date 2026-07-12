@@ -40,7 +40,7 @@ class MaRSEngine:
 
     def can_share(self, content: str) -> bool:
         classification = classify(content)
-        return _POLICIES[classification]["shareable"]
+        return bool(_POLICIES[classification]["shareable"])
 
     def decay_multiplier(self, content: str) -> float:
         return _POLICIES[classify(content)]["decay_multiplier"]

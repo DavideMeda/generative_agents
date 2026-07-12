@@ -12,7 +12,7 @@ PathLike = str | Path
 def save_individual(genome: NEATGenome, path: PathLike) -> str:
     out = Path(path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(out, **genome.to_arrays())
+    np.savez_compressed(out, **genome.to_arrays())  # type: ignore[arg-type]
     return str(out)
 
 

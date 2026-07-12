@@ -65,12 +65,12 @@ class AssociativeMemoryBridge:
         memory_type: str = "observation",
         importance: float = 5.0,
     ) -> str:
-        return self._memory.store(
+        return str(self._memory.store(
             agent_id=self._agent_id,
             content=content,
             memory_type=memory_type,
             importance=importance,
-        )
+        ))
 
     def retrieve_memories(self, query: str, top_k: int = 5) -> list[str]:
         from gen_agent.interfaces.memory_protocol import MemoryQuery
@@ -100,7 +100,7 @@ class AssociativeMemoryBridge:
                 tick=int(context.get("tick", 0)),
                 location=context.get("location", "town"),
             )
-            return plan.get("steps", [])
+            return list(plan.get("steps", []))
         except Exception as exc:
             logger.warning("Plan generation failed for %s: %s", self._agent_id, exc)
             return ["Explore the environment"]

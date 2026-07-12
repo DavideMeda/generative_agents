@@ -149,4 +149,4 @@ class PostgresMemoryBackend:
                 cur.execute("SELECT COUNT(*) FROM memories WHERE agent_id = %s", (agent_id,))
             else:
                 cur.execute("SELECT COUNT(*) FROM memories")
-            return cur.fetchone()[0]
+            return int(cur.fetchone()[0])

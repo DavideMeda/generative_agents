@@ -15,7 +15,7 @@ class FaissVectorStore:
         self._ids: list[str] = []
         self._faiss = None
         try:
-            import faiss  # type: ignore
+            import faiss
             self._faiss = faiss
         except ImportError:
             logger.info("faiss-cpu not installed — vector store uses keyword fallback")

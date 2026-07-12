@@ -32,7 +32,7 @@ def get_llm_provider(name: str | None = None) -> LLMProvider:
     Supported values: ollama | openrouter | council | mock
     Falls back to mock if the requested provider is unavailable.
     """
-    selected = (name or os.getenv("LLM_PROVIDER", "mock")).lower().strip()
+    selected = (name or os.getenv("LLM_PROVIDER") or "mock").lower().strip()
 
     if selected == "ollama":
         from gen_agent.llm.ollama_provider import OllamaProvider

@@ -37,7 +37,7 @@ class OpenRouterProvider(LLMProvider):
     ) -> None:
         self._api_key = api_key or os.getenv("OPENROUTER_API_KEY", "")
         self._model = model or os.getenv("OPENROUTER_MODEL", _DEFAULT_MODEL)
-        self._timeout = int(timeout or os.getenv("OPENROUTER_TIMEOUT", _DEFAULT_TIMEOUT))
+        self._timeout = int(timeout or os.getenv("OPENROUTER_TIMEOUT") or _DEFAULT_TIMEOUT)
         if not self._api_key:
             logger.warning("OpenRouterProvider: OPENROUTER_API_KEY not set")
 
@@ -63,7 +63,7 @@ class OpenRouterProvider(LLMProvider):
         try:
             with urllib.request.urlopen(req, timeout=self._timeout) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
-                return data["choices"][0]["message"]["content"].strip()
+                return str(data["choices"][0]["message"]["content"]).strip()
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="replace")
             logger.warning("OpenRouter HTTP %s: %s", exc.code, body[:200])

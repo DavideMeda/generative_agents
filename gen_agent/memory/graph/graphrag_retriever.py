@@ -104,7 +104,7 @@ class GraphRAGRetriever:
         self._backend.delete(memory_id)
 
 
-def make_graphrag_if_enabled(backend=None) -> GraphRAGRetriever | None:
+def make_graphrag_if_enabled(backend: Any = None) -> GraphRAGRetriever | None:
     if os.getenv("ENABLE_GRAPHRAG", "false").lower() in ("1", "true", "yes"):
         return GraphRAGRetriever(backend=backend)
     return None
