@@ -23,7 +23,7 @@ class FeedForwardNetwork:
                 (int(conn.in_node), float(conn.weight))
             )
 
-    def activate(self, inputs: np.ndarray) -> np.ndarray:  # type: ignore[type-arg]
+    def activate(self, inputs: np.ndarray) -> np.ndarray:
         values: dict[int, float] = {}
         arr = np.asarray(inputs, dtype=np.float64)
         if arr.size < self.input_size:
