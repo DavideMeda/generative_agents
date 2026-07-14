@@ -1,10 +1,10 @@
 """
-Benchmark: 100-tick baseline (3 agenti, stub mode, no LLM).
+Benchmark: 100-tick baseline (3 agents, stub mode, no LLM).
 
-Misura il tempo di avanzamento di 100 tick e il throughput tick/s.
-Output JSON salvato in output/benchmarks/.
+Measures tick advancement time and ticks/s throughput.
+JSON output saved to output/benchmarks/.
 
-Uso:
+Usage:
     python benchmarks/100_tick_baseline.py
 """
 from __future__ import annotations

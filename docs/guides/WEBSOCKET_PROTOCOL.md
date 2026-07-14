@@ -1,19 +1,12 @@
 # WebSocket Protocol — Gen_Agent
 
 ## Endpoint
-
 ```
 ws://localhost:8000/ws
 ```
+The server emits a JSON message on every simulation tick; the client receives live updates without polling.
 
-Il server emette messaggi JSON ad ogni tick della simulazione. Il client si connette e riceve aggiornamenti in tempo reale senza bisogno di polling.
-
----
-
-## Envelope versionato (schema_version "1")
-
-Ogni messaggio ha la seguente struttura:
-
+## Versioned envelope (schema_version "1")
 ```json
 {
   "schema_version": "1",
@@ -29,82 +22,37 @@ Ogni messaggio ha la seguente struttura:
         "target_poi": "Cafe",
         "emotion": "happy"
       }
-    },
-    "stats": {
-      "tick": 42,
-      "agent_count": 3,
-      "dialogues_started": 1
     }
   }
 }
 ```
 
-### Campi dell'envelope
+### Fields
+- `schema_version`: protocol version (string)
+- `type`: `"tick_result"` (reserved for future types)
+- `tick`: current tick number
+- `timestamp`: ISO8601 UTC
+- `data.events`: list of event strings
+- `data.agents`: per-agent state (id → payload)
 
-| Campo            | Tipo   | Descrizione                                              |
-|------------------|--------|----------------------------------------------------------|
-| `schema_version` | string | Versione del protocollo. Attualmente `"1"`.              |
-| `type`           | string | Tipo di evento. Attualmente `"tick_result"`.             |
-| `tick`           | int    | Numero di tick simulato (0-indexed).                     |
-| `timestamp`      | string | ISO-8601 UTC del momento di emissione sul server.        |
-| `data`           | object | Payload specifico per `type` (vedi sotto).               |
+Agent payload (example keys):
+- `name`: display name
+- `position`: `[x, y]`
+- `target_poi`: POI name if any
+- `traits`: personality traits
+- `neat`: latest NEAT action if enabled
+- `dialogue`: optional transcript preview (if dialogue occurred)
 
-### Payload `tick_result`
-
-| Campo     | Tipo   | Descrizione                                                       |
-|-----------|--------|-------------------------------------------------------------------|
-| `events`  | array  | Lista di stringhe descrittive degli eventi avvenuti nel tick.     |
-| `agents`  | object | Mappa `agent_id → AgentSnapshot` (posizione, POI, emozione, ...) |
-| `stats`   | object | Statistiche aggregate del motore di simulazione.                  |
-
----
-
-## Versioning e backward compatibility
-
-- La versione `"1"` è la versione stabile corrente.
-- I client devono controllare `schema_version` e ignorare messaggi con versione sconosciuta.
-- Nuovi campi potranno essere aggiunti a `data` in modo non-breaking.
-- Cambi breaking incrementeranno la versione (es. `"2"`).
-
----
-
-## Esempio client JavaScript
-
-```javascript
+## Client example (JavaScript)
+```js
 const ws = new WebSocket("ws://localhost:8000/ws");
-
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
-  if (msg.schema_version !== "1") return;  // versione non supportata
-  if (msg.type === "tick_result") {
-    console.log(`Tick ${msg.tick}:`, msg.data.agents);
-  }
+  if (msg.schema_version !== "1") return;
+  console.log("Tick", msg.tick, "events", msg.data.events);
 };
 ```
 
-## Esempio client Python (websockets)
-
-```python
-import asyncio
-import json
-import websockets
-
-async def watch():
-    async with websockets.connect("ws://localhost:8000/ws") as ws:
-        async for raw in ws:
-            msg = json.loads(raw)
-            if msg.get("schema_version") != "1":
-                continue
-            print(f"Tick {msg['tick']}: {len(msg['data']['agents'])} agents")
-
-asyncio.run(watch())
-```
-
----
-
-## Note implementative
-
-- Il server mantiene un set di code asyncio (`asyncio.Queue`) per ogni client connesso.
-- La coda ha `maxsize=50`: messaggi in eccesso vengono scartati (lossy broadcast).
-- Il timeout di ricezione lato server è 30s: dopo 30s di silenzio il server chiude la connessione.
-- Il codice sorgente dell'envelope è in `server/tick_runner.py::_make_envelope`.
+## Notes
+- Envelope is append-only; prefer adding fields over changing existing ones.
+- If you need to bump the schema, increase `schema_version` and keep a compatibility shim client-side.

@@ -1,8 +1,8 @@
 """
-Protocollo per l'adapter che fa da ponte tra Gen_Agent e il codice Stanford.
+Protocol for the adapter that bridges Gen_Agent and the Stanford code.
 
-Isola il resto del sistema da qualsiasi dipendenza diretta
-ai path/moduli della repo Stanford (reverie/, environment/).
+Isolates the rest of the system from any direct dependency
+on Stanford repo paths/modules (reverie/, environment/).
 """
 from __future__ import annotations
 
@@ -12,17 +12,17 @@ from typing import Any, Protocol, runtime_checkable
 @runtime_checkable
 class StanfordAdapterProtocol(Protocol):
     def run_agent_plan(self, agent_id: str, context: dict[str, Any]) -> dict[str, Any]:
-        """Esegue il ciclo plan/act di un agente Stanford. Ritorna il plan risultante."""
+        """Run the plan/act cycle for a Stanford agent. Returns the resulting plan."""
         ...
 
     def run_reflection(self, agent_id: str, memories: list[str]) -> list[str]:
-        """Chiede all'agente Stanford di fare una reflection sulle memorie date."""
+        """Ask the Stanford agent to reflect on the given memories."""
         ...
 
     def get_agent_scratch(self, agent_id: str) -> dict[str, Any]:
-        """Legge il scratch pad interno dell'agente Stanford."""
+        """Read the internal scratch pad of the Stanford agent."""
         ...
 
     def set_agent_scratch(self, agent_id: str, data: dict[str, Any]) -> None:
-        """Aggiorna il scratch pad interno dell'agente Stanford."""
+        """Update the internal scratch pad of the Stanford agent."""
         ...

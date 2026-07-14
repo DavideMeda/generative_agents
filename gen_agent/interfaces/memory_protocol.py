@@ -1,8 +1,8 @@
 """
-Protocollo stabile per il layer memoria di Gen_Agent.
+Stable protocol for the Gen_Agent memory layer.
 
-Tutti i componenti che vogliono leggere/scrivere memorie devono
-dipendere da questa interfaccia, mai dall'implementazione concreta.
+All components that read/write memories must depend on this interface,
+never on a concrete implementation.
 """
 from __future__ import annotations
 
@@ -42,17 +42,17 @@ class MemoryProtocol(Protocol):
         importance: float,
         **kwargs: Any,
     ) -> str:
-        """Salva una memoria. Ritorna l'ID assegnato."""
+        """Store a memory. Returns the assigned ID."""
         ...
 
     def retrieve(self, query: MemoryQuery) -> list[MemoryRecord]:
-        """Recupera memorie rilevanti per la query."""
+        """Retrieve memories relevant to the query."""
         ...
 
     def touch(self, memory_id: str) -> None:
-        """Aggiorna il timestamp di ultimo accesso."""
+        """Update the last-accessed timestamp."""
         ...
 
     def delete(self, memory_id: str) -> None:
-        """Rimuove una memoria per ID."""
+        """Remove a memory by ID."""
         ...

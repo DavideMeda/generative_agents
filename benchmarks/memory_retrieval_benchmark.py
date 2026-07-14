@@ -1,10 +1,10 @@
 """
 Benchmark: memory retrieval performance.
 
-Inserisce N memorie in SQLite e misura il tempo di retrieval
-per varie dimensioni del corpus.
+Inserts N memories into SQLite and measures retrieval time
+for various corpus sizes.
 
-Uso:
+Usage:
     python benchmarks/memory_retrieval_benchmark.py
 """
 from __future__ import annotations

@@ -1,17 +1,17 @@
 """
-StanfordExporter — scrive lo stato della simulazione nel formato
-atteso dall'UI Stanford (environment/frontend_server).
+StanfordExporter — writes simulation state in the format expected by the
+Stanford UI (environment/frontend_server).
 
-Il frontend Django Stanford legge i file:
-  storage/{sim_code}/movement/{step}.json   → posizioni agenti
-  storage/{sim_code}/environment/{step}.json → stato ambiente
-  temp_storage/curr_sim_code.json            → codice simulazione corrente
-  temp_storage/curr_step.json                → step corrente
+The Stanford Django frontend reads:
+  storage/{sim_code}/movement/{step}.json    → agent positions
+  storage/{sim_code}/environment/{step}.json → environment state
+  temp_storage/curr_sim_code.json            → current simulation code
+  temp_storage/curr_step.json                → current step
 
-Questo modulo viene chiamato opzionalmente dal TickRunner
-(attivo solo se STANFORD_UI_EXPORT=true e STANFORD_UI_DIR è impostato).
+This module is called optionally by TickRunner
+(active only if STANFORD_UI_EXPORT=true and STANFORD_UI_DIR is set).
 
-Documentazione: docs/guides/STANFORD_UI.md
+See docs/guides/STANFORD_UI.md
 """
 from __future__ import annotations
 
@@ -30,8 +30,7 @@ _DEFAULT_PRONUNCIATIO = "🚶"
 
 class StanfordExporter:
     """
-    Traduce i TickResult del backend modulare nel formato
-    file-based del frontend Stanford.
+    Translate modular TickResult into the Stanford frontend file format.
     """
 
     def __init__(self, storage_dir: str, sim_code: str = "gen_agent_run") -> None:
@@ -46,9 +45,9 @@ class StanfordExporter:
 
     def export_tick(self, tick: int, agents: dict[str, Any]) -> None:
         """
-        Scrive il file movement/{tick}.json nel formato Stanford.
+        Write movement/{tick}.json in the Stanford format.
 
-        Formato atteso:
+        Expected format:
         {
           "PersonaName": {
             "movement": [x, y],

@@ -1,14 +1,14 @@
 """
-Cognitive Biases Layer — lightweight algebra-only implementations.
+Cognitive Biases Layer — lightweight, algebra-only implementations.
 
-Four biases usable as optional hooks inside SimEngine._run_interaction():
+Four biases usable as optional hooks inside `SimEngine._run_interaction()`:
 
-- RecencyBias          — memoria recente pesa di più (decay esponenziale)
-- AnchoringBias        — la prima stima osservata funge da ancora
-- AvailabilityHeuristic— frequenza nella memoria recente → probabilità stimata
-- ConfirmationBias     — recupero preferisce memorie con overlap keyword
+- RecencyBias           — recent memories weigh more (exponential decay)
+- AnchoringBias         — first observed estimate becomes an anchor
+- AvailabilityHeuristic — recent frequency → estimated probability
+- ConfirmationBias      — retrieval prefers memories with keyword overlap
 
-Enable via  ENABLE_BIASES=true  (gestito in config/engine_factory.py).
+Enable via `ENABLE_BIASES=true` (handled in `config/engine_factory.py`).
 """
 from __future__ import annotations
 
@@ -20,12 +20,12 @@ from typing import Any
 
 class RecencyBias:
     """
-    Peso moltiplicativo decrescente per età della memoria.
+    Multiplicative weight that decays with memory age.
 
     w = exp(-lambda * age_ticks)
 
-    Se age_ticks=0 → w=1.0; a 5 tick con lambda=0.2 → w≈0.37.
-    Usato per pesare quanto una memoria recente influenza la willingness.
+    If age_ticks=0 → w=1.0; at 5 ticks with lambda=0.2 → w≈0.37.
+    Used to weight how recent memories influence willingness.
     """
 
     def __init__(self, decay_lambda: float = 0.2) -> None:
@@ -46,8 +46,8 @@ class RecencyBias:
 
 class AnchoringBias:
     """
-    Prima stima osservata per un agente diventa ancora.
-    Deviazioni successive vengono attenuate di anchor_weight.
+    First observed estimate for an agent becomes the anchor.
+    Subsequent deviations are dampened by anchor_weight.
 
     bias_value = anchor + anchor_weight * (new_value - anchor)
     """
@@ -57,7 +57,7 @@ class AnchoringBias:
         self._anchors: dict[str, float] = {}
 
     def observe(self, agent_id: str, value: float) -> float:
-        """Registra o applica l'ancora per agent_id. Ritorna il valore biased."""
+        """Register or apply the anchor for agent_id. Returns the biased value."""
         if agent_id not in self._anchors:
             self._anchors[agent_id] = value
             return value
@@ -72,12 +72,12 @@ class AnchoringBias:
 
 class AvailabilityHeuristic:
     """
-    Frequenza di un tipo di evento nella memoria recente → probabilità stimata.
+    Recent frequency of an event type → estimated probability.
 
     P_biased(event_type) = count(event_type in recent) / len(recent)
-    Restituisce 0.0 se il tipo non è mai apparso.
+    Returns 0.0 if the type never appears.
 
-    ponytail: scan lineare O(n), accettabile per window_size <= 100.
+    ponytail: linear scan O(n), acceptable for window_size <= 100.
     """
 
     def __init__(self, window_size: int = 20) -> None:
@@ -99,12 +99,12 @@ class AvailabilityHeuristic:
 
 class ConfirmationBias:
     """
-    Retrieval preferisce memorie con overlap keyword > threshold rispetto al belief corrente.
+    Retrieval prefers memories with keyword overlap > threshold relative to the belief.
 
     overlap = |words(belief) ∩ words(memory)| / |words(belief)|
 
-    Se overlap >= threshold la memoria viene tenuta, altrimenti scartata
-    (a meno che non ci siano memorie sopra threshold, nel qual caso ritorna tutte).
+    If overlap >= threshold the memory is kept, otherwise discarded
+    (unless none pass the threshold, in which case all are returned).
     """
 
     def __init__(self, threshold: float = 0.2) -> None:
@@ -115,7 +115,7 @@ class ConfirmationBias:
         return {w.lower().strip(".,!?;:\"'") for w in text.split() if len(w) > 2}
 
     def filter(self, belief: str, memories: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Filtra le memorie per overlap con il belief corrente."""
+        """Filter memories by overlap with the current belief."""
         belief_words = self._words(belief)
         if not belief_words:
             return memories
@@ -131,10 +131,10 @@ class ConfirmationBias:
 @dataclass
 class BiasLayer:
     """
-    Facade che raggruppa tutti i bias.
-    Iniettata in SimEngine come parametro opzionale, non rompe niente se assente.
+    Facade grouping all biases.
+    Injected into SimEngine as an optional parameter; safe to omit.
 
-    Uso in SimEngine._run_interaction():
+    Usage in SimEngine._run_interaction():
         if self._biases:
             willingness *= self._biases.willingness_modifier(agent_id, current_tick, recent_events)
     """
@@ -152,11 +152,11 @@ class BiasLayer:
         recent_events: list[str] | None = None,
     ) -> float:
         """
-        Combina i bias in un moltiplicatore di willingness [0.1 … 2.0].
+        Combine biases into a willingness multiplier [0.1 … 2.0].
 
-        - RecencyBias abbassa la willingness se l'ultima interazione è recente.
-        - AvailabilityHeuristic aumenta se 'dialogue' è frequente nella memoria recente.
-        - AnchoringBias stabilizza il moltiplicatore verso il valore storico dell'agente.
+        - RecencyBias lowers willingness if the last interaction is recent.
+        - AvailabilityHeuristic boosts if 'dialogue' is frequent in recent memory.
+        - AnchoringBias stabilizes the multiplier toward the agent's historical value.
         """
         age = (current_tick - last_interaction_tick) if last_interaction_tick is not None else 10
         recency_w = self.recency.weight(age)

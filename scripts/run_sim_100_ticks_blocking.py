@@ -117,7 +117,7 @@ def run_ollama_scenario(ticks: int, report_path: Path | None) -> dict:
     }
 
     summary = {
-        "project": "Nuovo Gen_Agent (modular)",
+        "project": "new-gen-agent (modular)",
         "scenario": "blocking_100",
         "llm": os.getenv("LLM_PROVIDER", "ollama"),
         "ollama_model": os.getenv("OLLAMA_MODEL", "llama3.2:3b"),
@@ -158,12 +158,13 @@ def run_ollama_scenario(ticks: int, report_path: Path | None) -> dict:
 
 def run_mock_simple(ticks: int, agent_names: list[str], **kwargs) -> dict:
     """Legacy simple path (random walk, no POI) for fast offline smoke test."""
+    import math
+
     from gen_agent.dialogue.dialogue_engine import DialogueEngine
     from gen_agent.interfaces.sim_protocol import AgentConfig
     from gen_agent.memory.manager import MemoryManager
     from gen_agent.memory.storage.sqlite_backend import SQLiteMemoryBackend
     from gen_agent.sim.engine import SimConfig, SimEngine
-    import math
 
     backend = SQLiteMemoryBackend(db_path=":memory:")
     memory = MemoryManager(backend=backend)
@@ -196,7 +197,7 @@ def run_mock_simple(ticks: int, agent_names: list[str], **kwargs) -> dict:
     elapsed = time.perf_counter() - t0
     stats = engine.stats()
     return {
-        "project": "Nuovo Gen_Agent (mock simple)",
+        "project": "new-gen-agent (mock simple)",
         "ticks_requested": ticks,
         "agents": len(agent_names),
         "block_on_dialogue": True,
@@ -220,7 +221,7 @@ def main() -> int:
     args = parser.parse_args()
 
     # Load launch profile and apply env flags
-    from config.launch_profile import load_profile, apply_profile_to_env
+    from config.launch_profile import apply_profile_to_env, load_profile
     profile = load_profile(args.preset)
     if args.ticks is not None:
         profile.ticks = args.ticks
@@ -231,7 +232,7 @@ def main() -> int:
     apply_profile_to_env(profile)
 
     ticks = profile.ticks
-    print("=== Nuovo Gen_Agent — blocking simulation ===")
+    print("=== new-gen-agent — blocking simulation ===")
     print(f"preset={args.preset} ticks={ticks} agents={profile.agents} llm={args.llm}")
 
     if args.llm == "ollama":

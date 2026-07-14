@@ -26,10 +26,10 @@ from server.tick_runner import TickRunner
 
 def _configure_logging() -> None:
     """
-    Configura structlog in modalità dev (console leggibile) o prod (JSON).
-    LOG_FORMAT=json → ndjson per aggregatori (Loki, CloudWatch, etc.)
-    LOG_FORMAT=dev  → console colorata (default)
-    Documentazione: docs/guides/OBSERVABILITY.md
+    Configure structlog for dev (readable console) or prod (JSON).
+    LOG_FORMAT=json → ndjson for aggregators (Loki, CloudWatch, etc.)
+    LOG_FORMAT=dev  → colored console (default)
+    See docs/guides/OBSERVABILITY.md
     """
     log_level_name = os.getenv("LOG_LEVEL", "INFO").upper()
     log_level = getattr(logging, log_level_name, logging.INFO)

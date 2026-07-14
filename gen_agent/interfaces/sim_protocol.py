@@ -1,5 +1,5 @@
 """
-Protocollo stabile per il motore di simulazione di Gen_Agent.
+Stable protocol for the Gen_Agent simulation engine.
 """
 from __future__ import annotations
 
@@ -25,17 +25,17 @@ class TickResult:
 @runtime_checkable
 class SimProtocol(Protocol):
     def register_agent(self, config: AgentConfig) -> str:
-        """Registra un agente nel motore. Ritorna agent_id."""
+        """Register an agent in the engine. Returns agent_id."""
         ...
 
     def advance(self) -> TickResult:
-        """Avanza di un tick. Ritorna eventi e stati."""
+        """Advance one tick. Returns events and agent states."""
         ...
 
     def snapshot(self) -> dict[str, Any]:
-        """Ritorna stato corrente dell'intera simulazione."""
+        """Return current state of the entire simulation."""
         ...
 
     def reset(self) -> None:
-        """Azzera la simulazione (utile per test)."""
+        """Reset the simulation (useful for tests)."""
         ...

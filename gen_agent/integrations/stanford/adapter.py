@@ -1,13 +1,13 @@
 """
-Adapter concreto che fa da ponte verso il codice Stanford (reverie/).
+Concrete adapter bridging to the Stanford code (reverie/).
 
-Questo è l'UNICO punto del codebase Gen_Agent che può importare da reverie/.
-Tutto il resto del sistema parla con StanfordAdapterProtocol.
+This is the ONLY place in the Gen_Agent codebase that may import reverie/.
+Everything else talks to StanfordAdapterProtocol.
 
-Strategia di isolamento:
-- Tutti gli import Stanford sono racchiusi in try/except per ambienti
-  dove il codice Stanford non è presente (es. unit test standalone).
-- L'adapter trasforma le chiamate Gen_Agent nei formati Stanford e viceversa.
+Isolation strategy:
+- All Stanford imports are wrapped in try/except for environments
+  where the Stanford code is absent (e.g., standalone unit tests).
+- The adapter translates Gen_Agent calls into Stanford formats and back.
 """
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-# Aggiunge la root del fork a sys.path così reverie/ è importabile
+# Add fork root to sys.path so reverie/ is importable
 _FORK_ROOT = Path(__file__).resolve().parents[4]
 if str(_FORK_ROOT) not in sys.path:
     sys.path.insert(0, str(_FORK_ROOT))
@@ -38,10 +38,10 @@ except ModuleNotFoundError:
 
 class StanfordAdapter:
     """
-    Implementazione concreta di StanfordAdapterProtocol.
+    Concrete implementation of StanfordAdapterProtocol.
 
-    In stub mode (Stanford non disponibile) restituisce risposte vuote/
-    placeholder senza crashare — utile per test e sviluppo offline.
+    In stub mode (Stanford unavailable) it returns empty/placeholder
+    responses without crashing — useful for tests and offline development.
     """
 
     def __init__(

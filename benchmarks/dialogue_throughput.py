@@ -1,10 +1,10 @@
 """
-Benchmark: dialogue throughput (stub LLM, nessuna connessione Ollama).
+Benchmark: dialogue throughput (stub LLM, no Ollama connection).
 
-Misura quante conversazioni si completano in N tick quando gli agenti
-sono abbastanza vicini da interagire.
+Measures how many conversations complete in N ticks when agents
+are close enough to interact.
 
-Uso:
+Usage:
     python benchmarks/dialogue_throughput.py
 """
 from __future__ import annotations
@@ -22,7 +22,7 @@ PRESET = "dialogue_throughput"
 
 
 def _stub_llm(prompt: str) -> str:
-    """LLM stub: risposta minima valida per il dialogue engine."""
+    """LLM stub: minimal valid response for the dialogue engine."""
     return "Hello there. How are you today? I am doing well, thank you."
 
 
@@ -40,12 +40,12 @@ def run() -> dict:
         seed=0,
     )
     engine = SimEngine(config=cfg, dialogue_engine=dialogue)
-    # 4 agenti molto vicini → massima probabilità di interazione
+    # 4 agents placed very close → maximum interaction probability
     for i in range(4):
         engine.register_agent(AgentConfig(
             agent_id=f"agent_{i}",
             name=f"Agent{i}",
-            position=(float(i % 2), float(i // 2)),  # griglia 2x2
+            position=(float(i % 2), float(i // 2)),  # 2x2 grid
         ))
 
     t0 = time.perf_counter()

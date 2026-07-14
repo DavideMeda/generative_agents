@@ -1,10 +1,10 @@
 """
 Benchmark: agent scaling profile.
 
-Misura come il tempo per tick cresce all'aumentare del numero di agenti.
-Scala da 1 a 50 agenti, 20 tick ciascuno.
+Measures how tick time grows as the number of agents increases.
+Scales from 1 to 50 agents, 20 ticks each.
 
-Uso:
+Usage:
     python benchmarks/agent_scaling_profile.py
 """
 from __future__ import annotations

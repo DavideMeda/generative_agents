@@ -1,11 +1,11 @@
 """
-Tests per StanfordAdapter — M1 adapter hardening.
+Tests for StanfordAdapter — M1 adapter hardening.
 
-Copre:
-  - stub mode (senza reverie)
+Covers:
+  - stub mode (without reverie)
   - protocol compliance (StanfordAdapterProtocol)
   - contract tests: mock LLM + register_persona + run_agent_plan
-  - boundary rule: solo gen_agent/integrations/stanford/ può importare reverie
+  - boundary rule: only gen_agent/integrations/stanford/ may import reverie
 """
 from __future__ import annotations
 
@@ -142,12 +142,12 @@ class TestFactoryFunction:
 
 class TestBoundaryImportRule:
     """
-    Regola architetturale: solo gen_agent/integrations/stanford/ può importare reverie.
-    Scansione AST dei soli top-level package del progetto
+    Architectural rule: only gen_agent/integrations/stanford/ may import reverie.
+    AST scan limited to top-level project packages
     (gen_agent, server, config, scenarios, scripts, benchmarks).
     """
 
-    # Scansiona solo questi package top-level — esclude reverie/, environment/, portfolio/
+    # Scan only these top-level packages — excludes reverie/, environment/, portfolio/
     _SCAN_DIRS = ("gen_agent", "server", "config", "scenarios", "scripts", "benchmarks")
 
     def test_no_reverie_import_outside_stanford_integration(self):

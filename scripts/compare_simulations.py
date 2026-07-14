@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Compare Nuovo Gen_Agent vs legacy Gen_Agent blocking simulations.
+Compare new-gen-agent vs legacy Gen_Agent blocking simulations.
 
 Produces a side-by-side table AND a structured parity_report.json
 with quality metrics (core_score, plan→poi, memory types, reflection).
@@ -13,14 +13,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import os
 import re
-import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -39,7 +37,7 @@ THRESHOLDS = {
 }
 
 
-def load_json(path: Path) -> Optional[dict]:
+def load_json(path: Path) -> dict | None:
     if path and path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     return None
@@ -51,7 +49,6 @@ def load_json(path: Path) -> Optional[dict]:
 
 def _score_utterance(text: str) -> float:
     """Lightweight CORE score for a single utterance (no deps)."""
-    import string
     stop = {"the","a","an","and","or","but","in","on","at","to","for","of","with","is","are","was",
             "were","i","you","he","she","it","we","they","this","that","not","be","have","has","do"}
     words = re.sub(r"[^\w\s]", " ", (text or "").lower()).split()
@@ -64,7 +61,7 @@ def _score_utterance(text: str) -> float:
     return round(variety * 0.7 + length_bonus * 0.3, 3)
 
 
-def _detect_issues(text: str, speaker: str, listener: str, known_names: List[str]) -> Dict[str, bool]:
+def _detect_issues(text: str, speaker: str, listener: str, known_names: list[str]) -> dict[str, bool]:
     lower = text.lower()
     meta = bool(re.search(
         r"\b(simulation|language model|llm|as an ai|waking up|woke up|virtual reality|"
@@ -85,7 +82,7 @@ def _detect_issues(text: str, speaker: str, listener: str, known_names: List[str
     return {"meta": meta, "non_english": non_english, "wrong_addressee": wrong_addressee}
 
 
-def compute_dialogue_quality(report: dict) -> Dict[str, Any]:
+def compute_dialogue_quality(report: dict) -> dict[str, Any]:
     log = report.get("dialogue_log", [])
     if not log:
         return {"core_score_mean": 0.0, "core_score_min": 0.0, "per_dialogue": [],
@@ -118,7 +115,7 @@ def compute_dialogue_quality(report: dict) -> Dict[str, Any]:
     }
 
 
-def check_memory_persistence(data_dir: str = "data") -> Dict[str, Any]:
+def check_memory_persistence(data_dir: str = "data") -> dict[str, Any]:
     """Check if per-agent memory DBs exist from previous run."""
     base = ROOT / data_dir / "agents"
     if not base.exists():
@@ -127,9 +124,9 @@ def check_memory_persistence(data_dir: str = "data") -> Dict[str, Any]:
     return {"per_agent_dbs": len(dbs), "agents_found": [p.parent.name for p in dbs]}
 
 
-def extract_memory_types(report: dict) -> Dict[str, int]:
+def extract_memory_types(report: dict) -> dict[str, int]:
     """Best-effort count of memory types from trace files."""
-    types: Dict[str, int] = {"observation": 0, "social": 0, "reflection": 0, "plan": 0, "other": 0}
+    types: dict[str, int] = {"observation": 0, "social": 0, "reflection": 0, "plan": 0, "other": 0}
     # Sum from report if present
     for k in list(types.keys()):
         if k in report:
@@ -137,7 +134,7 @@ def extract_memory_types(report: dict) -> Dict[str, int]:
     return types
 
 
-def extract_new_quality_metrics(report: dict) -> Dict[str, Any]:
+def extract_new_quality_metrics(report: dict) -> dict[str, Any]:
     ticks = report.get("final_tick") or report.get("ticks_requested", 0)
     agents = report.get("agents", 1)
     dq = compute_dialogue_quality(report)
@@ -145,7 +142,7 @@ def extract_new_quality_metrics(report: dict) -> Dict[str, Any]:
     reflections = report.get("reflections_generated", 0)
 
     return {
-        "project": report.get("project", "Nuovo Gen_Agent"),
+        "project": report.get("project", "new-gen-agent"),
         "ticks": ticks,
         "agents": agents,
         "interactions": report.get("interactions", 0),
@@ -178,7 +175,7 @@ def extract_new_quality_metrics(report: dict) -> Dict[str, Any]:
 # Parity check
 # ------------------------------------------------------------------
 
-def check_thresholds(m: Dict[str, Any]) -> Dict[str, bool]:
+def check_thresholds(m: dict[str, Any]) -> dict[str, bool]:
     ticks = m["ticks"] or 1
     scale = 100 / ticks  # normalize to 100 ticks
     return {
@@ -193,7 +190,7 @@ def check_thresholds(m: Dict[str, Any]) -> Dict[str, bool]:
     }
 
 
-def generate_parity_report(m: Dict[str, Any], out_path: Path) -> None:
+def generate_parity_report(m: dict[str, Any], out_path: Path) -> None:
     checks = check_thresholds(m)
     passed = sum(checks.values())
     total = len(checks)
@@ -212,7 +209,7 @@ def generate_parity_report(m: Dict[str, Any], out_path: Path) -> None:
     print(f"\nParity report saved: {out_path}")
 
 
-def print_quality_comparison(m: Dict[str, Any]) -> None:
+def print_quality_comparison(m: dict[str, Any]) -> None:
     checks = check_thresholds(m)
     print("\n" + "=" * 65)
     print("QUALITY PARITY CHECK vs legacy blocking_balanced")
@@ -236,8 +233,8 @@ def print_quality_comparison(m: Dict[str, Any]) -> None:
 
 
 def print_quantitative_comparison(
-    m: Dict[str, Any],
-    legacy: Optional[Dict[str, Any]] = None,
+    m: dict[str, Any],
+    legacy: dict[str, Any] | None = None,
     title: str = "QUANTITATIVE COMPARISON — blocking / 5 agents / Ollama",
 ) -> None:
     print("\n" + "=" * 70)
@@ -266,7 +263,7 @@ def print_quantitative_comparison(
         ("Ollama model", m["ollama_model"], legacy.get("ollama_model", "n/a") if legacy else "n/a"),
     ]
     col = 22
-    print(f"{'Metric':<{col}} {'Nuovo':>20} {'Legacy':>20}")
+    print(f"{'Metric':<{col}} {'New':>20} {'Legacy':>20}")
     print("-" * 70)
     for label, new_v, leg_v in rows:
         print(f"{label:<{col}} {str(new_v):>20} {str(leg_v):>20}")
@@ -274,12 +271,12 @@ def print_quantitative_comparison(
 
 
 def build_comparison_json(
-    nuovo: Dict[str, Any],
-    legacy: Optional[Dict[str, Any]],
+    nuovo: dict[str, Any],
+    legacy: dict[str, Any] | None,
     *,
     label: str,
     nuovo_source: str,
-    legacy_source: Optional[str],
+    legacy_source: str | None,
 ) -> dict:
     return {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -292,8 +289,8 @@ def build_comparison_json(
     }
 
 
-def _delta_metrics(nuovo: Dict[str, Any], legacy: Dict[str, Any]) -> dict:
-    def d(key: str, nkey: Optional[str] = None) -> Optional[float]:
+def _delta_metrics(nuovo: dict[str, Any], legacy: dict[str, Any]) -> dict:
+    def d(key: str, nkey: str | None = None) -> float | None:
         nk = nkey or key
         try:
             a = float(nuovo.get(nk, 0) or 0)
@@ -343,7 +340,7 @@ def extract_legacy_metrics(report: dict) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--report", default="output/sim_blocking_30_en.json",
-                        help="Path to Nuovo Gen_Agent sim report JSON")
+                        help="Path to new-gen-agent sim report JSON")
     parser.add_argument("--legacy-report", help="Path to legacy report JSON (skip auto-find)")
     parser.add_argument("--skip-legacy", action="store_true")
     parser.add_argument("--parity-out", default="output/parity_report.json")
@@ -373,7 +370,7 @@ def main() -> int:
             legacy_raw = load_json(legacy_path) or {}
             legacy_m = extract_legacy_metrics(legacy_raw)
             title = (
-                f"QUANTITATIVE COMPARISON — Nuovo vs legacy "
+                f"QUANTITATIVE COMPARISON — New vs legacy "
                 f"({legacy_m.get('preset', 'unknown preset')})"
             )
             print_quantitative_comparison(m, legacy_m, title=title)

@@ -80,7 +80,7 @@ Thresholds: `core_score > 0.5`, zero meta/wrong-name/non-English turns,
 ## Documentation
 
 - [Architecture](docs/architecture/MODULARITY.md)
-- [Legacy vs Nuovo comparison](docs/COMPARISON.md)
+- [Legacy vs New comparison](docs/COMPARISON.md)
 - [Stanford fork relationship](docs/architecture/UPSTREAM_RELATIONSHIP.md)
 - [Docker guide](docs/guides/DOCKER.md)
 - [Simulation configuration](docs/guides/CONFIGURATORE_SIMULAZIONE.md)

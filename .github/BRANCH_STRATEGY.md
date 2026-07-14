@@ -1,50 +1,42 @@
 # Branch Strategy — Gen_Agent (fork-first)
 
-## Branch permanenti
+## Permanent branches
 
-| Branch    | Scopo                                         | Protezione |
-|-----------|-----------------------------------------------|------------|
-| `main`    | Codice stabile, pronto per produzione         | Sì — require PR + CI verde |
-| `develop` | Integrazione continua feature/fix             | Sì — require PR + CI verde |
+| Branch  | Purpose                                 | Protection |
+|---------|-----------------------------------------|------------|
+| `main`  | Stable, production-ready code           | Yes — PR + green CI required |
+| `develop` | Continuous integration of features/fixes | Yes — PR + green CI required |
 
-## Branch temporanei (naming convention)
-
+## Temporary branches (naming)
 ```
-feature/<descrizione-breve>   # nuova funzionalità
-refactor/<modulo>             # refactoring interno
-fix/<descrizione-bug>         # bugfix
-docs/<argomento>              # solo documentazione
-chore/<task>                  # manutenzione, deps, config
+feature/<short-desc>   # new feature
+refactor/<module>      # internal refactor
+fix/<bug-desc>         # bugfix
+docs/<topic>           # docs only
+chore/<task>           # maintenance, deps, config
 ```
 
-## Workflow standard
+## Standard workflow
+1. Branch from `develop`: `git checkout -b feature/my-feature develop`
+2. Develop + test locally.
+3. Open PR to `develop` — CI must be green.
+4. Code review required (≥1 reviewer).
+5. Squash merge into `develop`.
+6. Releases: PR from `develop` to `main` with semver tag.
 
-1. Crea branch da `develop`: `git checkout -b feature/mia-feature develop`
-2. Sviluppa + testa localmente.
-3. Apri PR verso `develop` — CI deve essere verde.
-4. Code review obbligatoria (almeno 1 reviewer).
-5. Squash merge in `develop`.
-6. Ogni release: PR da `develop` a `main` con tag semver.
+## Commit rules
+- Format: `<type>: <short description>` (max 72 chars)
+- Allowed types: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `style`, `ci`
+- Example: `feat: add tick-based memory decay engine`
 
-## Regole commit
-
-Formato: `<tipo>: <breve descrizione>` (massimo 72 caratteri)
-
-Tipi ammessi: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `style`, `ci`
-
-Esempio: `feat: add tick-based memory decay engine`
-
-## Sincronizzazione con upstream Stanford
-
-Mensilmente (o a ogni release Stanford rilevante):
-
+## Sync with upstream Stanford
+Monthly (or after relevant upstream releases):
 ```bash
 git fetch upstream
 git checkout develop
 git merge upstream/main --no-ff -m "chore: sync with upstream Stanford joonspk-research/generative_agents"
 ```
 
-## Branch protection rules (da applicare su GitHub)
-
+## Branch protection (on GitHub)
 - `main`: require PR, require status checks (ci/lint, ci/test), no force push, require review from code owners.
 - `develop`: require PR, require status checks (ci/lint), no force push.

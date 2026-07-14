@@ -20,7 +20,7 @@ def extrapolate(legacy: dict, target_ticks: int) -> dict:
     done = legacy.get("final_tick", legacy.get("ticks_requested", 1)) or 1
     factor = target_ticks / done
     return {
-        "project": f"{legacy.get('project', 'legacy')} [stima x{factor:.1f}]",
+        "project": f"{legacy.get('project', 'legacy')} [estimate x{factor:.1f}]",
         "ticks": target_ticks,
         "agents": legacy.get("agents", 5),
         "interactions": round(legacy.get("interactions", 0) * factor),
@@ -32,7 +32,7 @@ def extrapolate(legacy: dict, target_ticks: int) -> dict:
         "ollama_model": legacy.get("ollama_model", "n/a"),
         "preset": legacy.get("scenario", "blocking_balanced"),
         "block_on_dialogue": True,
-        "note": f"Estrapolato da {done} tick reali",
+        "note": f"Extrapolated from {done} actual ticks",
     }
 
 
@@ -43,7 +43,7 @@ def row(label, a, b):
 def main() -> None:
     new = load(NEW)
     if not new:
-        print(f"Manca report nuovo: {NEW}")
+        print(f"Missing new report: {NEW}")
         sys.exit(1)
 
     legacy_raw = load(LEGACY)
@@ -67,7 +67,7 @@ def main() -> None:
             "ollama_model": new.get("ollama_model"),
             "preset": "blocking_balanced",
             "block_on_dialogue": True,
-            "note": "Stima da preset docs (150 tick = 2-4h)",
+            "note": "Estimate from preset docs (150 ticks = 2-4h)",
         }
 
     nm = {
@@ -87,33 +87,32 @@ def main() -> None:
     lm = {k: legacy.get(k, "n/a") for k in nm}
 
     print("=" * 74)
-    print("CONFRONTO — 100 tick | 5 agenti | Ollama bloccante | blocking_balanced-like")
+    print("COMPARISON — 100 ticks | 5 agents | Ollama blocking | blocking_balanced-like")
     print("=" * 74)
-    row("Metrica", "Nuovo (modulare)", "Legacy")
+    row("Metric", "New (modular)", "Legacy")
     print("-" * 74)
     for k in nm:
         row(k, nm[k], lm[k])
     if legacy.get("note"):
-        print(f"\nNota legacy: {legacy['note']}")
+        print(f"\nLegacy note: {legacy['note']}")
     print("=" * 74)
 
-  # Architecture delta
-    print("\n--- Differenze architetturali (nuovo piu snello) ---")
+    # Architecture delta
+    print("\n--- Architectural differences (new is leaner) ---")
     deltas = [
-        ("Core SimEngine", "~420 righe modulari", "~1500+ righe monolitiche"),
-        ("Memoria", "SQLite + layer opt-in", "UniversalMemoryManager ~2300 righe"),
-        ("LLM", "Provider astratto (stdlib)", "Accoppiato al worker dialoghi"),
-        ("Stanford", "Adapter opzionale", "Worker sempre attivo nei preset"),
-        ("Docker/CI", "Multi-stage + compose modulare", "Monolitico vibecoded"),
-        ("Layer avanzati", "HRM/RLIF/SEAL via env flag", "Integrati nel core"),
+        ("Core SimEngine", "~420 modular lines", "~1500+ monolithic lines"),
+        ("Memory", "SQLite + opt-in layers", "UniversalMemoryManager ~2300 lines"),
+        ("LLM", "Abstract provider (stdlib)", "Coupled to dialogue worker"),
+        ("Stanford", "Optional adapter", "Worker always active in presets"),
+        ("Docker/CI", "Multi-stage + modular compose", "Monolithic vibecoded"),
+        ("Advanced layers", "HRM/RLIF/SEAL via env flag", "Embedded in core"),
     ]
     for a, b, c in deltas:
         print(f"  {a}: {b} vs {c}")
 
     rt_new = float(new.get("real_time_sec", 1))
     if isinstance(lm.get("real_time_sec"), (int, float)) and lm["real_time_sec"]:
-        ratio = lm["real_time_sec"] / rt_new
-        print(f"\nTempo stimato: nuovo ~{rt_new/60:.0f} min vs legacy ~{lm['real_time_sec']/60:.0f} min")
+        print(f"\nEstimated time: new ~{rt_new/60:.0f} min vs legacy ~{lm['real_time_sec']/60:.0f} min")
 
 
 if __name__ == "__main__":

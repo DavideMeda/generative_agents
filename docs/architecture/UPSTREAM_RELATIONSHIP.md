@@ -2,7 +2,7 @@
 
 ## Overview
 
-`Nuovo Gen_Agent` is a **fork** of Stanford Generative Agents (git `upstream` =
+`new-gen-agent` is a **fork** of Stanford Generative Agents (git `upstream` =
 `joonspk-research/generative_agents`). The Stanford reference code is **vendored**
 under `reverie/` (copied into the repo, *not* a git submodule — there is no
 `.gitmodules` and no nested `.git`, so there is no "repo inside a repo").
