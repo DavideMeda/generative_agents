@@ -71,22 +71,11 @@ Full diagram: [docs/architecture/MODULARITY.md](docs/architecture/MODULARITY.md)
 | `blocking_balanced` | 100 | 5 | Legacy parity target |
 | `complex` | 200 | 10 | All layers enabled |
 
-## Quality parity checks
-
-```bash
-python scripts/compare_simulations.py --skip-legacy
-# → output/parity_report.json
-```
-
-Thresholds: `core_score > 0.5`, zero meta/wrong-name/non-English turns,
-≥1 reflection/agent/100 ticks.
-
 ## Documentation
 
 - [Architecture](docs/architecture/MODULARITY.md)
 - [Stanford fork relationship](docs/architecture/UPSTREAM_RELATIONSHIP.md)
 - [Docker guide](docs/guides/DOCKER.md)
-- [Simulation configuration](docs/guides/CONFIGURATORE_SIMULAZIONE.md)
 - [Database schema](docs/database/SCHEMA.md)
 - [Developer onboarding](docs/guides/DEVELOPER_ONBOARDING.md)
 - [Attribution / third-party notices](NOTICE)
@@ -101,7 +90,7 @@ See [docs/research/LAYERS.md](docs/research/LAYERS.md) for the full list, enable
 ## Tests
 
 ```bash
-pytest                          # unit tests (coverage gate: core modules ≥55%)
+pytest                          # unit tests (coverage gate ≥70%)
 pytest tests/integration/       # integration (requires running server or Postgres)
 ```
 
