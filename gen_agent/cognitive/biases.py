@@ -166,7 +166,7 @@ class BiasLayer:
         raw = recency_w * avail_boost
         biased = self.anchoring.observe(agent_id, raw)
 
-        # registra l'evento per il prossimo ciclo
+        # record events for the next cycle
         if recent_events:
             for ev in recent_events:
                 self.availability.record(ev)

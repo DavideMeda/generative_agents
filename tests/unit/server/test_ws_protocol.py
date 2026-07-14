@@ -1,8 +1,8 @@
 """
-Test schema WS protocol — M2.
+Test WS protocol schema — M2.
 
-Verifica che ogni messaggio emesso da _make_envelope rispetti
-l'envelope versionato documentato in docs/guides/WEBSOCKET_PROTOCOL.md.
+Verifies that every message emitted by _make_envelope conforms to
+the versioned envelope documented in docs/guides/WEBSOCKET_PROTOCOL.md.
 """
 from __future__ import annotations
 
@@ -49,8 +49,8 @@ class TestEnvelopeSchema:
         env = self._sample()
         ts = env["timestamp"]
         assert isinstance(ts, str)
-        assert ts.endswith("Z"), f"timestamp deve finire con Z (UTC): {ts}"
-        # deve essere parsabile
+        assert ts.endswith("Z"), f"timestamp must end with Z (UTC): {ts}"
+        # must be parseable as ISO datetime
         from datetime import datetime
         datetime.fromisoformat(ts.rstrip("Z"))
 
@@ -79,7 +79,7 @@ class TestEnvelopeSchema:
 
 
 class TestBroadcastIntegration:
-    """Verifica che _broadcast usi l'envelope e che la coda riceva JSON valido."""
+    """Verifies that _broadcast uses the envelope and that the queue receives valid JSON."""
 
     def test_broadcast_puts_json_string_in_queue(self):
         q: asyncio.Queue = asyncio.Queue(maxsize=10)

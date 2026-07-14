@@ -57,7 +57,7 @@ def get_state() -> dict[str, Any]:
 
 @router.get("/api/snapshot")
 def get_snapshot() -> dict[str, Any]:
-    """Snapshot iniziale per la Web UI — caricato al boot prima del primo tick WS."""
+    """Initial snapshot for the Web UI — fetched at boot before the first WebSocket tick."""
     store = StateStore.get()
     if store.engine is None:
         return {"running": False, "tick": 0, "agents": {}, "stats": {}}

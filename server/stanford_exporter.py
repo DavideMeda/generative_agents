@@ -85,7 +85,7 @@ class StanfordExporter:
         self._write_json(self._movement_dir / f"{tick}.json", movement)
         self._write_json(self._env_dir / f"{tick}.json", env)
 
-        # Aggiorna i file di stato corrente letti da home()
+        # Update current-state files read by home()
         self._write_json(self._temp_dir / "curr_sim_code.json", {"sim_code": self._sim_code})
         self._write_json(self._temp_dir / "curr_step.json", {"step": tick})
         logger.debug("stanford_exporter.tick_exported", tick=tick, agents=len(agents))

@@ -1,4 +1,4 @@
-"""Utility comuni per tutti i benchmark — metadata e output JSON."""
+"""Shared utilities for all benchmarks — metadata and JSON output."""
 from __future__ import annotations
 
 import datetime

@@ -160,7 +160,7 @@ class TestBoundaryImportRule:
             if not top_dir.exists():
                 continue
             for py_file in top_dir.rglob("*.py"):
-                # file dentro la directory permessa → skip
+                # file inside the allowed directory → skip
                 try:
                     py_file.relative_to(allowed_dir)
                     continue

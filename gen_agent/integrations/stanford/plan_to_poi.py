@@ -22,6 +22,7 @@ POI_ALIASES: dict[str, str] = {
 
 
 def _split_goal_candidate(goal: str) -> list[str]:
+    # "e", "poi", "dopo" are Italian conjunctions (and/then/after) kept for legacy plan compatibility
     parts = re.split(r"\s+(?:and|then|e|poi|dopo)\s+", goal, flags=re.IGNORECASE)
     return [p.strip() for p in parts if p.strip()]
 
@@ -39,6 +40,7 @@ def extract_concrete_goals(text: str) -> list[str]:
     ]
     goals: list[str] = []
     seen: set[str] = set()
+    # Italian articles/prepositions ("il", "la", "di", etc.) kept for legacy plan compatibility
     stop = {"and", "or", "the", "a", "il", "la", "di", "da", "in", "un", "una", "with", "friend"}
     for pattern in patterns:
         for match in re.finditer(pattern, text.lower(), re.IGNORECASE):
