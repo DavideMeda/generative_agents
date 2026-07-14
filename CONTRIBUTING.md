@@ -1,56 +1,69 @@
-# Contributing
+# Contributing to New Gen Agent
 
-## Before you start
+Thank you for your interest in contributing! This document explains the workflow for submitting changes.
 
-1. Read the [Developer Onboarding](docs/guides/DEVELOPER_ONBOARDING.md) guide.
-2. Read the [Branch Strategy](.github/BRANCH_STRATEGY.md).
-3. Make sure tests pass locally: `pytest`.
-
-## Workflow
-
-1. **Open an issue** describing what you want to add or fix.
-2. **Branch from `develop`**: `git checkout -b feature/your-feature develop`.
-3. **Write tests first** (or at minimum alongside the code).
-4. **Keep PRs small** — one logical change per PR.
-5. **Open PR against `develop`** — never directly against `main`.
-
-## Code standards
-
-- Formatter: `black` (line length 99).
-- Linter: `ruff`.
-- Type hints: required for all public functions.
-- Comments: explain *why*, not *what*.
-
-Run before committing:
+## Getting started
 
 ```bash
-ruff check gen_agent/ tests/
-mypy gen_agent/
-pytest
+git clone https://github.com/DavideMeda/new-gen-agent.git
+cd new-gen-agent
+pip install -e ".[dev]"
+pre-commit install
 ```
 
-## Boundary rule
-
-> **Never import `reverie.*` outside of `gen_agent/integrations/stanford/adapter.py`.**
-
-Violations will be rejected in code review.
-
-## Syncing with Stanford upstream
-
-Open a PR monthly (or when Stanford releases a relevant update):
+## Running the test suite
 
 ```bash
-git fetch upstream
-git checkout develop
-git merge upstream/main --no-ff -m "chore: sync upstream Stanford"
+pytest                    # unit tests (fast, no LLM required)
+pytest tests/integration/ # requires running server or Postgres
 ```
 
-Resolve conflicts in `reverie/` and `environment/` — never change those files for Gen_Agent features.
+Coverage gate: core modules must stay at or above 70%.
 
-## Commit message format
+## Code style
 
+- **Formatter:** `black` (line length 99)
+- **Linter:** `ruff` (rules E, F, I, UP)
+- **Types:** `mypy --strict` on `gen_agent/`
+
+Run all checks at once:
+
+```bash
+ruff check gen_agent/ tests/ --fix
+mypy gen_agent/ --ignore-missing-imports
 ```
-<type>: <short description>   (max 72 chars)
 
-Types: feat, fix, refactor, docs, chore, test, style, ci
-```
+Pre-commit runs these automatically on every commit.
+
+## Branch strategy
+
+See [.github/BRANCH_STRATEGY.md](.github/BRANCH_STRATEGY.md) for the full branching model.
+
+Short version:
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Stable, CI-green, always deployable |
+| `feature/*` | New features — PR into `main` |
+| `fix/*` | Bug fixes — PR into `main` |
+| `research/*` | Experimental — may not be stable |
+
+## Pull request checklist
+
+- [ ] CI passes (lint + unit tests + mypy)
+- [ ] New logic has at least one unit test
+- [ ] No Italian text in comments or docstrings
+- [ ] `NOTICE` updated if new third-party code is included
+- [ ] Docs updated if public interface changes
+
+## Reporting bugs
+
+Open a GitHub Issue using the Bug Report template. Include:
+- Python version and OS
+- Exact command that failed
+- Full traceback
+- Relevant env vars (redact any API keys)
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the Apache 2.0 License.

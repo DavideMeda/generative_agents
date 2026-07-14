@@ -1,5 +1,9 @@
 # New Gen Agent
 
+[![CI](https://github.com/DavideMeda/new-gen-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/DavideMeda/new-gen-agent/actions/workflows/ci.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+
 New Gen Agent — cognitive generative agents in a living town.  
 Persistent memory with decay and LLM reflections; cognitive biases and emotions modulate decisions.  
 LLM dialogues (blocking or mock), missions, structured plans to POIs, social interactions.  
@@ -80,7 +84,6 @@ Thresholds: `core_score > 0.5`, zero meta/wrong-name/non-English turns,
 ## Documentation
 
 - [Architecture](docs/architecture/MODULARITY.md)
-- [Legacy vs New comparison](docs/COMPARISON.md)
 - [Stanford fork relationship](docs/architecture/UPSTREAM_RELATIONSHIP.md)
 - [Docker guide](docs/guides/DOCKER.md)
 - [Simulation configuration](docs/guides/CONFIGURATORE_SIMULAZIONE.md)

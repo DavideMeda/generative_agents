@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "Nuovo Gen_Agent: Modular Generative Agent Simulation"
+title: "New Gen Agent: Modular Generative Agent Simulation"
 message: >-
   If you use this software in academic work, please cite both this repository
   and the original Stanford Generative Agents paper.
@@ -7,8 +7,8 @@ type: software
 authors:
   - family-names: Meda
     given-names: Davide
-repository-code: "https://github.com/DavideMeda/generative_agents"
-url: "https://github.com/DavideMeda/generative_agents"
+repository-code: "https://github.com/DavideMeda/new-gen-agent"
+url: "https://github.com/DavideMeda/new-gen-agent"
 license: Apache-2.0
 version: 0.1.0
 keywords:
