@@ -29,6 +29,8 @@ jobs:
       - uses: ./.github/actions/setup-python-env
         with:
           extras: dev
+      # Upgrade setuptools to patch PYSEC-2026-3447 (runner ships 79.x, fix is 83+)
+      - run: pip install "setuptools>=83" -q -U
       - run: pip-audit
 
   trivy:
