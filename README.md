@@ -1,15 +1,12 @@
-# Nuovo Gen_Agent
+# New Gen Agent
 
-Modular generative-agent simulation. Agents live in a small town, walk to POIs,
-have personality-driven conversations, form memories, reflect, and evolve via NEAT.
+New Gen Agent — cognitive generative agents in a living town.  
+Persistent memory with decay and LLM reflections; cognitive biases and emotions modulate decisions.  
+LLM dialogues (blocking or mock), missions, structured plans to POIs, social interactions.  
+FastAPI + WebSocket live updates, dual storage (SQLite/PostgreSQL), structured logging, CI/tests ready.
 
 Built on top of [Stanford Generative Agents](https://github.com/joonspk-research/generative_agents):
 this repo is a **fork** of it (`upstream`), with the reference implementation vendored under `reverie/`.
-
-The fork adds a modular Python package (`gen_agent/`), a FastAPI server with WebSocket live updates,
-structured logging via `structlog`, cognitive biases, NEAT-based agent evolution, dual-mode storage
-(SQLite / PostgreSQL), and a full CI/CD pipeline — while preserving full functional parity with the
-original Stanford simulation metrics.
 
 ## Quick start
 
@@ -22,9 +19,6 @@ ollama pull llama3.2:3b
 
 # 3. Run a 30-tick simulation
 python scripts/run_sim_100_ticks_blocking.py --preset fast --ticks 30 --llm ollama
-
-# 4. Check quality vs legacy
-python scripts/compare_simulations.py --report output/sim_blocking_100_v2.json
 ```
 
 ## Reproducibility
@@ -36,7 +30,7 @@ python scripts/compare_simulations.py --report output/sim_blocking_100_v2.json
 | Parity metrics (`core_score`, Plan→POI) | **Indicative** | Re-run may differ; pin model + version |
 
 For comparable runs, record in your report: `OLLAMA_MODEL`, preset, tick count, and
-the git commit hash. See [docs/COMPARISON.md](docs/COMPARISON.md) for benchmark methodology.
+the git commit hash.
 
 ## Citation
 
