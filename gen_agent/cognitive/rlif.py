@@ -1,12 +1,13 @@
 """
-RLIF — Reinforcement Learning from Interaction Feedback
+[RESEARCH LAYER] RLIF — Reinforcement Learning from Interaction Feedback
+
+Status: experimental — not covered by CI tests, excluded from the coverage gate.
+Enable: ENABLE_RLIF=true
 
 After each interaction, updates a per-agent-pair reward signal.
 Dynamically adjusts proximity radius and cooldown gaps:
   - High cumulative reward → agents seek each other more often (smaller gap)
   - Negative reward trend → agents avoid each other (larger gap / smaller radius)
-
-Activated when ENABLE_RLIF=true.
 """
 from __future__ import annotations
 

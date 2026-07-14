@@ -1,5 +1,8 @@
 """
-ConsensusEngine — collective decision-making for agent groups.
+[RESEARCH LAYER] ConsensusEngine — collective decision-making for agent groups.
+
+Status: experimental — not covered by CI tests, excluded from the coverage gate.
+Enable: ENABLE_CONSENSUS=true
 
 Supported algorithms:
   majority_vote  — simple majority (most frequent choice wins)

@@ -1,5 +1,8 @@
 """
-HRM — Hierarchical Role Management
+[RESEARCH LAYER] HRM — Hierarchical Role Management
+
+Status: experimental — not covered by CI tests, excluded from the coverage gate.
+Enable: ENABLE_HRM=true
 
 Assigns agent roles based on Big Five traits and updates mission priorities.
 
@@ -7,8 +10,6 @@ Roles:
   leader     — high extraversion + conscientiousness → first to get new missions
   mediator   — high agreeableness → buffers negative interaction outcomes
   observer   — low extraversion → slower interaction cooldown
-
-Activated when ENABLE_HRM=true (or injected via SimEngine constructor).
 """
 from __future__ import annotations
 

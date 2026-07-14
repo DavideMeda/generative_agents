@@ -1,15 +1,15 @@
 """
-GameEngine — strategic interaction modelling via game theory.
+[RESEARCH LAYER] GameEngine — strategic interaction modelling via game theory.
+
+Status: experimental — not covered by CI tests, excluded from the coverage gate.
+Enable: ENABLE_GAME_THEORY=true
 
 Implemented games:
   prisoner_dilemma — classic cooperate/defect matrix
   stag_hunt        — coordination game (cooperate together or hunt solo)
 
 Nash equilibrium solver for 2×2 payoff matrices (pure strategy only).
-
 The outcome feeds into RLIF to update agent reward signals.
-
-Activated when ENABLE_GAME_THEORY=true.
 """
 from __future__ import annotations
 

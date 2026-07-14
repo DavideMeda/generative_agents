@@ -1,5 +1,8 @@
 """
-Evolutionary Learning module — social imitation + intrinsic motivation.
+[RESEARCH LAYER] Evolutionary Learning — social imitation + intrinsic motivation.
+
+Status: experimental — not covered by CI tests, excluded from the coverage gate.
+Enable: ENABLE_SOCIAL_LEARNING=true
 
 SocialLearner:
   Every N ticks, the agent with the lowest cumulative reward copies a trait
@@ -8,8 +11,6 @@ SocialLearner:
 IntrinsicMotivation:
   Agents earn a bonus reward for visiting POIs they have never been to.
   Encourages exploration over exploitation.
-
-Activated when ENABLE_SOCIAL_LEARNING=true.
 """
 from __future__ import annotations
 

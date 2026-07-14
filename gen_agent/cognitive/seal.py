@@ -1,5 +1,8 @@
 """
-SEAL — Social Emotional Adaptation Layer
+[RESEARCH LAYER] SEAL — Social Emotional Adaptation Layer
+
+Status: experimental — not covered by CI tests, excluded from the coverage gate.
+Enable: ENABLE_SEAL=true
 
 Slowly adjusts Big Five traits based on accumulated interaction history.
 Implements personality plasticity: repeated positive/negative experiences

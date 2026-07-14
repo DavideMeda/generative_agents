@@ -1,5 +1,8 @@
 """
-Social Learning — imitation and knowledge diffusion.
+[RESEARCH LAYER] Social Learning — imitation and knowledge diffusion.
+
+Status: experimental — not covered by CI tests, excluded from the coverage gate.
+Enable: ENABLE_SOCIAL_LEARNING=true
 
 ImitationEngine:
   Every N ticks, agents with lower reward copy a strategy from higher-reward agents.

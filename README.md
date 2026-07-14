@@ -91,6 +91,13 @@ Thresholds: `core_score > 0.5`, zero meta/wrong-name/non-English turns,
 - [Developer onboarding](docs/guides/DEVELOPER_ONBOARDING.md)
 - [Attribution / third-party notices](NOTICE)
 
+## Research layers
+
+Optional cognitive and social modules (disabled by default, activated via env flags):
+`BiasLayer`, `HRM`, `RLIF`, `SEAL`, `SocialLearner`, `GameEngine`, `ConsensusEngine`, and more.
+
+See [docs/research/LAYERS.md](docs/research/LAYERS.md) for the full list, enable flags, and status.
+
 ## Tests
 
 ```bash
