@@ -37,10 +37,6 @@ Pre-commit runs these automatically on every commit.
 
 ## Branch strategy
 
-See [.github/BRANCH_STRATEGY.md](.github/BRANCH_STRATEGY.md) for the full branching model.
-
-Short version:
-
 | Branch | Purpose |
 |--------|---------|
 | `main` | Stable, CI-green, always deployable |

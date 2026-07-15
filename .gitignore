@@ -25,6 +25,7 @@ coverage.xml
 
 # Docker
 .docker-data/
+config/certs/          # TLS certificates — never commit private keys
 
 # IDE
 .idea/

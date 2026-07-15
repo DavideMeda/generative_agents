@@ -1,15 +1,24 @@
 version: "3.9"
 
-# Production overrides — resource limits, structured logging, nginx.
-# Usage: docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
-
-include:
-  - docker-compose.base.yml
+# Production deployment — registry image, nginx TLS termination, resource limits.
+# Usage: docker compose -f docker-compose.prod.yml up -d
+#
+# Requirements:
+#   - .env with POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB
+#   - config/certs/fullchain.pem + config/certs/privkey.pem (TLS certificates)
+#   - See docs/guides/DOCKER.md for full setup guide.
 
 services:
   app:
-    image: ghcr.io/davidemeda/generative_agents:latest
+    image: ghcr.io/davidemeda/new-gen-agent:latest
     restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      LOG_LEVEL: ${LOG_LEVEL:-WARNING}
+    depends_on:
+      db:
+        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -20,12 +29,21 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      LOG_LEVEL: WARNING
 
   db:
+    image: postgres:16-alpine
     restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?required}
+      POSTGRES_USER: ${POSTGRES_USER:?required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     deploy:
       resources:
         limits:
@@ -43,3 +61,10 @@ services:
       - ./config/certs:/etc/nginx/certs:ro
     depends_on:
       - app
+
+volumes:
+  db_data:
+
+networks:
+  default:
+    name: gen_agent_net

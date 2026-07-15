@@ -1,0 +1,63 @@
+version: "3.9"
+
+# Default: app only, SQLite storage (no Postgres needed).
+# With PostgreSQL: docker compose --profile postgres up
+#
+# Usage:
+#   docker compose up                         # SQLite dev (simplest)
+#   docker compose --profile postgres up      # Postgres + pgAdmin
+#   docker compose -f docker-compose.yml \
+#     -f docker-compose.stanford.yml up       # + Stanford UI
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-}
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      ENABLE_STANFORD_WORKER: ${ENABLE_STANFORD_WORKER:-false}
+    ports:
+      - "8000:8000"
+      - "5678:5678"   # debugpy (attach from VS Code / PyCharm)
+    volumes:
+      - .:/app            # hot-reload: local changes reflected immediately
+      - /app/.venv        # keep container venv isolated from local
+    command: uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
+
+  db:
+    profiles: [postgres]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-gen_agent}
+      POSTGRES_USER: ${POSTGRES_USER:-gen_agent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gen_agent}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    profiles: [postgres]
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gen-agent.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+
+networks:
+  default:
+    name: gen_agent_net

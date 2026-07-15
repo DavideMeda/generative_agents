@@ -44,11 +44,11 @@ See [CITATION.cff](CITATION.cff) (GitHub / Zenodo compatible).
 ## Docker
 
 ```bash
-docker compose -f docker-compose.dev.yml up
-# server at http://localhost:8000
+docker compose up                         # SQLite dev (simplest)
+docker compose --profile postgres up      # + PostgreSQL + pgAdmin
 ```
 
-See [docs/guides/DOCKER.md](docs/guides/DOCKER.md) for production (PostgreSQL) setup.
+See [docs/guides/DOCKER.md](docs/guides/DOCKER.md) for production and Stanford UI setup.
 
 ## Architecture
 

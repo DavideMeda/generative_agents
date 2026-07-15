@@ -1,15 +1,15 @@
 version: "3.9"
 
-# Profilo Stanford UI — aggiunge il frontend Django al backend modulare.
+# Stanford UI overlay — adds the Django frontend to the modular backend.
 #
-# Uso:
-#   docker compose -f docker-compose.dev.yml -f docker-compose.stanford.yml up
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.stanford.yml up
 #
-# Prerequisiti:
-#   - environment/frontend_server/ presente su disco (non ignorata da Docker)
-#   - .env con STANFORD_SIM_CODE (default: gen_agent_run)
+# Prerequisites:
+#   - environment/frontend_server/ present on disk (not ignored by Docker)
+#   - .env with STANFORD_SIM_CODE (default: gen_agent_run)
 #
-# Documentazione: docs/guides/STANFORD_UI.md
+# Documentation: docs/guides/STANFORD_UI.md
 
 services:
   app:
