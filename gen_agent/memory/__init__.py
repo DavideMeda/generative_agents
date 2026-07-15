@@ -1,4 +1,4 @@
 from gen_agent.memory.manager import MemoryManager
-from gen_agent.memory.models import Memory, Reflection
+from gen_agent.memory.models import Memory
 
-__all__ = ["Memory", "MemoryManager", "Reflection"]
+__all__ = ["Memory", "MemoryManager"]

@@ -18,7 +18,7 @@ from typing import Any
 import structlog
 
 from gen_agent.interfaces.memory_protocol import MemoryQuery, MemoryRecord
-from gen_agent.memory.decay import MemoryDecayEngine, get_decay_engine
+from gen_agent.memory.decay import MemoryDecayEngine
 from gen_agent.memory.models import Memory
 from gen_agent.memory.storage.sqlite_backend import SQLiteMemoryBackend
 
@@ -55,7 +55,7 @@ class MemoryManager:
         self._data_dir.mkdir(parents=True, exist_ok=True)
         self._agent_backends: dict[str, SQLiteMemoryBackend] = {}
         self._backend = backend or SQLiteMemoryBackend(str(self._data_dir / "central_memory.db"))
-        self._decay = decay_engine or get_decay_engine()
+        self._decay = decay_engine or MemoryDecayEngine()
         self._graphrag = graphrag
         self._mars = mars
         self._compressor = compressor
@@ -105,16 +105,7 @@ class MemoryManager:
             importance=importance,
             extra=kwargs,
         )
-        record = MemoryRecord(
-            memory_id=memory.memory_id,
-            agent_id=memory.agent_id,
-            content=memory.content,
-            memory_type=memory.memory_type,
-            importance=memory.importance,
-            created_at=memory.created_at,
-            last_accessed=memory.last_accessed,
-            extra=memory.extra,
-        )
+        record = memory.to_record()
 
         # GraphRAG: also indexes the memory in the knowledge graph
         backend = self._backend_for(agent_id)
@@ -231,26 +222,13 @@ class MemoryManager:
                 or r.agent_id == query.agent_id
             ]
 
-        # Re-score and re-rank using the decay engine
-        memory_objects = [
-            Memory(
-                memory_id=r.memory_id,
-                agent_id=r.agent_id,
-                content=r.content,
-                memory_type=r.memory_type,
-                importance=r.importance,
-                created_at=r.created_at,
-                last_accessed=r.last_accessed,
-                extra=r.extra,
-            )
-            for r in candidates
-        ]
+        # Re-score and re-rank using the decay engine (MemoryRecord has all needed fields)
         scored = sorted(
-            zip(memory_objects, candidates),
-            key=lambda pair: self._decay.score(pair[0], query.query_text),
+            candidates,
+            key=lambda r: self._decay.score(r, query.query_text),
             reverse=True,
         )
-        return [record for _, record in scored[: query.top_k]]
+        return scored[: query.top_k]
 
     def touch(self, memory_id: str, agent_id: str | None = None) -> None:
         if agent_id:
@@ -280,17 +258,7 @@ class MemoryManager:
             backend = self._backend_for(agent_id)
             records = backend.retrieve(MemoryQuery(agent_id=agent_id, query_text="", top_k=200))
             for record in records:
-                mem = Memory(
-                    memory_id=record.memory_id,
-                    agent_id=record.agent_id,
-                    content=record.content,
-                    memory_type=record.memory_type,
-                    importance=record.importance,
-                    created_at=record.created_at,
-                    last_accessed=record.last_accessed,
-                    extra=record.extra,
-                )
-                new_imp = max(0.1, record.importance * (0.95 + 0.05 * self._decay.recency_score(mem)))
+                new_imp = max(0.1, record.importance * (0.95 + 0.05 * self._decay.recency_score(record.last_accessed)))
                 if new_imp < record.importance - 0.01:
                     record.importance = new_imp
                     backend.store(record)

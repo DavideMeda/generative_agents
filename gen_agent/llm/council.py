@@ -1,5 +1,8 @@
 """
-LLM Council — queries multiple providers and unifies responses.
+[RESEARCH LAYER] LLMCouncil — multi-provider majority-vote aggregation.
+
+Status: experimental — not covered by CI tests, excluded from coverage gate.
+Enable: LLM_PROVIDER=council
 
 Two strategies:
   - majority: returns the response whose key keywords appear most often

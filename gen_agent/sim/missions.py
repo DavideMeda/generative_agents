@@ -75,5 +75,3 @@ class MissionSystem:
             agent_id=agent_id,
         )
 
-    def record_completion(self, agent_id: str, poi_id: str) -> None:
-        self._history.setdefault(agent_id, []).append(poi_id)

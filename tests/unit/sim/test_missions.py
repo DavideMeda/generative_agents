@@ -34,8 +34,3 @@ def test_assign_avoids_recent_pois():
     assert second.assigned_tick == 2
 
 
-def test_record_completion_appends_history():
-    system = MissionSystem(_small_world(), rng=random.Random(0))
-    system.record_completion("agent1", "park")
-    mission = system.assign("agent1", current_tick=10)
-    assert mission is not None

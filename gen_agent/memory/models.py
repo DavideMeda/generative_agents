@@ -9,7 +9,10 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from gen_agent.interfaces.memory_protocol import MemoryRecord
 
 
 @dataclass
@@ -36,21 +39,18 @@ class Memory:
     def age_seconds(self) -> float:
         return time.time() - self.created_at
 
-    @property
-    def recency_score(self) -> float:
-        """Exponential recency decay (half-life ≈ 1 hour)."""
-        hours_since_access = (time.time() - self.last_accessed) / 3600
-        return float(0.99 ** hours_since_access)
+    def to_record(self) -> MemoryRecord:
+        """Return a MemoryRecord view of this Memory (no copy of heavy fields)."""
+        from gen_agent.interfaces.memory_protocol import MemoryRecord  # noqa: PLC0415
+        return MemoryRecord(
+            memory_id=self.memory_id,
+            agent_id=self.agent_id,
+            content=self.content,
+            memory_type=self.memory_type,
+            importance=self.importance,
+            created_at=self.created_at,
+            last_accessed=self.last_accessed,
+            extra=self.extra,
+        )
 
 
-@dataclass
-class Reflection:
-    """A higher-order insight synthesised from a set of memories."""
-
-    agent_id: str
-    content: str
-    source_memory_ids: list[str]
-
-    reflection_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    created_at: float = field(default_factory=time.time)
-    importance: float = 5.0

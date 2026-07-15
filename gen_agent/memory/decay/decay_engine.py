@@ -14,10 +14,7 @@ from __future__ import annotations
 
 import math
 import time
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from gen_agent.memory.models import Memory
+from typing import Any
 
 
 class MemoryDecayEngine:
@@ -33,14 +30,14 @@ class MemoryDecayEngine:
             raise ValueError("decay_factor must be in (0, 1)")
         self._decay = decay_factor
 
-    def recency_score(self, memory: Memory) -> float:
-        hours_elapsed = (time.time() - memory.last_accessed) / 3600
+    def recency_score(self, last_accessed: float) -> float:
+        hours_elapsed = (time.time() - last_accessed) / 3600
         return float(self._decay ** hours_elapsed)
 
-    def importance_score(self, memory: Memory) -> float:
+    def importance_score(self, memory: Any) -> float:
         return memory.importance / 10.0
 
-    def relevance_score(self, memory: Memory, query: str) -> float:
+    def relevance_score(self, memory: Any, query: str) -> float:
         """
         Keyword-overlap relevance (stub).
         ponytail: replace with embedding cosine similarity when vector store is added.
@@ -52,23 +49,15 @@ class MemoryDecayEngine:
         overlap = len(query_words & content_words)
         return overlap / math.sqrt(len(query_words) * max(len(content_words), 1))
 
-    def score(self, memory: Memory, query: str = "") -> float:
+    def score(self, memory: Any, query: str = "") -> float:
         """
         Composite retrieval score in [0, 1].
+        Accepts any object with .importance, .last_accessed, .content fields
+        (both Memory and MemoryRecord qualify).
         Weights mirror the original Gen_Agent legacy implementation.
         """
-        r = self.recency_score(memory)
+        r = self.recency_score(memory.last_accessed)
         i = self.importance_score(memory)
         v = self.relevance_score(memory, query)
         return (r + i + v) / 3.0
 
-
-# Module-level singleton — avoids re-instantiating on every call.
-_engine: MemoryDecayEngine | None = None
-
-
-def get_decay_engine() -> MemoryDecayEngine:
-    global _engine
-    if _engine is None:
-        _engine = MemoryDecayEngine()
-    return _engine

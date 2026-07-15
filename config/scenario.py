@@ -10,14 +10,22 @@ A Scenario bundles all configuration needed to spin up a simulation:
 Usage:
     scenario = load_scenario("default")
     engine = scenario.build_engine()
+
+    # Or build from a LaunchProfile preset:
+    from config.launch_profile import load_profile
+    scenario = Scenario.from_profile(load_profile("fast"))
 """
 from __future__ import annotations
 
 import importlib
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from gen_agent.sim.engine import SimConfig, SimEngine
 from gen_agent.world.world import World, seed_default_world
+
+if TYPE_CHECKING:
+    from config.launch_profile import LaunchProfile
 
 
 @dataclass
@@ -36,6 +44,27 @@ class Scenario:
         from config.engine_factory import build_sim_engine
         engine, _extras = build_sim_engine(self)
         return engine
+
+    @classmethod
+    def from_profile(cls, profile: LaunchProfile) -> Scenario:
+        """Build a Scenario from a LaunchProfile preset (no manual bridging needed)."""
+        return cls(
+            name=profile.preset,
+            description=profile.scenario_description,
+            agent_names=profile.agent_names,
+            world=seed_default_world(),
+            sim_config=SimConfig(
+                block_on_dialogue=profile.block_on_dialogue,
+                dialogue_max_turns=profile.dialogue_max_turns,
+                interaction_radius=profile.interaction_radius,
+                min_gap_ticks=profile.min_gap_ticks,
+                mission_duration_ticks=profile.mission_duration_ticks,
+                seed=42,
+            ),
+            llm_provider=profile.llm_provider,
+            enable_missions=True,
+            enable_dialogue=True,
+        )
 
 
 def load_scenario(name: str) -> Scenario:
