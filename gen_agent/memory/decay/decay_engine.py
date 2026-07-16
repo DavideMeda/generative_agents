@@ -14,7 +14,13 @@ from __future__ import annotations
 
 import math
 import time
-from typing import Any
+from typing import Protocol
+
+
+class _MemoryLike(Protocol):
+    importance: float
+    last_accessed: float
+    content: str
 
 
 class MemoryDecayEngine:
@@ -34,10 +40,10 @@ class MemoryDecayEngine:
         hours_elapsed = (time.time() - last_accessed) / 3600
         return float(self._decay ** hours_elapsed)
 
-    def importance_score(self, memory: Any) -> float:
+    def importance_score(self, memory: _MemoryLike) -> float:
         return memory.importance / 10.0
 
-    def relevance_score(self, memory: Any, query: str) -> float:
+    def relevance_score(self, memory: _MemoryLike, query: str) -> float:
         """
         Keyword-overlap relevance (stub).
         ponytail: replace with embedding cosine similarity when vector store is added.
@@ -49,7 +55,7 @@ class MemoryDecayEngine:
         overlap = len(query_words & content_words)
         return overlap / math.sqrt(len(query_words) * max(len(content_words), 1))
 
-    def score(self, memory: Any, query: str = "") -> float:
+    def score(self, memory: _MemoryLike, query: str = "") -> float:
         """
         Composite retrieval score in [0, 1].
         Accepts any object with .importance, .last_accessed, .content fields
