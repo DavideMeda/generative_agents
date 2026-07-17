@@ -1,0 +1,33 @@
+---
+const nodes = [
+  { label: "GitHub", href: "https://github.com/DavideMeda/new-gen-agent" },
+  { label: "Getting started", href: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/tutorials/GETTING_STARTED.md" },
+  { label: "Architecture", href: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/architecture/MODULARITY.md" },
+  { label: "Examples", href: "https://github.com/DavideMeda/new-gen-agent/tree/main/examples" },
+  { label: "Citation", href: "https://github.com/DavideMeda/new-gen-agent/blob/main/CITATION.cff" },
+  { label: "Stanford upstream", href: "https://github.com/joonspk-research/generative_agents" },
+];
+---
+
+<section class="section wrap" id="nodes">
+  <p class="section-label">Nodes</p>
+  <h2>Continue from here</h2>
+  <ul class="nodes">
+    {
+      nodes.map((n) => (
+        <li>
+          <a href={n.href} target="_blank" rel="noopener">
+            {n.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>NEW GEN AGENT · OPEN SOURCE · APACHE 2.0</span>
+    <span>FORK OF STANFORD GENERATIVE AGENTS</span>
+  </div>
+</footer>

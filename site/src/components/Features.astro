@@ -1,0 +1,52 @@
+---
+const features = [
+  {
+    id: "01 · Memory",
+    title: "Persistent memory with decay",
+    body: "Observations and reflections scored by recency, importance, and relevance. Optional GraphRAG, FAISS, and MaRS privacy layers.",
+  },
+  {
+    id: "02 · Cognition",
+    title: "Plans, missions, Stanford worker",
+    body: "Structured plans map to Points of Interest. An async Stanford cognition worker handles planning and reflection without blocking the tick loop.",
+  },
+  {
+    id: "03 · Dialogue",
+    title: "LLM conversations that stick",
+    body: "Blocking or mock dialogues with intent packs, emotion context, quality guards, and a circuit breaker so a downed LLM does not freeze the run.",
+  },
+  {
+    id: "04 · Biases",
+    title: "Cognitive biases as opt-in layers",
+    body: "Confirmation, availability, anchoring, and recency biases modulate willingness and retrieval — research modules, disabled by default.",
+  },
+  {
+    id: "05 · Ops",
+    title: "CI, Docker, dual storage",
+    body: "Coverage gate ≥70%, Postgres migrations, slim Docker image, structured logging, and examples for Ollama and OpenRouter.",
+  },
+];
+---
+
+<section class="section wrap" id="features">
+  <p class="section-label">Applied research layers</p>
+  <h2>What the fork adds</h2>
+  <p class="lead">
+    Modular architecture on top of the Stanford Generative Agents reference —
+    same simulation idea, clearer boundaries, production-ready tooling.
+  </p>
+
+  <div class="feature-list">
+    {
+      features.map((f) => (
+        <article class="feature">
+          <p class="feature-id">{f.id}</p>
+          <div>
+            <h3>{f.title}</h3>
+            <p>{f.body}</p>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>

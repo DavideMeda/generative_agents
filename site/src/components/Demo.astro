@@ -1,0 +1,42 @@
+---
+const base = import.meta.env.BASE_URL;
+// Prefer site/public/demo.gif; fall back to docs path copied at build if present
+const demoSrc = `${base}demo.gif`;
+---
+
+<section class="section wrap" id="demo">
+  <p class="section-label">Live surface</p>
+  <h2>Simulation dashboard</h2>
+  <p class="lead">
+    Agents move through a town, meet at POIs, talk via LLM, store memories, and
+    evolve goals — streamed over WebSocket to a real-time UI.
+  </p>
+
+  <div class="demo-frame">
+    <img
+      id="demo-gif"
+      src={demoSrc}
+      alt="New Gen Agent live dashboard — agents moving and interacting"
+      width="1280"
+      height="720"
+      loading="lazy"
+    />
+    <div id="demo-placeholder" class="demo-placeholder" hidden>
+      DEMO GIF PENDING
+      <code>docs/assets/CAPTURE_DEMO.md</code>
+    </div>
+  </div>
+</section>
+
+<script>
+  const img = document.getElementById("demo-gif");
+  const ph = document.getElementById("demo-placeholder");
+  if (img instanceof HTMLImageElement && ph instanceof HTMLElement) {
+    const showPlaceholder = () => {
+      img.hidden = true;
+      ph.hidden = false;
+    };
+    img.addEventListener("error", showPlaceholder);
+    if (img.complete && img.naturalWidth === 0) showPlaceholder();
+  }
+</script>

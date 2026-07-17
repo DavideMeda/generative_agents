@@ -1,0 +1,39 @@
+---
+const repo = "https://github.com/DavideMeda/new-gen-agent";
+const docs = "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/tutorials/GETTING_STARTED.md";
+---
+
+<section class="hero wrap">
+  <h1 class="hero-brand">
+    New Gen
+    <span>Agent</span>
+  </h1>
+  <p class="hero-tag">
+    Cognitive generative agents in a living town — persistent memory with decay,
+    LLM dialogues, biases, and a live dashboard. Built as a modular fork of
+    Stanford Generative Agents.
+  </p>
+  <div class="hero-cta">
+    <a class="btn btn-primary" href={repo}>View on GitHub</a>
+    <a class="btn" href="#start">Quick start</a>
+    <a class="btn" href={docs} target="_blank" rel="noopener">Tutorial</a>
+  </div>
+
+  <div class="terminal-grid" aria-label="Simulation metrics">
+    <article class="terminal-card">
+      <p class="meta">Output · Memory</p>
+      <p class="output">Decay + LLM</p>
+      <p class="seed">SEED: reflections every N memories</p>
+    </article>
+    <article class="terminal-card">
+      <p class="meta">Output · Dialogue</p>
+      <p class="output">Blocking / Mock</p>
+      <p class="seed">SEED: Ollama · OpenRouter · mock</p>
+    </article>
+    <article class="terminal-card">
+      <p class="meta">Output · Stack</p>
+      <p class="output">FastAPI + WS</p>
+      <p class="seed">SEED: SQLite / PostgreSQL</p>
+    </article>
+  </div>
+</section>

@@ -1,0 +1,24 @@
+---
+---
+
+<section class="section wrap" id="start">
+  <p class="section-label">Commitment to shipping</p>
+  <h2>Run your first simulation</h2>
+  <p class="lead">
+    Python 3.10+. Offline mock works immediately; Ollama and OpenRouter are
+    optional for real dialogues.
+  </p>
+
+  <pre class="pre"><span class="comment"># install</span>
+pip install -e ".[dev]"
+
+<span class="comment"># offline smoke test — no LLM</span>
+python examples/hello_world.py
+
+<span class="comment"># local LLM</span>
+ollama pull llama3.2:3b
+python examples/ollama_simple.py
+
+<span class="comment"># live dashboard</span>
+uvicorn server.main:app --port 8000</pre>
+</section>
