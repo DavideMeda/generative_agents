@@ -1,0 +1,34 @@
+[
+  {
+    "date": "2026-07-14",
+    "commit": "fcce9b57",
+    "preset": "blocking_balanced",
+    "ticks": 100,
+    "agents": 5,
+    "llm": "ollama",
+    "model": "llama3.2:3b",
+    "dialogues": 14,
+    "utterances": 28,
+    "memories": 67,
+    "reflections": 21,
+    "real_time_sec": 1847,
+    "avg_sec_per_tick": 18.47,
+    "notes": "baseline run — post ponytail cleanup"
+  },
+  {
+    "date": "2026-07-15",
+    "commit": "25fba144",
+    "preset": "blocking_balanced",
+    "ticks": 50,
+    "agents": 5,
+    "llm": "ollama",
+    "model": "llama3.2:3b",
+    "dialogues": 9,
+    "utterances": 18,
+    "memories": 48,
+    "reflections": 14,
+    "real_time_sec": 2254,
+    "avg_sec_per_tick": 45.09,
+    "notes": "Ollama instability (HTTP 500) — dialogues partial; circuit breaker not yet active"
+  }
+]

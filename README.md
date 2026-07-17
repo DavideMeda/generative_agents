@@ -15,26 +15,44 @@ this repo is a **fork** of it (`upstream`), with the reference implementation ve
 ## Quick start
 
 ```bash
-# 1. Install (pyproject.toml is the single source of truth — do NOT use old Stanford deps)
+# 1. Install
 pip install -e ".[dev]"
 
-# 2. Pull the Ollama model
-ollama pull llama3.2:3b
+# 2. Offline test — no LLM needed
+python examples/hello_world.py
 
-# 3. Run a 30-tick simulation
-python scripts/run_sim_100_ticks_blocking.py --preset fast --ticks 30 --llm ollama
+# 3. With Ollama (local LLM)
+ollama pull llama3.2:3b
+python examples/ollama_simple.py
+
+# 4. With OpenRouter API (free tier)
+export OPENROUTER_API_KEY=sk-or-...
+python examples/openrouter_api.py
 ```
+
+See [docs/tutorials/GETTING_STARTED.md](docs/tutorials/GETTING_STARTED.md) for the full step-by-step guide.
+
+## Examples
+
+Ready-to-run scripts in `examples/`:
+
+| Script | LLM | What it shows |
+|--------|-----|---------------|
+| `hello_world.py` | mock | Minimal simulation — runs in 5 s |
+| `ollama_simple.py` | Ollama | Real LLM dialogues, auto-fallback if Ollama is down |
+| `openrouter_api.py` | OpenRouter | Cloud API (free tier), auto-fallback if key missing |
+| `cognitive_biases.py` | mock | ConfirmationBias, AvailabilityHeuristic, AnchoringBias demo |
+| `custom_scenario.py` | mock | Template for your own world and scenario |
 
 ## Reproducibility
 
 | Layer | Deterministic? | Notes |
 |-------|----------------|-------|
 | Agent movement, proximity, missions | **Yes** | `SimConfig.seed=42` fixes RNG |
-| Dialogue text, reflections, plans | **No** | LLM output (Ollama/OpenAI) is stochastic |
-| Parity metrics (`core_score`, Plan→POI) | **Indicative** | Re-run may differ; pin model + version |
+| Dialogue text, reflections, plans | **No** | LLM output is stochastic |
+| Parity metrics (Plan→POI) | **Indicative** | Re-run may differ; pin model + version |
 
-For comparable runs, record in your report: `OLLAMA_MODEL`, preset, tick count, and
-the git commit hash.
+For comparable runs, record: `OLLAMA_MODEL`, preset, tick count, and git commit hash.
 
 ## Citation
 
@@ -48,22 +66,25 @@ docker compose up                         # SQLite dev (simplest)
 docker compose --profile postgres up      # + PostgreSQL + pgAdmin
 ```
 
-See [docs/guides/DOCKER.md](docs/guides/DOCKER.md) for production and Stanford UI setup.
+Open `http://localhost:8000` for the live WebSocket dashboard.
+
+See [docs/guides/DOCKER.md](docs/guides/DOCKER.md) and [docs/guides/WEB_UI.md](docs/guides/WEB_UI.md).
 
 ## Architecture
 
 ```
 launch_profile → engine_factory → SimEngine
-                                 ├── DialogueEngine (intent_pack + traits + emotions)
-                                 ├── MemoryManager  (SQLite / PostgreSQL dual-mode)
-                                 ├── StanfordWorker (async planning + reflection)
+                                 ├── DialogueEngine   (intent_pack + traits + emotions)
+                                 ├── MemoryManager    (SQLite / PostgreSQL dual-mode)
+                                 ├── StanfordWorker   (async planning + reflection)
                                  ├── MissionSystem
-                                 └── optional layers (HRM, RLIF, NEAT, GameTheory…)
+                                 ├── CircuitBreaker   (LLM resilience)
+                                 └── optional layers  (HRM, RLIF, NEAT, GameTheory…)
 ```
 
 Full diagram: [docs/architecture/MODULARITY.md](docs/architecture/MODULARITY.md)
 
-## Presets
+## Presets & Scenarios
 
 | Preset | Ticks | Agents | Notes |
 |--------|-------|--------|-------|
@@ -71,11 +92,17 @@ Full diagram: [docs/architecture/MODULARITY.md](docs/architecture/MODULARITY.md)
 | `blocking_balanced` | 100 | 5 | Legacy parity target |
 | `complex` | 200 | 10 | All layers enabled |
 
+See [docs/scenarios/SCENARIOS.md](docs/scenarios/SCENARIOS.md) for all built-in scenarios
+(`blocking_100`, `debate`, `offline`, `default`) and how to create your own.
+
 ## Documentation
 
+- [Getting Started Tutorial](docs/tutorials/GETTING_STARTED.md) — Ollama + OpenRouter setup
+- [Scenarios guide](docs/scenarios/SCENARIOS.md)
 - [Architecture](docs/architecture/MODULARITY.md)
 - [Stanford fork relationship](docs/architecture/UPSTREAM_RELATIONSHIP.md)
 - [Docker guide](docs/guides/DOCKER.md)
+- [Web UI dashboard](docs/guides/WEB_UI.md)
 - [Database schema](docs/database/SCHEMA.md)
 - [Developer onboarding](docs/guides/DEVELOPER_ONBOARDING.md)
 - [Attribution / third-party notices](NOTICE)
@@ -99,3 +126,17 @@ Coverage excludes optional research layers (NEAT, social learning, HRM) — see
 
 CI runs lint + unit + Postgres migration + smoke on every PR.
 The 100-tick Ollama simulation is **manual/nightly** (too slow for PR CI).
+
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for planned features and Q3–Q4 2026 milestones.
+
+## Performance
+
+Historical benchmark data: [benchmarks/history.json](benchmarks/history.json)
+
+Add your own run:
+```bash
+python scripts/run_sim_100_ticks_blocking.py --preset blocking_balanced --report output/bench.json
+python benchmarks/add_entry.py output/bench.json
+```

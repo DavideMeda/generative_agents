@@ -163,6 +163,15 @@ def build_sim_engine(scenario: Any) -> tuple[SimEngine, EngineExtras]:
     os.environ.setdefault("LLM_PROVIDER", scenario.llm_provider)
     llm_prov = get_llm_provider(scenario.llm_provider)
 
+    # Wrap with circuit breaker (enabled by default; disable with ENABLE_CIRCUIT_BREAKER=false)
+    if _env_bool("ENABLE_CIRCUIT_BREAKER", True) and scenario.llm_provider not in ("mock",):
+        from gen_agent.llm.circuit_breaker import CircuitBreaker
+        llm_prov = CircuitBreaker(
+            llm_prov,
+            failure_threshold=int(os.getenv("CB_FAILURE_THRESHOLD", "3")),
+            recovery_timeout=float(os.getenv("CB_RECOVERY_TIMEOUT", "30")),
+        )
+
     memory = _build_memory(scenario, llm_prov)
     cog = _build_cognition(scenario, scenario.sim_config, memory, llm_prov)
 

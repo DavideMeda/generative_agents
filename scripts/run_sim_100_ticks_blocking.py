@@ -27,6 +27,53 @@ if str(ROOT) not in sys.path:
 DEFAULT_AGENT_NAMES = ["Marco", "Lucia", "Giovanni", "Anna", "Elena"]
 
 
+def _collect_llm_metrics(engine: object) -> dict:
+    """Extract circuit breaker stats from the engine's dialogue engine, if available."""
+    try:
+        dialogue = getattr(engine, "_dialogue", None)  # type: ignore[attr-defined]
+        if dialogue is None:
+            return {}
+        llm_callable = getattr(dialogue, "_llm", None)
+        if llm_callable is None:
+            return {"provider": "mock"}
+        # CircuitBreaker wraps the provider; __self__ on a bound method gives the CB instance
+        cb = getattr(llm_callable, "__self__", None)
+        if cb is not None and hasattr(cb, "state"):
+            return {
+                "provider": os.getenv("LLM_PROVIDER", "unknown"),
+                "circuit_state": cb.state,
+                "consecutive_failures": cb._failures,
+            }
+        return {"provider": os.getenv("LLM_PROVIDER", "unknown")}
+    except Exception:
+        return {}
+
+
+def _preflight_llm(provider_name: str, model: str) -> bool:
+    """
+    Quick health check for the LLM provider before the simulation starts.
+    Returns True if the provider responds successfully, False otherwise.
+    On failure the caller should fall back to mock.
+    """
+    from gen_agent.llm.provider import get_llm_provider
+    provider = get_llm_provider(provider_name)
+    if not provider.is_available():
+        print(f"[pre-flight] {provider_name} not reachable — falling back to mock.", flush=True)
+        return False
+    print(f"[pre-flight] Testing {provider_name} ({model})...", flush=True)
+    try:
+        result = provider.complete("Reply with one word: OK")
+        if "[" in result and ("error" in result.lower() or "unavailable" in result.lower()):
+            print(f"[pre-flight] Provider returned error: {result[:80]}", flush=True)
+            print("[pre-flight] Falling back to mock.", flush=True)
+            return False
+        print(f"[pre-flight] OK — response: {result[:40]!r}", flush=True)
+        return True
+    except Exception as exc:
+        print(f"[pre-flight] Exception: {exc} — falling back to mock.", flush=True)
+        return False
+
+
 def run_ollama_scenario(ticks: int, report_path: Path | None) -> dict:
     """Full modular stack: World + POI + Missions + Ollama + blocking dialogues."""
     from config.scenario import load_scenario
@@ -35,6 +82,11 @@ def run_ollama_scenario(ticks: int, report_path: Path | None) -> dict:
     os.environ.setdefault("OLLAMA_MODEL", "llama3.2:3b")
     os.environ.setdefault("OLLAMA_TIMEOUT", "300")
     os.environ.setdefault("DIALOGUE_MAX_ATTEMPTS", "2")
+
+    model = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
+    if not _preflight_llm("ollama", model):
+        os.environ["LLM_PROVIDER"] = "mock"
+
     scenario = load_scenario("blocking_100")
     scenario.sim_config.block_on_dialogue = True
     scenario.sim_config.dialogue_max_turns = 3
@@ -144,6 +196,7 @@ def run_ollama_scenario(ticks: int, report_path: Path | None) -> dict:
         "reflections_generated": reflections,
         "real_time_sec": round(elapsed, 2),
         "avg_sec_per_tick": round(elapsed / max(ticks, 1), 3),
+        "llm_metrics": _collect_llm_metrics(engine),
         "dialogue_log": dialogue_log,
         "errors": errors,
     }
@@ -216,7 +269,10 @@ def main() -> int:
     parser.add_argument("--agents", type=int, default=None)
     parser.add_argument("--llm", choices=["mock", "ollama"], default="ollama")
     parser.add_argument("--report", type=str, default="output/sim_blocking_100_v2.json")
-    parser.add_argument("--preset", default="blocking_balanced", choices=["fast", "blocking_balanced", "dense_100", "complex", "long"])
+    parser.add_argument(
+        "--preset", default="blocking_balanced",
+        choices=["fast", "blocking_balanced", "dense_100", "complex", "long"],
+    )
     parser.add_argument("--neat", action="store_true", help="Enable NEAT during simulation")
     args = parser.parse_args()
 
