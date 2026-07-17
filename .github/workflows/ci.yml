@@ -95,6 +95,9 @@ jobs:
         with:
           extras: dev
 
+      - name: Run hello_world example (mock, 10 ticks)
+        run: python examples/hello_world.py
+
       - name: Run 10-tick mock simulation
         # ponytail: exit 2 = warning (too few utterances for 10 ticks), not a real failure
         run: python scripts/run_sim_100_ticks_blocking.py --llm mock --ticks 10 --preset fast || [ $? -eq 2 ]

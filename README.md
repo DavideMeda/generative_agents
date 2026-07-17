@@ -106,6 +106,7 @@ See [docs/scenarios/SCENARIOS.md](docs/scenarios/SCENARIOS.md) for all built-in 
 - [Database schema](docs/database/SCHEMA.md)
 - [Developer onboarding](docs/guides/DEVELOPER_ONBOARDING.md)
 - [Attribution / third-party notices](NOTICE)
+- [Roadmap](ROADMAP.md)
 
 ## Research layers
 
