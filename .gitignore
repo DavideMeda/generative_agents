@@ -52,13 +52,11 @@ node_modules/
 dist/
 .astro/
 
-# Stanford frontend — runtime data excluded, Dockerfile included (M5)
+# Stanford frontend — only code tracked; runtime data excluded
 environment/frontend_server/storage/
 environment/frontend_server/temp_storage/
 environment/frontend_server/compressed_storage/
 environment/frontend_server/static_dirs/
-# ponytail: reverie/ and other environment dirs are excluded (boundary rule);
-# environment/frontend_server/Dockerfile.stanford is tracked for the M5 compose
 
 # Locally generated output — do not commit simulation results
 output/

@@ -106,7 +106,6 @@ See [docs/scenarios/SCENARIOS.md](docs/scenarios/SCENARIOS.md) for all built-in 
 - [Database schema](docs/database/SCHEMA.md)
 - [Developer onboarding](docs/guides/DEVELOPER_ONBOARDING.md)
 - [Attribution / third-party notices](NOTICE)
-- [Roadmap](ROADMAP.md)
 
 ## Research layers
 
@@ -127,10 +126,6 @@ Coverage excludes optional research layers (NEAT, social learning, HRM) — see
 
 CI runs lint + unit + Postgres migration + smoke on every PR.
 The 100-tick Ollama simulation is **manual/nightly** (too slow for PR CI).
-
-## Roadmap
-
-See [ROADMAP.md](ROADMAP.md) for planned features and Q3–Q4 2026 milestones.
 
 ## Performance
 
