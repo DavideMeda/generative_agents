@@ -11,12 +11,8 @@ FastAPI + WebSocket live updates, dual storage (SQLite/PostgreSQL), structured l
 
 **Site:** [davidemeda.github.io/new-gen-agent](https://davidemeda.github.io/new-gen-agent/)
 
-![Live dashboard demo](docs/assets/demo.gif)
-
 Built on top of [Stanford Generative Agents](https://github.com/joonspk-research/generative_agents):
 this repo is a **fork** of it (`upstream`), with the reference implementation vendored under `reverie/`.
-
-> Demo GIF: if the image above is broken, record it with [docs/assets/CAPTURE_DEMO.md](docs/assets/CAPTURE_DEMO.md).
 
 ## Quick start
 

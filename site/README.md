@@ -25,7 +25,5 @@ npm run preview
 Output goes to `site/dist/` and is published by GitHub Pages
 (`.github/workflows/pages.yml`).
 
-## Demo GIF
-
-Place `demo.gif` in `site/public/` (same file as `docs/assets/demo.gif`).
-See [docs/assets/CAPTURE_DEMO.md](../docs/assets/CAPTURE_DEMO.md).
+Later: dedicated pages for Getting Started, scenarios, and architecture
+can be added under `src/pages/`.

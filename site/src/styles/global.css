@@ -281,47 +281,6 @@ img {
   }
 }
 
-/* demo */
-.demo-frame {
-  border: 1px solid var(--line);
-  background: var(--bg-elevated);
-  overflow: hidden;
-}
-
-.demo-frame img,
-.demo-frame .placeholder {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-}
-
-.demo-placeholder {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 16 / 9;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(255, 255, 255, 0.015) 2px,
-      rgba(255, 255, 255, 0.015) 4px
-    ),
-    var(--bg-elevated);
-  color: var(--fg-dim);
-  text-align: center;
-  padding: 2rem;
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
-}
-
-.demo-placeholder code {
-  display: block;
-  margin-top: 0.75rem;
-  color: var(--accent);
-  font-size: 0.7rem;
-}
-
 /* quick start */
 .pre {
   background: var(--bg-elevated);
