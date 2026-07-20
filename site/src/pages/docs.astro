@@ -1,0 +1,167 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+
+const sections = [
+  {
+    title: "Tutorials",
+    links: [
+      { name: "Getting Started", url: "/getting-started" },
+      { name: "Building a Custom Cognitive Layer", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/tutorials/CUSTOM_COGNITIVE_LAYER.md" },
+      { name: "Integrating a New LLM Provider", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/tutorials/CUSTOM_LLM_PROVIDER.md" },
+      { name: "Production Deployment Checklist", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/tutorials/PRODUCTION_DEPLOYMENT.md" },
+    ]
+  },
+  {
+    title: "Guides",
+    links: [
+      { name: "Scenarios (Built-in & Custom)", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/scenarios/SCENARIOS.md" },
+      { name: "Web UI Dashboard", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/guides/WEB_UI.md" },
+      { name: "Docker & Docker Compose", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/guides/DOCKER.md" },
+      { name: "WebSocket Protocol", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/guides/WEBSOCKET_PROTOCOL.md" },
+      { name: "Observability & Logging", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/guides/OBSERVABILITY.md" },
+      { name: "Performance Baseline", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/guides/PERFORMANCE_BASELINE.md" },
+      { name: "Stanford UI Integration", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/guides/STANFORD_UI.md" },
+    ]
+  },
+  {
+    title: "Architecture",
+    links: [
+      { name: "Architecture Overview", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/architecture/OVERVIEW.md" },
+      { name: "Architecture Diagrams", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/architecture/DIAGRAMS.md" },
+      { name: "Modularity & Interfaces", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/architecture/MODULARITY.md" },
+      { name: "Upstream Relationship (Stanford Fork)", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/architecture/UPSTREAM_RELATIONSHIP.md" },
+    ]
+  },
+  {
+    title: "Research",
+    links: [
+      { name: "Research Layers (Optional Features)", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/research/LAYERS.md" },
+    ]
+  },
+  {
+    title: "Database",
+    links: [
+      { name: "Schema Documentation", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/database/SCHEMA.md" },
+    ]
+  },
+  {
+    title: "Contributing",
+    links: [
+      { name: "Contributing Guide", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/CONTRIBUTING.md" },
+      { name: "Developer Onboarding", url: "https://github.com/DavideMeda/new-gen-agent/blob/main/docs/guides/DEVELOPER_ONBOARDING.md" },
+    ]
+  },
+];
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Documentation — New Gen Agent"
+  description="Complete documentation for New Gen Agent: tutorials, guides, architecture, and API reference."
+>
+  <Nav />
+  <main class="wrap doc-index">
+    <h1>Documentation</h1>
+    <p class="intro">
+      Complete guide to building, running, and extending New Gen Agent simulations.
+    </p>
+
+    {sections.map((section) => (
+      <section class="doc-section">
+        <h2>{section.title}</h2>
+        <ul>
+          {section.links.map((link) => (
+            <li>
+              <a
+                href={link.url.startsWith('http') ? link.url : `${base}${link.url.replace(/^\//, '')}`}
+                target={link.url.startsWith('http') ? '_blank' : undefined}
+                rel={link.url.startsWith('http') ? 'noopener' : undefined}
+              >
+                {link.name}
+                {link.url.startsWith('http') && <span class="external">↗</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <footer class="doc-footer">
+      <p>Can't find what you're looking for?</p>
+      <ul>
+        <li><a href="https://github.com/DavideMeda/new-gen-agent/issues" target="_blank" rel="noopener">Open an issue</a></li>
+        <li><a href="https://github.com/DavideMeda/new-gen-agent/discussions" target="_blank" rel="noopener">Start a discussion</a></li>
+        <li><a href="https://github.com/DavideMeda/new-gen-agent" target="_blank" rel="noopener">View on GitHub</a></li>
+      </ul>
+    </footer>
+  </main>
+</BaseLayout>
+
+<style>
+  .doc-index {
+    max-width: 900px;
+    padding: 4rem 1rem;
+  }
+  .doc-index h1 {
+    margin-bottom: 1rem;
+  }
+  .intro {
+    font-size: 1.125rem;
+    color: #888;
+    margin-bottom: 3rem;
+  }
+  .doc-section {
+    margin-bottom: 3rem;
+  }
+  .doc-section h2 {
+    color: #00d9ff;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  .doc-section ul {
+    list-style: none;
+    padding: 0;
+  }
+  .doc-section li {
+    margin-bottom: 0.75rem;
+  }
+  .doc-section a {
+    color: #ddd;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    display: inline-block;
+    transition: color 0.2s;
+  }
+  .doc-section a:hover {
+    color: #00d9ff;
+  }
+  .external {
+    margin-left: 0.25rem;
+    font-size: 0.875rem;
+    opacity: 0.6;
+  }
+  .doc-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid #222;
+  }
+  .doc-footer p {
+    color: #888;
+    margin-bottom: 1rem;
+  }
+  .doc-footer ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 2rem;
+  }
+  .doc-footer a {
+    color: #00d9ff;
+    text-decoration: none;
+  }
+  .doc-footer a:hover {
+    text-decoration: underline;
+  }
+</style>

@@ -1,0 +1,150 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+---
+
+<BaseLayout
+  title="Getting Started — New Gen Agent"
+  description="Step-by-step guide to install and run your first generative agent simulation."
+>
+  <Nav />
+  <main class="wrap doc-content">
+    <h1>Getting Started</h1>
+
+    <section>
+      <h2>Installation</h2>
+      <pre><code>git clone https://github.com/DavideMeda/new-gen-agent.git
+cd new-gen-agent
+pip install -e ".[dev]"</code></pre>
+      <p>Requires Python 3.10+. On Windows, use a virtual environment to avoid system conflicts.</p>
+    </section>
+
+    <section>
+      <h2>Quick test (no LLM required)</h2>
+      <pre><code>python examples/hello_world.py</code></pre>
+      <p>
+        Runs a 10-tick simulation with 3 agents (Alice, Bob, Carol) using a mock LLM.
+        Completes in ~5 seconds. Output shows interactions and final stats.
+      </p>
+    </section>
+
+    <section>
+      <h2>With Ollama (local LLM)</h2>
+      <pre><code># 1. Install Ollama (https://ollama.ai)
+ollama pull llama3.2:3b
+
+# 2. Run simulation
+python examples/ollama_simple.py</code></pre>
+      <p>
+        Uses <code>llama3.2:3b</code> for realistic agent dialogues. If Ollama is unavailable,
+        the script auto-falls back to mock LLM and continues.
+      </p>
+    </section>
+
+    <section>
+      <h2>With OpenRouter API (cloud LLM)</h2>
+      <pre><code># 1. Get free API key from https://openrouter.ai
+export OPENROUTER_API_KEY=sk-or-...
+
+# 2. Run simulation
+python examples/openrouter_api.py</code></pre>
+      <p>
+        Supports 200+ models (free tier: meta-llama/llama-3.2-3b-instruct).
+        Auto-fallback to mock if key is missing.
+      </p>
+    </section>
+
+    <section>
+      <h2>Cognitive biases demo</h2>
+      <pre><code>python examples/cognitive_biases.py</code></pre>
+      <p>
+        Shows ConfirmationBias, AvailabilityHeuristic, and AnchoringBias in action.
+        Uses mock LLM (no external dependencies).
+      </p>
+    </section>
+
+    <section>
+      <h2>Custom scenario</h2>
+      <p>See <code>examples/custom_scenario.py</code> for a commented template showing:</p>
+      <ul>
+        <li>How to define a custom world with POIs</li>
+        <li>How to create agents with traits and initial memories</li>
+        <li>How to configure <code>SimConfig</code> (tick interval, interaction radius, etc.)</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Web UI (live dashboard)</h2>
+      <pre><code>docker compose up</code></pre>
+      <p>
+        Starts FastAPI server on <code>http://localhost:8000</code> with WebSocket updates.
+        Open the URL in a browser to see agents move, interact, and form memories in real time.
+      </p>
+      <p>For production (PostgreSQL + migrations), see <a href="https://github.com/DavideMeda/new-gen-agent/blob/main/docs/guides/DOCKER.md" target="_blank" rel="noopener">docs/guides/DOCKER.md</a>.</p>
+    </section>
+
+    <section>
+      <h2>Running tests</h2>
+      <pre><code>pytest                    # unit tests (fast, no LLM)
+pytest tests/integration/ # requires server or Postgres</code></pre>
+      <p>Coverage gate is 70%+. Pre-commit hooks run <code>ruff</code> and <code>mypy</code> automatically.</p>
+    </section>
+
+    <section>
+      <h2>Next steps</h2>
+      <ul>
+        <li><a href="https://github.com/DavideMeda/new-gen-agent/blob/main/docs/tutorials/GETTING_STARTED.md" target="_blank" rel="noopener">Full tutorial</a> — detailed walkthrough with troubleshooting</li>
+        <li><a href="https://github.com/DavideMeda/new-gen-agent/blob/main/docs/scenarios/SCENARIOS.md" target="_blank" rel="noopener">Scenarios guide</a> — built-in presets and how to create custom ones</li>
+        <li><a href="https://github.com/DavideMeda/new-gen-agent/blob/main/docs/research/LAYERS.md" target="_blank" rel="noopener">Research layers</a> — optional cognitive/social features</li>
+        <li><a href="/docs">Advanced tutorials</a> — custom cognitive layers, LLM providers, production deployment</li>
+      </ul>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .doc-content {
+    max-width: 800px;
+    padding: 4rem 1rem;
+  }
+  .doc-content h1 {
+    margin-bottom: 2rem;
+  }
+  .doc-content section {
+    margin-bottom: 3rem;
+  }
+  .doc-content h2 {
+    margin-bottom: 1rem;
+    color: #00d9ff;
+    font-size: 1.5rem;
+  }
+  .doc-content pre {
+    background: #0f0f0f;
+    border: 1px solid #222;
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+  .doc-content code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+  }
+  .doc-content p code {
+    background: #1a1a1a;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.875rem;
+  }
+  .doc-content ul {
+    padding-left: 1.5rem;
+    line-height: 1.8;
+  }
+  .doc-content a {
+    color: #00d9ff;
+    text-decoration: none;
+  }
+  .doc-content a:hover {
+    text-decoration: underline;
+  }
+</style>

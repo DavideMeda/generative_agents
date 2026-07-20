@@ -1,0 +1,116 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+
+const features = [
+  {
+    category: "Core Architecture",
+    items: [
+      { name: "SimEngine", desc: "Tick-based simulation with thread-safe state management" },
+      { name: "Memory System", desc: "Persistent storage with decay, reflections, and retrieval scoring" },
+      { name: "Dialogue Engine", desc: "LLM-powered conversations with quality guards and intent packs" },
+      { name: "Stanford Adapter", desc: "Vendored integration with the original Stanford Generative Agents" },
+    ]
+  },
+  {
+    category: "Cognitive Layers (Optional)",
+    items: [
+      { name: "BiasLayer", desc: "Confirmation bias, availability heuristic, anchoring bias" },
+      { name: "HRM", desc: "Hierarchical role management (leader/mediator/observer/member)" },
+      { name: "RLIF", desc: "Reinforcement learning from interaction feedback" },
+      { name: "SEAL", desc: "Social emotional adaptation with trait plasticity" },
+      { name: "Evolutionary", desc: "Social learning and intrinsic motivation for exploration" },
+    ]
+  },
+  {
+    category: "Social Layers (Optional)",
+    items: [
+      { name: "GameEngine", desc: "Game theory with Nash equilibrium solver (Prisoner's Dilemma, Stag Hunt)" },
+      { name: "Social Learning", desc: "Imitation and knowledge diffusion between agents" },
+      { name: "Consensus", desc: "Collective decision-making (majority vote, Borda count, Delphi)" },
+    ]
+  },
+  {
+    category: "Advanced Memory (Optional)",
+    items: [
+      { name: "GraphRAG", desc: "Graph-augmented retrieval for semantic memory expansion" },
+      { name: "MaRS Engine", desc: "Privacy filtering and retention policies" },
+      { name: "Memory Compressor", desc: "Periodic database compression for long-running simulations" },
+      { name: "FAISS Vector Store", desc: "Embedding-based similarity search" },
+    ]
+  },
+  {
+    category: "Infrastructure",
+    items: [
+      { name: "FastAPI Server", desc: "REST API + WebSocket for live updates" },
+      { name: "Dual Storage", desc: "SQLite (dev) / PostgreSQL (prod) with Alembic migrations" },
+      { name: "Docker Multi-stage", desc: "Production-ready container with health checks" },
+      { name: "CI/CD", desc: "GitHub Actions: lint, test, coverage gate (70%+), Docker build" },
+      { name: "Structured Logging", desc: "structlog with JSON output for observability" },
+    ]
+  },
+  {
+    category: "LLM Providers",
+    items: [
+      { name: "Ollama", desc: "Local LLMs (Llama, Mistral, etc.) with auto-fallback" },
+      { name: "OpenRouter", desc: "Cloud API with 200+ models (free tier available)" },
+      { name: "Mock Provider", desc: "Built-in fallback for offline testing" },
+      { name: "Circuit Breaker", desc: "LLM resilience with exponential backoff" },
+    ]
+  },
+];
+---
+
+<BaseLayout
+  title="Features — New Gen Agent"
+  description="Modular cognitive architecture with memory decay, LLM dialogues, cognitive biases, social learning, and game theory."
+>
+  <Nav />
+  <main class="wrap" style="padding: 4rem 0;">
+    <h1 style="margin-bottom: 2rem;">Features</h1>
+
+    {features.map((section) => (
+      <section style="margin-bottom: 3rem;">
+        <h2 style="margin-bottom: 1rem; color: #00d9ff;">{section.category}</h2>
+        <div style="display: grid; gap: 1rem;">
+          {section.items.map((item) => (
+            <article class="feature-card">
+              <h3 style="margin: 0 0 0.5rem; font-size: 1.125rem;">{item.name}</h3>
+              <p style="margin: 0; color: #888; font-size: 0.9375rem;">{item.desc}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #222;">
+      <p style="color: #666;">
+        All optional layers are disabled by default. Enable via environment variables
+        (e.g., <code>ENABLE_BIASES=true</code>). See
+        <a href="https://github.com/DavideMeda/new-gen-agent/blob/main/docs/research/LAYERS.md" target="_blank" rel="noopener"
+          style="color: #00d9ff; text-decoration: none;">docs/research/LAYERS.md</a>
+        for details.
+      </p>
+    </footer>
+  </main>
+</BaseLayout>
+
+<style>
+  .feature-card {
+    padding: 1rem;
+    background: #0f0f0f;
+    border: 1px solid #222;
+    border-radius: 6px;
+    transition: border-color 0.2s;
+  }
+  .feature-card:hover {
+    border-color: #00d9ff;
+  }
+  code {
+    background: #1a1a1a;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.875rem;
+    font-family: 'Courier New', monospace;
+  }
+</style>

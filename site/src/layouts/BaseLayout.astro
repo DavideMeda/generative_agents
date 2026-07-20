@@ -4,14 +4,18 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
 }
 
 const {
   title = "New Gen Agent — Cognitive Generative Agents",
   description = "Modular generative-agent simulation with memory decay, LLM dialogues, cognitive biases, and a live WebSocket dashboard. Fork of Stanford Generative Agents.",
+  image,
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://davidemeda.github.io/new-gen-agent/");
+const socialImage = image || `${canonicalURL.origin}${base}og-image.png`;
 ---
 
 <!doctype html>
@@ -22,6 +26,29 @@ const base = import.meta.env.BASE_URL;
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0a0a0a" />
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- SEO -->
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Davide Meda" />
+    <meta name="keywords" content="generative agents, multi-agent simulation, LLM, cognitive architecture, AI agents, Stanford Generative Agents, memory decay, cognitive biases" />
+    
+    <!-- Open Graph (Facebook, LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:site_name" content="New Gen Agent" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:creator" content="@DavideMeda" />
+    
     <title>{title}</title>
   </head>
   <body>

@@ -120,9 +120,15 @@ img {
   color: var(--fg-dim);
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links a.active {
   color: var(--fg);
   opacity: 1;
+}
+
+.nav-links a.active {
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 0.15rem;
 }
 
 /* hero */

@@ -32,7 +32,7 @@ export OPENROUTER_API_KEY=sk-or-...
 python examples/openrouter_api.py
 ```
 
-See [docs/tutorials/GETTING_STARTED.md](docs/tutorials/GETTING_STARTED.md) for the full step-by-step guide.
+See [docs/tutorials/GETTING_STARTED.md](docs/tutorials/GETTING_STARTED.md) for the full step-by-step guide, or visit the [**Getting Started page**](https://davidemeda.github.io/new-gen-agent/getting-started) on the website.
 
 ## Examples
 
@@ -84,7 +84,7 @@ launch_profile → engine_factory → SimEngine
                                  └── optional layers  (HRM, RLIF, NEAT, GameTheory…)
 ```
 
-Full diagram: [docs/architecture/MODULARITY.md](docs/architecture/MODULARITY.md)
+See [docs/architecture/DIAGRAMS.md](docs/architecture/DIAGRAMS.md) for Mermaid flowcharts and [docs/architecture/MODULARITY.md](docs/architecture/MODULARITY.md) for detailed interface descriptions.
 
 ## Presets & Scenarios
 
@@ -99,15 +99,34 @@ See [docs/scenarios/SCENARIOS.md](docs/scenarios/SCENARIOS.md) for all built-in 
 
 ## Documentation
 
-- [Getting Started Tutorial](docs/tutorials/GETTING_STARTED.md) — Ollama + OpenRouter setup
-- [Scenarios guide](docs/scenarios/SCENARIOS.md)
-- [Architecture](docs/architecture/MODULARITY.md)
-- [Stanford fork relationship](docs/architecture/UPSTREAM_RELATIONSHIP.md)
-- [Docker guide](docs/guides/DOCKER.md)
-- [Web UI dashboard](docs/guides/WEB_UI.md)
-- [Database schema](docs/database/SCHEMA.md)
-- [Developer onboarding](docs/guides/DEVELOPER_ONBOARDING.md)
-- [Attribution / third-party notices](NOTICE)
+**Website:** [davidemeda.github.io/new-gen-agent/docs](https://davidemeda.github.io/new-gen-agent/docs)
+
+**Tutorials:**
+- [Getting Started](docs/tutorials/GETTING_STARTED.md) — Installation, Ollama, OpenRouter setup
+- [Building a Custom Cognitive Layer](docs/tutorials/CUSTOM_COGNITIVE_LAYER.md) — Add your own biases, behaviors
+- [Integrating a New LLM Provider](docs/tutorials/CUSTOM_LLM_PROVIDER.md) — Anthropic, custom APIs
+- [Production Deployment Checklist](docs/tutorials/PRODUCTION_DEPLOYMENT.md) — Docker, K8s, monitoring
+
+**Architecture:**
+- [Overview](docs/architecture/OVERVIEW.md) — High-level design
+- [Diagrams (Mermaid)](docs/architecture/DIAGRAMS.md) — Visual flowcharts
+- [Modularity & Interfaces](docs/architecture/MODULARITY.md) — Protocol-based design
+- [Stanford fork relationship](docs/architecture/UPSTREAM_RELATIONSHIP.md) — Vendored integration
+
+**Guides:**
+- [Scenarios & Presets](docs/scenarios/SCENARIOS.md) — Built-in and custom scenarios
+- [Web UI dashboard](docs/guides/WEB_UI.md) — Live WebSocket interface
+- [Docker guide](docs/guides/DOCKER.md) — Multi-stage builds, compose profiles
+- [WebSocket Protocol](docs/guides/WEBSOCKET_PROTOCOL.md) — Real-time message format
+- [Observability](docs/guides/OBSERVABILITY.md) — Structured logging, metrics
+- [Performance Baseline](docs/guides/PERFORMANCE_BASELINE.md) — Benchmarking
+- [Database schema](docs/database/SCHEMA.md) — SQLite/PostgreSQL tables
+- [Developer onboarding](docs/guides/DEVELOPER_ONBOARDING.md) — Contributing workflow
+
+**Other:**
+- [Research Layers](docs/research/LAYERS.md) — Optional cognitive/social features
+- [Contributing](CONTRIBUTING.md) — Code style, branch strategy, tests
+- [Attribution / third-party notices](NOTICE) — Licensing
 
 ## Research layers
 
